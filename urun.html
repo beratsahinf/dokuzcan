@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kit Satın Al — REDLINE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --red: #E8001D;
+      --dark-red: #9B0013;
+      --black: #080808;
+      --dark: #0e0e0e;
+      --panel: #141414;
+      --panel2: #1a1a1a;
+      --border: #252525;
+      --border2: #2e2e2e;
+      --white: #F2F0EC;
+      --grey: #777;
+      --lg: #aaa;
+      --green: #22c55e;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Barlow', sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+      cursor: crosshair;
+    }
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 9998; opacity: 0.5;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(8,8,8,0.97);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      backdrop-filter: blur(10px);
+    }
+    .nav-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 20px; letter-spacing: 4px;
+      color: var(--white); text-decoration: none;
+    }
+    .nav-logo span { color: var(--red); }
+    .nav-back {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px; font-weight: 700; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--grey);
+      text-decoration: none; display: flex; align-items: center; gap: 6px;
+      transition: color 0.2s;
+    }
+    .nav-back:hover { color: var(--white); }
+    .nav-steps {
+      display: flex; align-items: center; gap: 0;
+    }
+    .nav-step {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; color: #333;
+      padding: 6px 16px; border-right: 1px solid var(--border);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .nav-step:last-child { border-right: none; }
+    .nav-step.active { color: var(--white); }
+    .nav-step.done { color: var(--green); }
+    .step-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: #333;
+    }
+    .nav-step.active .step-dot { background: var(--red); }
+    .nav-step.done .step-dot { background: var(--green); }
+
+    /* ── SCREENS ── */
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ══════════════════════════════
+       SCREEN 1 — KIT SEÇ
+    ══════════════════════════════ */
+    .product-layout {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      min-height: calc(100vh - 57px);
+    }
+
+    /* LEFT: Kit listesi */
+    .kits-col {
+      padding: 48px;
+      border-right: 1px solid var(--border);
+    }
+    .section-eyebrow {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px; font-weight: 700; letter-spacing: 5px;
+      text-transform: uppercase; color: var(--red); margin-bottom: 12px;
+    }
+    h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 56px; letter-spacing: 2px; line-height: 0.95;
+      margin-bottom: 8px;
+    }
+    .h1-sub {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 14px; color: var(--grey); margin-bottom: 40px;
+    }
+
+    /* Kit cards */
+    .kit-options { display: flex; flex-direction: column; gap: 12px; }
+
+    .kit-option {
+      border: 1px solid var(--border);
+      background: var(--panel);
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .kit-option:hover { border-color: #444; }
+    .kit-option.selected {
+      border-color: var(--red);
+      background: rgba(232,0,29,0.04);
+    }
+    .kit-option.selected::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: var(--red);
+    }
+    .kit-option-inner {
+      padding: 24px 28px;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 20px;
+      align-items: center;
+    }
+
+    /* Radio */
+    .radio-circle {
+      width: 20px; height: 20px;
+      border: 2px solid var(--border2);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      transition: border-color 0.2s; flex-shrink: 0;
+    }
+    .kit-option.selected .radio-circle { border-color: var(--red); }
+    .radio-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--red); opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .kit-option.selected .radio-dot { opacity: 1; }
+
+    .kit-info {}
+    .kit-top { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+    .kit-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 26px; letter-spacing: 2px;
+    }
+    .kit-tag {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 9px; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; padding: 3px 8px;
+    }
+    .tag-rec { background: var(--red); color: var(--black); }
+    .tag-pro { background: #2a2a2a; color: var(--grey); border: 1px solid #333; }
+
+    .kit-contents {
+      display: flex; flex-wrap: wrap; gap: 6px;
+    }
+    .content-pill {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px; letter-spacing: 1px;
+      color: #555; background: #111;
+      padding: 3px 10px;
+    }
+    .content-pill.highlight { color: var(--lg); background: #1a1a1a; }
+
+    .kit-price-col { text-align: right; flex-shrink: 0; }
+    .kit-price {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 36px; letter-spacing: 1px; line-height: 1;
+    }
+    .kit-price-sub {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px; color: var(--grey); letter-spacing: 1px;
+    }
+
+    /* Kit detail expand */
+    .kit-detail {
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.3s ease;
+      border-top: 0px solid var(--border);
+    }
+    .kit-option.selected .kit-detail {
+      max-height: 200px;
+      border-top: 1px solid var(--border);
+    }
+    .kit-detail-inner {
+      padding: 16px 28px 20px 68px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .detail-item {
+      display: flex; align-items: center; gap: 8px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px; color: var(--lg);
+    }
+    .detail-item::before {
+      content: '';
+      width: 12px; height: 1px;
+      background: var(--red); flex-shrink: 0;
+    }
+
+    /* ── QR add-on ── */
+    .addon-box {
+      margin-top: 24px;
+      border: 1px solid var(--border2);
+      background: var(--panel2);
+      padding: 20px 24px;
+      display: flex; align-items: center; gap: 16px;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .addon-box:hover { border-color: #3a3a3a; }
+    .addon-box.checked { border-color: var(--green); background: rgba(34,197,94,0.03); }
+    .addon-check {
+      width: 20px; height: 20px;
+      border: 2px solid var(--border2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; color: var(--green);
+      transition: border-color 0.2s; flex-shrink: 0;
+    }
+    .addon-box.checked .addon-check { border-color: var(--green); }
+    .addon-info { flex: 1; }
+    .addon-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 15px; font-weight: 700; letter-spacing: 1px;
+      color: var(--white); margin-bottom: 2px;
+    }
+    .addon-desc {
+      font-size: 12px; color: var(--grey); line-height: 1.5;
+    }
+    .addon-price {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px; letter-spacing: 1px;
+      color: var(--green);
+    }
+
+    /* RIGHT: Sipariş özeti */
+    .summary-col {
+      background: var(--dark);
+      padding: 48px 32px;
+      position: sticky; top: 57px;
+      height: calc(100vh - 57px);
+      display: flex; flex-direction: column;
+      overflow-y: auto;
+    }
+    .summary-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px; letter-spacing: 3px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 16px; margin-bottom: 20px;
+    }
+    .summary-row {
+      display: flex; justify-content: space-between;
+      align-items: flex-start;
+      padding: 12px 0;
+      border-bottom: 1px solid #1a1a1a;
+      font-family: 'Barlow Condensed', sans-serif;
+    }
+    .summary-row:last-child { border-bottom: none; }
+    .s-label { font-size: 13px; letter-spacing: 1px; color: var(--grey); }
+    .s-val { font-size: 14px; font-weight: 600; color: var(--white); text-align: right; }
+    .s-val.green { color: var(--green); }
+    .s-val.red { color: var(--red); }
+
+    .summary-total {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 2px solid var(--border2);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .total-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px; font-weight: 700; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--grey);
+    }
+    .total-price {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 44px; letter-spacing: 1px; color: var(--white);
+    }
+
+    .btn-continue {
+      display: block; width: 100%;
+      background: var(--red); color: var(--black);
+      border: none; padding: 18px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 20px; letter-spacing: 4px;
+      cursor: pointer; margin-top: 24px;
+      transition: background 0.2s;
+      position: relative; overflow: hidden;
+    }
+    .btn-continue::before {
+      content: '';
+      position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+      animation: sweep 2.5s ease-in-out infinite;
+    }
+    @keyframes sweep { 0% { left: -100%; } 100% { left: 200%; } }
+    .btn-continue:hover { background: var(--dark-red); }
+
+    .trust-badges {
+      margin-top: 20px;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .trust-item {
+      display: flex; align-items: center; gap: 8px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px; letter-spacing: 1px; color: var(--grey);
+    }
+    .trust-item-icon { font-size: 14px; }
+
+    /* ══════════════════════════════
+       SCREEN 2 — HESAP / ÖDEME
+    ══════════════════════════════ */
+    .checkout-layout {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      min-height: calc(100vh - 57px);
+    }
+    .checkout-col {
+      padding: 48px;
+      border-right: 1px solid var(--border);
+    }
+    h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 40px; letter-spacing: 2px; margin-bottom: 32px;
+    }
+
+    /* Tab: Yeni Hesap / Mevcut Hesap */
+    .account-tabs {
+      display: flex; gap: 0;
+      border: 1px solid var(--border);
+      margin-bottom: 32px;
+    }
+    .acc-tab {
+      flex: 1; padding: 14px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--grey);
+      background: var(--panel); border: none; cursor: pointer;
+      transition: all 0.2s; border-right: 1px solid var(--border);
+    }
+    .acc-tab:last-child { border-right: none; }
+    .acc-tab.active { background: rgba(232,0,29,0.08); color: var(--white); }
+    .acc-tab.active::after {
+      /* red top line via box-shadow trick */
+    }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* Form */
+    .form-section-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px; font-weight: 700; letter-spacing: 4px;
+      text-transform: uppercase; color: var(--grey);
+      padding-bottom: 10px; border-bottom: 1px solid var(--border);
+      margin-bottom: 20px;
+    }
+    .form-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+      margin-bottom: 20px;
+    }
+    .form-grid.cols1 { grid-template-columns: 1fr; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group.full { grid-column: 1 / -1; }
+    label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px; font-weight: 700; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--grey);
+    }
+    label .req { color: var(--red); }
+    input[type="text"], input[type="email"],
+    input[type="password"], input[type="tel"],
+    input[type="number"], select {
+      background: var(--dark);
+      border: 1px solid var(--border2);
+      color: var(--white);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 15px; padding: 13px 14px;
+      outline: none; transition: border-color 0.2s; width: 100%;
+      appearance: none; -webkit-appearance: none;
+    }
+    input:focus, select:focus { border-color: var(--red); }
+    input::placeholder { color: #383838; }
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23555' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 14px center;
+      padding-right: 36px; cursor: pointer;
+    }
+    select option { background: #1a1a1a; }
+
+    /* Password strength */
+    .pass-bars { display: flex; gap: 3px; margin-top: 6px; }
+    .pass-bar { flex: 1; height: 2px; background: var(--border); transition: background 0.2s; }
+    .pass-bar.weak { background: var(--red); }
+    .pass-bar.ok { background: var(--green); }
+
+    /* Card input */
+    .card-number-wrap { position: relative; }
+    .card-icons {
+      position: absolute; right: 12px; top: 50%;
+      transform: translateY(-50%);
+      display: flex; gap: 4px;
+    }
+    .card-icon {
+      width: 28px; height: 18px;
+      background: #222; border: 1px solid #333;
+      border-radius: 2px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 7px; font-weight: 700; letter-spacing: 0.5px;
+      color: #555;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* Kargo seçeneği */
+    .shipping-options { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
+    .shipping-opt {
+      border: 1px solid var(--border);
+      padding: 14px 16px;
+      display: flex; align-items: center; gap: 14px;
+      cursor: pointer; transition: border-color 0.2s;
+      background: var(--panel);
+    }
+    .shipping-opt.selected { border-color: var(--red); background: rgba(232,0,29,0.04); }
+    .ship-radio {
+      width: 16px; height: 16px; border-radius: 50%;
+      border: 2px solid var(--border2);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .shipping-opt.selected .ship-radio { border-color: var(--red); }
+    .ship-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--red); opacity: 0; transition: opacity 0.2s;
+    }
+    .shipping-opt.selected .ship-dot { opacity: 1; }
+    .ship-info { flex: 1; }
+    .ship-name {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 14px; font-weight: 700; letter-spacing: 1px; color: var(--white);
+    }
+    .ship-time { font-size: 12px; color: var(--grey); }
+    .ship-price {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 20px; letter-spacing: 1px;
+    }
+
+    /* KVKK onay */
+    .consent-box {
+      background: rgba(232,0,29,0.04);
+      border: 1px solid rgba(232,0,29,0.15);
+      padding: 16px; margin: 24px 0;
+    }
+    .consent-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px; font-weight: 700; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--red); margin-bottom: 8px;
+    }
+    .consent-text { font-size: 12px; line-height: 1.7; color: var(--grey); }
+    .consent-text a { color: var(--red); text-decoration: none; }
+    .check-row {
+      display: flex; gap: 10px; align-items: flex-start;
+      margin-top: 12px; cursor: pointer;
+    }
+    .check-box {
+      width: 18px; height: 18px;
+      border: 1px solid var(--border2);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 1px;
+      font-size: 11px; color: var(--green);
+    }
+    .check-box.checked::before { content: '✓'; }
+    .check-label { font-size: 12px; line-height: 1.6; color: var(--grey); }
+    .check-label a { color: var(--red); text-decoration: none; }
+
+    /* ══════════════════════════════
+       SCREEN 3 — BAŞARILI
+    ══════════════════════════════ */
+    .success-screen {
+      min-height: calc(100vh - 57px);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 60px 24px; text-align: center;
+    }
+    .success-icon {
+      width: 80px; height: 80px;
+      border: 2px solid var(--green);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px; margin: 0 auto 32px;
+      animation: pop 0.4s ease;
+    }
+    @keyframes pop {
+      0% { transform: scale(0.5); opacity: 0; }
+      70% { transform: scale(1.1); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .success-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 64px; letter-spacing: 3px; line-height: 0.95;
+      margin-bottom: 12px;
+    }
+    .success-title span { color: var(--green); }
+    .success-sub {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 16px; letter-spacing: 2px; color: var(--grey);
+      margin-bottom: 48px;
+    }
+
+    /* Hesap bilgileri kutusu */
+    .account-created {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-top: 2px solid var(--green);
+      padding: 32px 40px;
+      max-width: 480px; width: 100%;
+      margin: 0 auto 32px; text-align: left;
+    }
+    .ac-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px; font-weight: 700; letter-spacing: 4px;
+      text-transform: uppercase; color: var(--green); margin-bottom: 20px;
+    }
+    .ac-row {
+      display: flex; justify-content: space-between;
+      padding: 10px 0; border-bottom: 1px solid #1a1a1a;
+      font-family: 'Barlow Condensed', sans-serif;
+    }
+    .ac-row:last-child { border-bottom: none; }
+    .ac-key { font-size: 12px; letter-spacing: 2px; color: var(--grey); }
+    .ac-val { font-size: 14px; font-weight: 600; color: var(--white); }
+    .ac-val.mono {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px; color: var(--green); letter-spacing: 2px;
+    }
+
+    .activation-note {
+      max-width: 480px; width: 100%;
+      margin: 0 auto 40px;
+      background: rgba(232,0,29,0.05);
+      border: 1px dashed rgba(232,0,29,0.2);
+      padding: 16px 20px;
+      font-size: 13px; line-height: 1.7; color: var(--grey);
+      text-align: left;
+    }
+    .activation-note strong { color: var(--white); font-weight: 500; }
+
+    .success-actions { display: flex; gap: 12px; }
+    .btn-go-panel {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 18px; letter-spacing: 3px;
+      color: var(--black); background: var(--red);
+      padding: 16px 40px; text-decoration: none;
+      transition: background 0.2s;
+    }
+    .btn-go-panel:hover { background: var(--dark-red); }
+    .btn-go-home {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--grey);
+      padding: 16px 24px; border: 1px solid var(--border);
+      text-decoration: none; transition: all 0.2s;
+    }
+    .btn-go-home:hover { color: var(--white); border-color: #444; }
+
+    @media (max-width: 860px) {
+      .product-layout, .checkout-layout { grid-template-columns: 1fr; }
+      .summary-col { position: static; height: auto; }
+      .kits-col, .checkout-col { padding: 28px 20px; }
+      .kit-detail-inner { grid-template-columns: 1fr 1fr; padding-left: 40px; }
+      nav { padding: 14px 20px; }
+      .nav-steps { display: none; }
+      .kit-option-inner { grid-template-columns: auto 1fr; }
+      .kit-price-col { grid-column: 1 / -1; padding-left: 40px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .success-actions { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="index.html" class="nav-logo">RED<span>LINE</span></a>
+    <div class="nav-steps">
+      <div class="nav-step active" id="step1"><span class="step-dot"></span>Kit Seç</div>
+      <div class="nav-step" id="step2"><span class="step-dot"></span>Bilgiler & Ödeme</div>
+      <div class="nav-step" id="step3"><span class="step-dot"></span>Tamamlandı</div>
+    </div>
+    <a href="index.html" class="nav-back">← Ana Sayfa</a>
+  </nav>
+
+  <!-- ═══════════════════════════════════
+       SCREEN 1 — KİT SEÇ
+  ═══════════════════════════════════ -->
+  <div class="screen active" id="screen1">
+    <div class="product-layout">
+
+      <!-- LEFT -->
+      <div class="kits-col">
+        <div class="section-eyebrow">Motosikletçi Travma Kiti</div>
+        <h1>KİTİNİ<br>SEÇ</h1>
+        <p class="h1-sub">Her kit; bacak çantası, malzemeler ve QR profil sistemi içerir.</p>
+
+        <div class="kit-options">
+
+          <!-- BASIC -->
+          <div class="kit-option" onclick="selectKit(this, 'BASIC', 1490)">
+            <div class="kit-option-inner">
+              <div class="radio-circle"><div class="radio-dot"></div></div>
+              <div class="kit-info">
+                <div class="kit-top">
+                  <div class="kit-name">BASIC</div>
+                </div>
+                <div class="kit-contents">
+                  <span class="content-pill highlight">Turnike CAT Gen7</span>
+                  <span class="content-pill highlight">Israeli Bandaj</span>
+                  <span class="content-pill highlight">Taktik Makas</span>
+                  <span class="content-pill highlight">Nitril Eldiven ×2</span>
+                  <span class="content-pill">Cordura 500D Çanta</span>
+                  <span class="content-pill">QR Profil Sistemi</span>
+                </div>
+              </div>
+              <div class="kit-price-col">
+                <div class="kit-price">₺1.490</div>
+                <div class="kit-price-sub">KDV dahil</div>
+              </div>
+            </div>
+            <div class="kit-detail">
+              <div class="kit-detail-inner">
+                <div class="detail-item">CAT Gen7 Turnike</div>
+                <div class="detail-item">Israeli Basınç Bandajı</div>
+                <div class="detail-item">Taktik Makas</div>
+                <div class="detail-item">Nitril Eldiven ×2</div>
+                <div class="detail-item">Cordura 500D Çanta</div>
+                <div class="detail-item">QR Profil Etiketi</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ADVANCED (selected by default) -->
+          <div class="kit-option selected" onclick="selectKit(this, 'ADVANCED', 2290)">
+            <div class="kit-option-inner">
+              <div class="radio-circle"><div class="radio-dot"></div></div>
+              <div class="kit-info">
+                <div class="kit-top">
+                  <div class="kit-name">ADVANCED</div>
+                  <span class="kit-tag tag-rec">Önerilen</span>
+                </div>
+                <div class="kit-contents">
+                  <span class="content-pill highlight">Turnike CAT Gen7</span>
+                  <span class="content-pill highlight">QuikClot Hemostatik</span>
+                  <span class="content-pill highlight">Hyfin Göğüs Mührü</span>
+                  <span class="content-pill highlight">Israeli Bandaj</span>
+                  <span class="content-pill">Cordura 1000D Çanta</span>
+                  <span class="content-pill highlight">+3 malzeme</span>
+                </div>
+              </div>
+              <div class="kit-price-col">
+                <div class="kit-price">₺2.290</div>
+                <div class="kit-price-sub">KDV dahil</div>
+              </div>
+            </div>
+            <div class="kit-detail">
+              <div class="kit-detail-inner">
+                <div class="detail-item">CAT Gen7 Turnike</div>
+                <div class="detail-item">QuikClot Hemostatik Gaz</div>
+                <div class="detail-item">Hyfin Göğüs Mührü</div>
+                <div class="detail-item">Israeli Basınç Bandajı</div>
+                <div class="detail-item">Taktik Makas</div>
+                <div class="detail-item">Nitril Eldiven ×2</div>
+                <div class="detail-item">Cordura 1000D Çanta</div>
+                <div class="detail-item">QR Profil Etiketi</div>
+                <div class="detail-item">Reflektif Detaylar</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PRO -->
+          <div class="kit-option" onclick="selectKit(this, 'PRO', 3190)">
+            <div class="kit-option-inner">
+              <div class="radio-circle"><div class="radio-dot"></div></div>
+              <div class="kit-info">
+                <div class="kit-top">
+                  <div class="kit-name">PRO</div>
+                  <span class="kit-tag tag-pro">Tam Donanım</span>
+                </div>
+                <div class="kit-contents">
+                  <span class="content-pill highlight">ADVANCED her şey</span>
+                  <span class="content-pill highlight">14G Dekompresyon İğnesi</span>
+                  <span class="content-pill highlight">NPA Nazofaringeal</span>
+                  <span class="content-pill">Cordura 1000D Çanta</span>
+                  <span class="content-pill highlight">+2 malzeme</span>
+                </div>
+              </div>
+              <div class="kit-price-col">
+                <div class="kit-price">₺3.190</div>
+                <div class="kit-price-sub">KDV dahil</div>
+              </div>
+            </div>
+            <div class="kit-detail">
+              <div class="kit-detail-inner">
+                <div class="detail-item">ADVANCED tüm malzemeler</div>
+                <div class="detail-item">14G Dekompresyon İğnesi</div>
+                <div class="detail-item">NPA Nazofaringeal Airway</div>
+                <div class="detail-item">SAM Splint</div>
+                <div class="detail-item">Ekstra Turnike</div>
+                <div class="detail-item">Sert Dış Kasa Çanta</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- QR add-on -->
+        <div class="addon-box checked" id="qrAddon" onclick="toggleAddon()">
+          <div class="addon-check" id="addonCheck">✓</div>
+          <div class="addon-info">
+            <div class="addon-title">QR Profil Sistemi — Dahil</div>
+            <div class="addon-desc">Kişisel tıbbi profil + QR etiket. Kaza anında kan grubu, alerji ve acil kişin anında görünür. Uygulama gerektirmez.</div>
+          </div>
+          <div class="addon-price">ÜCRETSİZ</div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Özet -->
+      <div class="summary-col">
+        <div class="summary-title">Sipariş Özeti</div>
+
+        <div class="summary-row">
+          <span class="s-label">Kit</span>
+          <span class="s-val" id="sumKit">ADVANCED Kit</span>
+        </div>
+        <div class="summary-row">
+          <span class="s-label">QR Profil Sistemi</span>
+          <span class="s-val green">Ücretsiz</span>
+        </div>
+        <div class="summary-row">
+          <span class="s-label">Kargo</span>
+          <span class="s-val green">Ücretsiz</span>
+        </div>
+        <div class="summary-row">
+          <span class="s-label">KDV (%20)</span>
+          <span class="s-val" id="sumKdv">₺381,67</span>
+        </div>
+
+        <div class="summary-total">
+          <div class="total-label">Toplam</div>
+          <div class="total-price" id="sumTotal">₺2.290</div>
+        </div>
+
+        <button class="btn-continue" onclick="goToStep2()">
+          Devam Et →
+        </button>
+
+        <div class="trust-badges">
+          <div class="trust-item"><span class="trust-item-icon">🔒</span> 256-bit SSL şifreli ödeme</div>
+          <div class="trust-item"><span class="trust-item-icon">🚚</span> Ücretsiz kargo — 1-3 iş günü</div>
+          <div class="trust-item"><span class="trust-item-icon">↩️</span> 14 gün iade garantisi</div>
+          <div class="trust-item"><span class="trust-item-icon">🛡️</span> KVKK uyumlu veri güvenliği</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════
+       SCREEN 2 — BİLGİLER & ÖDEME
+  ═══════════════════════════════════ -->
+  <div class="screen" id="screen2">
+    <div class="checkout-layout">
+      <div class="checkout-col">
+        <h2>BİLGİLER &amp;<br>ÖDEME</h2>
+
+        <!-- Hesap seçimi -->
+        <div class="account-tabs">
+          <button class="acc-tab active" onclick="switchTab('new')">Yeni Hesap Oluştur</button>
+          <button class="acc-tab" onclick="switchTab('existing')">Zaten Hesabım Var</button>
+        </div>
+
+        <!-- YENİ HESAP -->
+        <div class="tab-content active" id="tabNew">
+
+          <div class="form-section-title">Kişisel Bilgiler</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Ad <span class="req">*</span></label>
+              <input type="text" id="firstName" placeholder="Murat" />
+            </div>
+            <div class="form-group">
+              <label>Soyad <span class="req">*</span></label>
+              <input type="text" id="lastName" placeholder="Yılmaz" />
+            </div>
+            <div class="form-group full">
+              <label>E-posta <span class="req">*</span></label>
+              <input type="email" id="email" placeholder="motorcu@redline.moto" />
+            </div>
+            <div class="form-group full">
+              <label>Telefon <span class="req">*</span></label>
+              <input type="tel" id="phone" placeholder="+90 5XX XXX XX XX" />
+            </div>
+            <div class="form-group full">
+              <label>Şifre <span class="req">*</span></label>
+              <input type="password" id="password" placeholder="En az 8 karakter" oninput="checkPass(this.value)" />
+              <div class="pass-bars">
+                <div class="pass-bar" id="pb1"></div>
+                <div class="pass-bar" id="pb2"></div>
+                <div class="pass-bar" id="pb3"></div>
+                <div class="pass-bar" id="pb4"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section-title" style="margin-top:8px;">Teslimat Adresi</div>
+          <div class="form-grid">
+            <div class="form-group full">
+              <label>Adres <span class="req">*</span></label>
+              <input type="text" placeholder="Sokak, bina no, daire" />
+            </div>
+            <div class="form-group">
+              <label>İl <span class="req">*</span></label>
+              <select>
+                <option value="">Seçin</option>
+                <option>İstanbul</option><option>Ankara</option><option>İzmir</option>
+                <option>Bursa</option><option>Antalya</option><option>Diğer</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>İlçe <span class="req">*</span></label>
+              <input type="text" placeholder="İlçe" />
+            </div>
+          </div>
+
+          <div class="form-section-title" style="margin-top:8px;">Kargo Seçeneği</div>
+          <div class="shipping-options">
+            <div class="shipping-opt selected" onclick="selectShipping(this, 0)">
+              <div class="ship-radio"><div class="ship-dot"></div></div>
+              <div class="ship-info">
+                <div class="ship-name">Standart Kargo</div>
+                <div class="ship-time">1–3 iş günü</div>
+              </div>
+              <div class="ship-price" style="color:var(--green)">ÜCRETSİZ</div>
+            </div>
+            <div class="shipping-opt" onclick="selectShipping(this, 49)">
+              <div class="ship-radio"><div class="ship-dot"></div></div>
+              <div class="ship-info">
+                <div class="ship-name">Hızlı Kargo</div>
+                <div class="ship-time">Aynı gün / ertesi gün</div>
+              </div>
+              <div class="ship-price">₺49</div>
+            </div>
+          </div>
+
+          <div class="form-section-title" style="margin-top:8px;">Ödeme Bilgileri</div>
+          <div class="form-grid">
+            <div class="form-group full">
+              <label>Kart Üzerindeki İsim <span class="req">*</span></label>
+              <input type="text" placeholder="AD SOYAD" style="text-transform:uppercase;" />
+            </div>
+            <div class="form-group full">
+              <label>Kart Numarası <span class="req">*</span></label>
+              <div class="card-number-wrap">
+                <input type="text" id="cardNum" placeholder="0000  0000  0000  0000" maxlength="19" oninput="formatCard(this)" />
+                <div class="card-icons">
+                  <div class="card-icon">VISA</div>
+                  <div class="card-icon">MC</div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Son Kullanma Tarihi <span class="req">*</span></label>
+              <input type="text" placeholder="AA/YY" maxlength="5" oninput="formatExpiry(this)" />
+            </div>
+            <div class="form-group">
+              <label>CVV <span class="req">*</span></label>
+              <input type="text" placeholder="•••" maxlength="3" />
+            </div>
+          </div>
+
+          <!-- KVKK -->
+          <div class="consent-box">
+            <div class="consent-title">⚠ KVKK & Açık Rıza</div>
+            <div class="consent-text">
+              Sağlık verileriniz yalnızca acil müdahale amaçlı işlenmekte, üçüncü taraflarla paylaşılmamaktadır. Tüm veriler Avrupa sunucularında şifreli saklanır.
+            </div>
+            <div class="check-row" onclick="toggleCheck('c1')">
+              <div class="check-box checked" id="c1">✓</div>
+              <div class="check-label"><a href="#">Kullanım Koşulları</a> ve <a href="#">Gizlilik Politikası</a>'nı kabul ediyorum.</div>
+            </div>
+            <div class="check-row" onclick="toggleCheck('c2')">
+              <div class="check-box checked" id="c2">✓</div>
+              <div class="check-label">Sağlık verilerimin acil durum amaçlı işlenmesine <a href="#">açık rıza</a> veriyorum.</div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- MEVCUT HESAP -->
+        <div class="tab-content" id="tabExisting">
+          <div class="form-section-title">Hesabına Giriş Yap</div>
+          <div class="form-grid cols1">
+            <div class="form-group">
+              <label>E-posta</label>
+              <input type="email" placeholder="motorcu@redline.moto" />
+            </div>
+            <div class="form-group">
+              <label>Şifre</label>
+              <input type="password" placeholder="••••••••" />
+            </div>
+          </div>
+          <div style="margin-bottom:24px;">
+            <a href="#" style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;color:var(--grey);text-decoration:none;">Şifremi unuttum →</a>
+          </div>
+          <div class="form-section-title" style="margin-top:16px;">Teslimat Adresi</div>
+          <div class="form-grid">
+            <div class="form-group full">
+              <label>Adres <span class="req">*</span></label>
+              <input type="text" placeholder="Sokak, bina no, daire" />
+            </div>
+            <div class="form-group">
+              <label>İl</label>
+              <select><option>İstanbul</option><option>Ankara</option></select>
+            </div>
+            <div class="form-group">
+              <label>İlçe</label>
+              <input type="text" placeholder="İlçe" />
+            </div>
+          </div>
+          <div class="form-section-title">Ödeme</div>
+          <div class="form-grid">
+            <div class="form-group full">
+              <label>Kart Numarası</label>
+              <div class="card-number-wrap">
+                <input type="text" placeholder="0000  0000  0000  0000" maxlength="19" oninput="formatCard(this)" />
+                <div class="card-icons">
+                  <div class="card-icon">VISA</div>
+                  <div class="card-icon">MC</div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Son Kullanma</label>
+              <input type="text" placeholder="AA/YY" maxlength="5" oninput="formatExpiry(this)" />
+            </div>
+            <div class="form-group">
+              <label>CVV</label>
+              <input type="text" placeholder="•••" maxlength="3" />
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT: Özet -->
+      <div class="summary-col">
+        <div class="summary-title">Sipariş Özeti</div>
+        <div class="summary-row">
+          <span class="s-label">Kit</span>
+          <span class="s-val" id="sumKit2">ADVANCED Kit</span>
+        </div>
+        <div class="summary-row">
+          <span class="s-label">QR Profil</span>
+          <span class="s-val green">Ücretsiz</span>
+        </div>
+        <div class="summary-row">
+          <span class="s-label">Kargo</span>
+          <span class="s-val green" id="sumKargo2">Ücretsiz</span>
+        </div>
+        <div class="summary-row">
+          <span class="s-label">KDV</span>
+          <span class="s-val" id="sumKdv2">₺381,67</span>
+        </div>
+        <div class="summary-total">
+          <div class="total-label">Toplam</div>
+          <div class="total-price" id="sumTotal2">₺2.290</div>
+        </div>
+
+        <button class="btn-continue" onclick="placeOrder()">
+          Ödemeyi Tamamla →
+        </button>
+
+        <div class="trust-badges">
+          <div class="trust-item"><span class="trust-item-icon">🔒</span> iyzico ile güvenli ödeme</div>
+          <div class="trust-item"><span class="trust-item-icon">🏦</span> Taksit seçeneği mevcut</div>
+          <div class="trust-item"><span class="trust-item-icon">📦</span> Kargoya verilince SMS bildirim</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════
+       SCREEN 3 — BAŞARILI
+  ═══════════════════════════════════ -->
+  <div class="screen" id="screen3">
+    <div class="success-screen">
+      <div class="success-icon">✓</div>
+      <div class="success-title">SİPARİŞ<br><span>ALINDI</span></div>
+      <div class="success-sub">Hesabın otomatik oluşturuldu — hemen profile gidebilirsin.</div>
+
+      <div class="account-created">
+        <div class="ac-title">✓ Hesabın Oluşturuldu</div>
+        <div class="ac-row">
+          <span class="ac-key">Ad Soyad</span>
+          <span class="ac-val" id="acName">Murat Yılmaz</span>
+        </div>
+        <div class="ac-row">
+          <span class="ac-key">E-posta</span>
+          <span class="ac-val" id="acEmail">motorcu@redline.moto</span>
+        </div>
+        <div class="ac-row">
+          <span class="ac-key">Profil ID</span>
+          <span class="ac-val mono" id="acId">RL-2025-00847</span>
+        </div>
+        <div class="ac-row">
+          <span class="ac-key">Sipariş No</span>
+          <span class="ac-val mono" id="acOrder">#RL-2025-4821</span>
+        </div>
+        <div class="ac-row">
+          <span class="ac-key">Kargo</span>
+          <span class="ac-val">1–3 iş günü içinde</span>
+        </div>
+      </div>
+
+      <div class="activation-note">
+        <strong>Sıradaki adım:</strong> Kit ellerine ulaşınca kutunun içindeki QR etiketini çantana yapıştır. Profil panelinden kan grubu, alerji ve acil kişi bilgilerini doldur — bu bilgiler QR koduna anında yansır.
+      </div>
+
+      <div class="success-actions">
+        <a href="profil-panel.html" class="btn-go-panel">Profilimi Doldur →</a>
+        <a href="index.html" class="btn-go-home">Ana Sayfa</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // State
+    let selectedKit = { name: 'ADVANCED', price: 2290 };
+    let shippingCost = 0;
+
+    // Kit seç
+    function selectKit(el, name, price) {
+      document.querySelectorAll('.kit-option').forEach(k => k.classList.remove('selected'));
+      el.classList.add('selected');
+      selectedKit = { name, price };
+      updateSummary();
+    }
+
+    // QR addon toggle
+    function toggleAddon() {
+      const box = document.getElementById('qrAddon');
+      const check = document.getElementById('addonCheck');
+      box.classList.toggle('checked');
+      check.textContent = box.classList.contains('checked') ? '✓' : '';
+    }
+
+    // Kargo seç
+    function selectShipping(el, cost) {
+      document.querySelectorAll('.shipping-opt').forEach(s => s.classList.remove('selected'));
+      el.classList.add('selected');
+      shippingCost = cost;
+      updateSummary();
+    }
+
+    // Özet güncelle
+    function updateSummary() {
+      const total = selectedKit.price + shippingCost;
+      const kdv = (selectedKit.price / 1.2 * 0.2).toFixed(2).replace('.', ',');
+      const kargoText = shippingCost === 0 ? 'Ücretsiz' : '₺' + shippingCost;
+
+      ['sumKit', 'sumKit2'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = selectedKit.name + ' Kit';
+      });
+      ['sumKdv', 'sumKdv2'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = '₺' + kdv;
+      });
+      ['sumTotal', 'sumTotal2'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = '₺' + total.toLocaleString('tr-TR');
+      });
+      const k2 = document.getElementById('sumKargo2');
+      if (k2) k2.textContent = kargoText;
+    }
+
+    // Adım 2'ye geç
+    function goToStep2() {
+      document.getElementById('screen1').classList.remove('active');
+      document.getElementById('screen2').classList.add('active');
+      document.getElementById('step1').classList.remove('active');
+      document.getElementById('step1').classList.add('done');
+      document.getElementById('step2').classList.add('active');
+      // sumKit2 güncelle
+      document.getElementById('sumKit2').textContent = selectedKit.name + ' Kit';
+      window.scrollTo(0, 0);
+    }
+
+    // Sipariş ver
+    function placeOrder() {
+      const btn = event.target;
+      btn.textContent = 'İşleniyor...';
+      btn.disabled = true;
+
+      // Demo: form değerlerini al
+      const fname = document.getElementById('firstName')?.value || 'Murat';
+      const lname = document.getElementById('lastName')?.value || 'Yılmaz';
+      const email = document.getElementById('email')?.value || 'motorcu@redline.moto';
+
+      setTimeout(() => {
+        // Başarı ekranı
+        document.getElementById('screen2').classList.remove('active');
+        document.getElementById('screen3').classList.add('active');
+        document.getElementById('step2').classList.remove('active');
+        document.getElementById('step2').classList.add('done');
+        document.getElementById('step3').classList.add('active');
+
+        // Bilgileri yaz
+        document.getElementById('acName').textContent = (fname + ' ' + lname).trim() || 'Murat Yılmaz';
+        document.getElementById('acEmail').textContent = email;
+
+        // Random sipariş no üret
+        const ordNo = '#RL-2025-' + Math.floor(4000 + Math.random() * 5000);
+        const profId = 'RL-2025-' + Math.floor(10000 + Math.random() * 89999);
+        document.getElementById('acOrder').textContent = ordNo;
+        document.getElementById('acId').textContent = profId;
+
+        window.scrollTo(0, 0);
+      }, 1800);
+    }
+
+    // Tab geçiş
+    function switchTab(tab) {
+      document.querySelectorAll('.acc-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      if (tab === 'new') {
+        document.querySelectorAll('.acc-tab')[0].classList.add('active');
+        document.getElementById('tabNew').classList.add('active');
+      } else {
+        document.querySelectorAll('.acc-tab')[1].classList.add('active');
+        document.getElementById('tabExisting').classList.add('active');
+      }
+    }
+
+    // Onay kutuları
+    function toggleCheck(id) {
+      const box = document.getElementById(id);
+      box.classList.toggle('checked');
+      box.textContent = box.classList.contains('checked') ? '✓' : '';
+    }
+
+    // Kart format
+    function formatCard(input) {
+      let val = input.value.replace(/\D/g, '').slice(0, 16);
+      val = val.replace(/(.{4})/g, '$1  ').trim();
+      input.value = val;
+    }
+    function formatExpiry(input) {
+      let val = input.value.replace(/\D/g, '').slice(0, 4);
+      if (val.length >= 2) val = val.slice(0,2) + '/' + val.slice(2);
+      input.value = val;
+    }
+
+    // Şifre gücü
+    function checkPass(val) {
+      let s = 0;
+      if (val.length >= 8) s++;
+      if (/[A-Z]/.test(val)) s++;
+      if (/[0-9]/.test(val)) s++;
+      if (/[^A-Za-z0-9]/.test(val)) s++;
+      for (let i = 1; i <= 4; i++) {
+        const bar = document.getElementById('pb' + i);
+        if (!bar) continue;
+        bar.classList.remove('weak', 'ok');
+        if (i <= s) bar.classList.add(s >= 3 ? 'ok' : 'weak');
+      }
+    }
+
+    updateSummary();
+  </script>
+</body>
+</html>

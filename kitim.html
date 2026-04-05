@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kitim — REDLINE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --red: #E8001D;
+      --dark-red: #9B0013;
+      --black: #080808;
+      --dark: #0e0e0e;
+      --panel: #141414;
+      --panel2: #181818;
+      --border: #252525;
+      --border2: #2e2e2e;
+      --white: #F2F0EC;
+      --grey: #777;
+      --light-grey: #aaa;
+      --green: #22c55e;
+      --yellow: #f59e0b;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Barlow', sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      cursor: crosshair;
+    }
+
+    /* SIDEBAR - same as profil-panel */
+    .sidebar {
+      background: var(--dark);
+      border-right: 1px solid var(--border);
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .sidebar-logo {
+      padding: 28px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    .logo-text {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 20px;
+      letter-spacing: 4px;
+      color: var(--white);
+    }
+    .logo-text span { color: var(--red); }
+    .logo-sub {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: var(--grey);
+      margin-top: 2px;
+    }
+    .sidebar-user {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .user-avatar {
+      width: 38px; height: 38px;
+      background: var(--red);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 18px;
+      letter-spacing: 1px;
+      flex-shrink: 0;
+    }
+    .user-name {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--white);
+    }
+    .user-id {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--grey);
+    }
+    .sidebar-nav {
+      flex: 1;
+      padding: 16px 0;
+      overflow-y: auto;
+    }
+    .nav-group-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: #444;
+      padding: 12px 24px 6px;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 24px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: var(--grey);
+      cursor: crosshair;
+      transition: color 0.2s, background 0.2s;
+      border-left: 2px solid transparent;
+      text-decoration: none;
+    }
+    .nav-item:hover { color: var(--light-grey); background: rgba(255,255,255,0.02); }
+    .nav-item.active { color: var(--white); border-left-color: var(--red); background: rgba(232,0,29,0.06); }
+    .nav-icon { font-size: 15px; width: 20px; text-align: center; }
+
+    /* MAIN */
+    .main {
+      overflow-y: auto;
+      min-height: 100vh;
+    }
+    .topbar {
+      position: sticky;
+      top: 0;
+      background: rgba(8,8,8,0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 10;
+    }
+    .page-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 24px;
+      letter-spacing: 3px;
+      color: var(--white);
+    }
+    .btn-topbar {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--black);
+      background: var(--red);
+      border: none;
+      padding: 10px 24px;
+      cursor: crosshair;
+      transition: background 0.2s;
+    }
+    .btn-topbar:hover { background: var(--dark-red); }
+
+    .content {
+      padding: 40px;
+      max-width: 1100px;
+    }
+
+    /* KIT OVERVIEW */
+    .kit-overview {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 28px;
+      margin-bottom: 24px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 24px;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .kit-overview::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--red);
+    }
+    .kit-overview-info {}
+    .kit-level {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 6px;
+    }
+    .kit-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 48px;
+      letter-spacing: 3px;
+      color: var(--white);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+    .kit-meta {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px;
+      letter-spacing: 1px;
+      color: var(--grey);
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .kit-meta span::before {
+      content: '·';
+      margin-right: 16px;
+      color: #444;
+    }
+    .kit-meta span:first-child::before { display: none; }
+    .kit-health {
+      text-align: center;
+      min-width: 140px;
+    }
+    .health-bar {
+      width: 100%;
+      height: 6px;
+      background: var(--border);
+      position: relative;
+      margin-bottom: 8px;
+    }
+    .health-bar-fill {
+      position: absolute;
+      top: 0; left: 0;
+      height: 100%;
+      background: var(--green);
+      width: 75%;
+    }
+    .health-bar-fill.warn { background: var(--yellow); }
+    .health-bar-fill.danger { background: var(--red); }
+    .health-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--grey);
+      margin-bottom: 2px;
+    }
+    .health-val {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      letter-spacing: 2px;
+      color: var(--green);
+    }
+
+    /* STATS STRIP */
+    .stats-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .stat-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 18px;
+      position: relative;
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+    }
+    .stat-card.red::before { background: var(--red); }
+    .stat-card.green::before { background: var(--green); }
+    .stat-card.yellow::before { background: var(--yellow); }
+    .stat-card.grey::before { background: var(--grey); }
+    .stat-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--grey);
+      margin-bottom: 8px;
+    }
+    .stat-val {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px;
+      letter-spacing: 2px;
+      line-height: 1;
+    }
+    .stat-card.red .stat-val { color: var(--red); }
+    .stat-card.green .stat-val { color: var(--green); }
+    .stat-card.yellow .stat-val { color: var(--yellow); }
+    .stat-card.grey .stat-val { color: var(--white); }
+
+    /* ALERT BANNER */
+    .alert-renewal {
+      background: rgba(245,158,11,0.06);
+      border: 1px solid rgba(245,158,11,0.3);
+      border-left: 3px solid var(--yellow);
+      padding: 16px 20px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .alert-info {}
+    .alert-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--yellow);
+      margin-bottom: 4px;
+    }
+    .alert-desc {
+      font-size: 13px;
+      color: var(--light-grey);
+    }
+    .btn-renewal {
+      background: var(--yellow);
+      color: var(--black);
+      border: none;
+      padding: 10px 20px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: crosshair;
+      white-space: nowrap;
+    }
+
+    /* ITEM LIST */
+    .items-section {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+    .section-header {
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 20px;
+      letter-spacing: 2px;
+      color: var(--white);
+    }
+    .section-count {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--grey);
+    }
+
+    .items-list {}
+    .item-row {
+      display: grid;
+      grid-template-columns: 40px 1fr 140px 100px 100px;
+      gap: 16px;
+      padding: 16px 24px;
+      border-bottom: 1px solid #1a1a1a;
+      align-items: center;
+      transition: background 0.2s;
+    }
+    .item-row:last-child { border-bottom: none; }
+    .item-row:hover { background: rgba(255,255,255,0.02); }
+    .item-status-dot {
+      width: 10px; height: 10px;
+      background: var(--green);
+      border-radius: 50%;
+    }
+    .item-status-dot.warn { background: var(--yellow); }
+    .item-status-dot.danger { background: var(--red); }
+
+    .item-info {}
+    .item-name {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--white);
+      margin-bottom: 2px;
+    }
+    .item-brand {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      letter-spacing: 1px;
+      color: var(--grey);
+    }
+
+    .item-expiry {
+      text-align: left;
+    }
+    .item-expiry-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--grey);
+      margin-bottom: 2px;
+    }
+    .item-expiry-date {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--white);
+    }
+    .item-expiry-date.warn { color: var(--yellow); }
+    .item-expiry-date.danger { color: var(--red); }
+
+    .item-days {
+      text-align: right;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 20px;
+      letter-spacing: 1px;
+      color: var(--white);
+    }
+    .item-days.warn { color: var(--yellow); }
+    .item-days.danger { color: var(--red); }
+    .item-days small {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 9px;
+      letter-spacing: 2px;
+      color: var(--grey);
+      display: block;
+      margin-top: -2px;
+    }
+
+    .btn-item {
+      background: transparent;
+      border: 1px solid var(--border2);
+      color: var(--grey);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 8px 12px;
+      cursor: crosshair;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .btn-item:hover { border-color: var(--red); color: var(--red); }
+
+    @media (max-width: 800px) {
+      body { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .content { padding: 20px; }
+      .kit-overview { grid-template-columns: 1fr; gap: 20px; }
+      .stats-strip { grid-template-columns: 1fr 1fr; }
+      .alert-renewal { flex-direction: column; align-items: flex-start; }
+      .item-row { grid-template-columns: 20px 1fr; gap: 8px; }
+      .item-row > :nth-child(n+3) { display: none; }
+      .item-row { position: relative; padding-right: 60px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-text">RED<span>LINE</span></div>
+      <div class="logo-sub">Profil Paneli</div>
+    </div>
+    <div class="sidebar-user">
+      <div class="user-avatar">MY</div>
+      <div>
+        <div class="user-name">Murat Yılmaz</div>
+        <div class="user-id">RL-2026-00847</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-group-label">Ana Menü</div>
+      <a class="nav-item" href="profil-panel.html">
+        <span class="nav-icon">🏥</span> Tıbbi Profil
+      </a>
+      <a class="nav-item" href="#">
+        <span class="nav-icon">👤</span> Kişisel Bilgiler
+      </a>
+      <a class="nav-item" href="qr-indir.html">
+        <span class="nav-icon">📱</span> QR Kod
+      </a>
+      <div class="nav-group-label" style="margin-top:8px;">Kit</div>
+      <a class="nav-item active" href="kitim.html">
+        <span class="nav-icon">🎒</span> Kitim
+      </a>
+      <a class="nav-item" href="#">
+        <span class="nav-icon">🔄</span> Yenileme
+      </a>
+      <a class="nav-item" href="#">
+        <span class="nav-icon">📦</span> Siparişlerim
+      </a>
+      <div class="nav-group-label" style="margin-top:8px;">Hesap</div>
+      <a class="nav-item" href="#">
+        <span class="nav-icon">⚙️</span> Ayarlar
+      </a>
+      <a class="nav-item" href="giris.html">
+        <span class="nav-icon">🚪</span> Çıkış
+      </a>
+    </nav>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="topbar">
+      <div class="page-title">Kitim</div>
+      <button class="btn-topbar">+ Yenileme Siparişi</button>
+    </div>
+
+    <div class="content">
+
+      <!-- KIT OVERVIEW -->
+      <div class="kit-overview">
+        <div class="kit-overview-info">
+          <div class="kit-level">Seviye 02</div>
+          <div class="kit-name">TOUR</div>
+          <div class="kit-meta">
+            <span>Satın Alma: 15.03.2026</span>
+            <span>Seri No: RL-T2-8473</span>
+            <span>Tank Bag · 1000D</span>
+          </div>
+        </div>
+        <div class="kit-health">
+          <div class="health-label">Kit Durumu</div>
+          <div class="health-val">%75</div>
+          <div class="health-bar">
+            <div class="health-bar-fill"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STATS -->
+      <div class="stats-strip">
+        <div class="stat-card green">
+          <div class="stat-label">Aktif Ürün</div>
+          <div class="stat-val">12</div>
+        </div>
+        <div class="stat-card yellow">
+          <div class="stat-label">Yakında Bitecek</div>
+          <div class="stat-val">3</div>
+        </div>
+        <div class="stat-card red">
+          <div class="stat-label">Süresi Dolmuş</div>
+          <div class="stat-val">1</div>
+        </div>
+        <div class="stat-card grey">
+          <div class="stat-label">Toplam Ürün</div>
+          <div class="stat-val">16</div>
+        </div>
+      </div>
+
+      <!-- ALERT -->
+      <div class="alert-renewal">
+        <div class="alert-info">
+          <div class="alert-title">⚠ Yenileme Zamanı Yaklaştı</div>
+          <div class="alert-desc">3 ürünün son kullanma tarihi 60 gün içinde dolacak. Yenileme paketini şimdi sipariş ederek kitini tam kapasitede tut.</div>
+        </div>
+        <button class="btn-renewal">Yenile — ₺380</button>
+      </div>
+
+      <!-- CRITICAL ITEMS -->
+      <div class="items-section">
+        <div class="section-header">
+          <div class="section-title">🩸 Kritik — Hayat Kurtarıcı</div>
+          <div class="section-count">5 ürün</div>
+        </div>
+        <div class="items-list">
+          <div class="item-row">
+            <div class="item-status-dot"></div>
+            <div class="item-info">
+              <div class="item-name">CAT Turnike Gen7</div>
+              <div class="item-brand">Combat Application Tourniquet · Orijinal</div>
+            </div>
+            <div class="item-expiry">
+              <div class="item-expiry-label">Son Kullanma</div>
+              <div class="item-expiry-date">03.2031</div>
+            </div>
+            <div class="item-days">
+              1823
+              <small>gün</small>
+            </div>
+            <button class="btn-item">Detay</button>
+          </div>
+
+          <div class="item-row">
+            <div class="item-status-dot"></div>
+            <div class="item-info">
+              <div class="item-name">CAT Turnike Gen7 — Yedek</div>
+              <div class="item-brand">Combat Application Tourniquet · Orijinal</div>
+            </div>
+            <div class="item-expiry">
+              <div class="item-expiry-label">Son Kullanma</div>
+              <div class="item-expiry-date">03.2031</div>
+            </div>
+            <div class="item-days">
+              1823
+              <small>gün</small>
+            </div>
+            <button class="btn-item">Detay</button>
+          </div>
+
+          <div class="item-row">
+            <div class="item-status-dot warn"></div>
+            <div class="item-info">
+              <div class="item-name">CELOX Hemostatik Gaz</div>
+              <div class="item-brand">Celox Rapid · Z-fold 76×365cm</div>
+            </div>
+            <div class="item-expiry">
+              <div class="item-expiry-label">Son Kullanma</div>
+              <div class="item-expiry-date warn">05.2026</div>
+            </div>
+            <div class="item-days warn">
+              58
+              <small>gün</small>
+            </div>
+            <button class="btn-item">Yenile</button>
+          </div>
+
+          <div class="item-row">
+            <div class="item-status-dot"></div>
+            <div class="item-info">
+              <div class="item-name">İsrail Basınç Bandajı</div>
+              <div class="item-brand">FCP Emergency Bandage · 10cm</div>
+            </div>
+            <div class="item-expiry">
+              <div class="item-expiry-label">Son Kullanma</div>
+              <div class="item-expiry-date">08.2028</div>
+            </div>
+            <div class="item-days">
+              879
+              <small>gün</small>
+            </div>
+            <button class="btn-item">Detay</button>
+          </div>
+
+          <div class="item-row">
+            <div class="item-status-dot warn"></div>
+            <div class="item-info">
+              <div class="item-name">HyFin Göğüs Mührü (2'li)</div>
+              <div class="item-brand">North American Rescue · Vented</div>
+            </div>
+            <div class="item-expiry">
+              <div class="item-expiry-label">Son Kullanma</div>
+              <div class="item-expiry-date warn">07.2026</div>
+            </div>
+            <div class="item-days warn">
+              89
+              <small>gün</small>
+            </div>
+            <button class="btn-item">Yenile</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- STABLE ITEMS -->
+      <div class="items-section">
+        <div class="section-header">
+          <div class="section-title">🦴 Stabilizasyon & Kırık</div>
+          <div class="section-count">3 ürün</div>
+        </div>
+        <div class="items-list">
+          <div class="item-row">
+            <div class="item-status-dot"></div>
+            <div class="item-info">
+              <div class="item-name">SAM Splint 36"</div>
+              <div class="item-brand">Alüminyum Atel · Şekillendirilebilir</div>
+            </div>
+            <div class="item-expiry">
+              <div class="item-expiry-label">Son Kullanma</div>
+              <div class="item-expiry-date">—</div>
+            </div>
+            <div class="item-days">
+              ∞
+              <small>süresiz</small>
+            </div>
+            <button class="btn-item">Detay</button>
+          </div>
+
+          <div class="item-row">
+            <div class="item-status-dot"></div>
+            <div class="item-info">
+              <div class="item-name">NPA Hava Yolu 28F</div>
+              <div class="item-brand">Nazofaringeal Airway + Lubrikant</div>
+            </div>
+            <div class="item-expiry">
+              <div class="item-expiry-label">Son Kullanma</div>
+              <div class="item-expiry-date">11.2029</div>
+            </div>
+            <div class="item-days">
+              1335
+              <small>gün</small>
+            </div>
+            <button class="btn-item">Detay</button>
+          </div>
+
+          <div class="item-row">
+            <div class="item-status-dot"></div>
+            <div class="item-info">
+              <div class="item-name">Üçgen Bandaj</div>
+              <div class="item-brand">Pamuklu · 100×100×142cm</div>
+            </div>
+            <div class="item-expiry">
+              <div class="item-expiry-label">Son Kullanma</div>
+              <div class="item-expiry-date">—</div>
+            </div>
+            <div class="item-days">
+              ∞
+              <small>süresiz</small>
+            </div>
+            <button class="btn-item">Detay</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- BASIC ITEMS -->
+      <div class="items-section">
+        <div class="section-header">
+          <div class="section-title">🧴 Temel Sarf Malzeme</div>
+          <div class="section-count">8 ürün</div>
+        </div>
+        <div class="items-list">
+          <div class="item-row">
+            <div class="item-status-dot danger"></div>
+            <div class="item-info">
+              <div class="item-name">Antiseptik Mendil (4 paket)</div>
+              <div class="item-brand">İzopropil Alkol %70 · Tek kullanımlık</div>
+            </div>
+            <div class="item-expiry">
+              <div class="item-expiry-label">Son Kullanma</div>
+              <div class="item-expiry-date danger">02.2026</div>
+            </div>
+            <div class="item-days danger">
+              -34
+              <small>süresi dolmuş</small>
+            </div>
+            <button class="btn-item">Yenile</button>
+          </div>
+
+          <div class="item-row">
+            <div class="item-status-dot warn"></div>
+            <div class="item-info">
+              <div class="item-name">Steril Salin 50ml</div>
+              <div class="item-brand">Göz/yara yıkama solüsyonu</div>
+            </div>
+            <div class="item-expiry">
+              <div class="item-expiry-label">Son Kullanma</div>
+              <div class="item-expiry-date warn">06.2026</div>
+            </div>
+            <div class="item-days warn">
+              63
+              <small>gün</small>
+            </div>
+            <button class="btn-item">Yenile</button>
+          </div>
+
+          <div class="item-row">
+            <div class="item-status-dot"></div>
+            <div class="item-info">
+              <div class="item-name">Nitril Eldiven (2 çift)</div>
+              <div class="item-brand">Pudrasız · M ve L beden</div>
+            </div>
+            <div class="item-expiry">
+              <div class="item-expiry-label">Son Kullanma</div>
+              <div class="item-expiry-date">10.2027</div>
+            </div>
+            <div class="item-days">
+              574
+              <small>gün</small>
+            </div>
+            <button class="btn-item">Detay</button>
+          </div>
+
+          <div class="item-row">
+            <div class="item-status-dot"></div>
+            <div class="item-info">
+              <div class="item-name">Travma Makası</div>
+              <div class="item-brand">Elbise kesme · Paslanmaz çelik</div>
+            </div>
+            <div class="item-expiry">
+              <div class="item-expiry-label">Son Kullanma</div>
+              <div class="item-expiry-date">—</div>
+            </div>
+            <div class="item-days">
+              ∞
+              <small>süresiz</small>
+            </div>
+            <button class="btn-item">Detay</button>
+          </div>
+
+          <div class="item-row">
+            <div class="item-status-dot"></div>
+            <div class="item-info">
+              <div class="item-name">Mylar Termal Battaniye</div>
+              <div class="item-brand">Şok önleme · 160×210cm</div>
+            </div>
+            <div class="item-expiry">
+              <div class="item-expiry-label">Son Kullanma</div>
+              <div class="item-expiry-date">—</div>
+            </div>
+            <div class="item-days">
+              ∞
+              <small>süresiz</small>
+            </div>
+            <button class="btn-item">Detay</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="height: 40px"></div>
+    </div>
+  </main>
+
+</body>
+</html>

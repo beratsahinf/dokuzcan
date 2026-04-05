@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kayıt Ol — REDLINE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --red: #E8001D;
+      --dark-red: #9B0013;
+      --black: #080808;
+      --dark: #111;
+      --panel: #161616;
+      --border: #2a2a2a;
+      --white: #F2F0EC;
+      --grey: #888;
+      --light-grey: #bbb;
+      --green: #22c55e;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Barlow', sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+      padding: 40px 20px;
+      cursor: crosshair;
+      position: relative;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.6;
+    }
+
+    .signup-wrapper {
+      width: 100%;
+      max-width: 560px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 2;
+    }
+
+    .signup-logo {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .logo-text {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px;
+      letter-spacing: 5px;
+      color: var(--white);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo-text::before {
+      content: '';
+      width: 10px; height: 10px;
+      background: var(--red);
+    }
+    .logo-text span { color: var(--red); }
+    .logo-sub {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--grey);
+      margin-top: 8px;
+    }
+
+    /* Steps */
+    .steps {
+      display: flex;
+      gap: 0;
+      margin-bottom: 24px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+    }
+    .step {
+      flex: 1;
+      padding: 14px 16px;
+      text-align: center;
+      border-right: 1px solid var(--border);
+      position: relative;
+    }
+    .step:last-child { border-right: none; }
+    .step.active { background: rgba(232,0,29,0.08); }
+    .step.active::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--red);
+    }
+    .step.done { background: rgba(34,197,94,0.05); }
+    .step-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      color: var(--grey);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .step.active .step-num { color: var(--red); }
+    .step.done .step-num { color: var(--green); }
+    .step-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--grey);
+    }
+    .step.active .step-label { color: var(--white); }
+
+    /* Card */
+    .signup-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 40px 36px;
+      position: relative;
+    }
+    .signup-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--red);
+    }
+    .card-tag {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 12px;
+    }
+    .card-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 36px;
+      letter-spacing: 3px;
+      color: var(--white);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+    .card-desc {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      color: var(--grey);
+      margin-bottom: 32px;
+      line-height: 1.6;
+    }
+
+    /* Activation box */
+    .activation-box {
+      background: rgba(232,0,29,0.05);
+      border: 1px dashed rgba(232,0,29,0.3);
+      padding: 16px;
+      margin-bottom: 24px;
+    }
+    .activation-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 8px;
+    }
+    .activation-desc {
+      font-size: 12px;
+      line-height: 1.7;
+      color: var(--light-grey);
+    }
+
+    /* Form */
+    .form-group { margin-bottom: 20px; }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    label {
+      display: block;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--grey);
+      margin-bottom: 8px;
+    }
+    label .req { color: var(--red); }
+    input[type="email"],
+    input[type="password"],
+    input[type="text"],
+    input[type="tel"] {
+      width: 100%;
+      background: var(--black);
+      border: 1px solid var(--border);
+      color: var(--white);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 15px;
+      padding: 14px 16px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input:focus { border-color: var(--red); }
+    input::placeholder { color: #444; }
+    input.code-input {
+      font-family: 'JetBrains Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      font-size: 16px;
+    }
+
+    /* Password strength */
+    .pass-strength {
+      margin-top: 8px;
+      display: flex;
+      gap: 4px;
+    }
+    .pass-bar {
+      flex: 1;
+      height: 3px;
+      background: var(--border);
+      transition: background 0.2s;
+    }
+    .pass-bar.active { background: var(--red); }
+    .pass-bar.active.medium { background: var(--green); }
+    .pass-hint {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: var(--grey);
+      margin-top: 6px;
+    }
+
+    /* Checkbox terms */
+    .terms {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      margin: 24px 0;
+      cursor: crosshair;
+    }
+    .terms input { display: none; }
+    .terms .check-box {
+      width: 18px; height: 18px;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--red);
+      font-size: 12px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .terms input:checked + .check-box::before {
+      content: '✓';
+    }
+    .terms-text {
+      font-size: 12px;
+      line-height: 1.7;
+      color: var(--grey);
+    }
+    .terms-text a {
+      color: var(--red);
+      text-decoration: none;
+    }
+    .terms-text a:hover { text-decoration: underline; }
+
+    .btn-signup {
+      width: 100%;
+      background: var(--red);
+      color: var(--black);
+      border: none;
+      padding: 16px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      cursor: crosshair;
+      transition: background 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-signup::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      animation: btn-sweep 2s ease-in-out infinite;
+    }
+    @keyframes btn-sweep {
+      0% { left: -100%; }
+      100% { left: 200%; }
+    }
+    .btn-signup:hover { background: var(--dark-red); }
+    .btn-signup:disabled {
+      background: #333;
+      color: #666;
+      cursor: not-allowed;
+    }
+    .btn-signup:disabled::before { display: none; }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 28px 0 20px;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+    .divider span {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--grey);
+    }
+    .login-link {
+      text-align: center;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      letter-spacing: 1px;
+      color: var(--grey);
+    }
+    .login-link a {
+      color: var(--red);
+      text-decoration: none;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-left: 8px;
+    }
+    .login-link a:hover { color: var(--white); }
+
+    @media (max-width: 480px) {
+      .form-row { grid-template-columns: 1fr; }
+      .step-label { font-size: 9px; letter-spacing: 1px; }
+      .signup-card { padding: 32px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="signup-wrapper">
+    <div class="signup-logo">
+      <div class="logo-text">RED<span>LINE</span></div>
+      <div class="logo-sub">Profil Oluştur</div>
+    </div>
+
+    <!-- Steps -->
+    <div class="steps">
+      <div class="step active">
+        <div class="step-num">01</div>
+        <div class="step-label">Hesap</div>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-label">Tıbbi Bilgiler</div>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-label">QR Oluştur</div>
+      </div>
+    </div>
+
+    <!-- Card -->
+    <div class="signup-card">
+      <div class="card-tag">1. Adım</div>
+      <div class="card-title">HESAP AÇ</div>
+      <div class="card-desc">
+        Kitinle birlikte gelen aktivasyon kodunu gir, temel bilgilerinle hesabını oluştur.
+      </div>
+
+      <!-- Activation code -->
+      <div class="activation-box">
+        <div class="activation-title">⚠ Kit Aktivasyon Kodu</div>
+        <div class="activation-desc">
+          Kitinin içindeki karttan 8 haneli aktivasyon kodunu gir. Kod yoksa kitini Redline'dan aldıysan müşteri hizmetleriyle iletişime geç.
+        </div>
+      </div>
+
+      <form id="signupForm" onsubmit="return handleSignup(event)">
+        <div class="form-group">
+          <label>Aktivasyon Kodu <span class="req">*</span></label>
+          <input type="text" id="activationCode" class="code-input" placeholder="RL-XXXX-XX" maxlength="10" required />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Ad <span class="req">*</span></label>
+            <input type="text" id="firstName" placeholder="Murat" required />
+          </div>
+          <div class="form-group">
+            <label>Soyad <span class="req">*</span></label>
+            <input type="text" id="lastName" placeholder="Yılmaz" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>E-posta <span class="req">*</span></label>
+          <input type="email" id="email" placeholder="motorcu@redline.moto" required />
+        </div>
+
+        <div class="form-group">
+          <label>Telefon <span class="req">*</span></label>
+          <input type="tel" id="phone" placeholder="+90 5XX XXX XX XX" required />
+        </div>
+
+        <div class="form-group">
+          <label>Şifre <span class="req">*</span></label>
+          <input type="password" id="password" placeholder="En az 8 karakter" required minlength="8" />
+          <div class="pass-strength">
+            <div class="pass-bar" id="bar1"></div>
+            <div class="pass-bar" id="bar2"></div>
+            <div class="pass-bar" id="bar3"></div>
+            <div class="pass-bar" id="bar4"></div>
+          </div>
+          <div class="pass-hint" id="passHint">Güçlü bir şifre girin</div>
+        </div>
+
+        <label class="terms">
+          <input type="checkbox" id="terms" required />
+          <span class="check-box"></span>
+          <span class="terms-text">
+            <a href="#">Kullanım Koşulları</a>'nı ve
+            <a href="#">KVKK Aydınlatma Metni</a>'ni okudum, kabul ediyorum. Sağlık verilerimin acil durum amaçlı işlenmesine açık rıza veriyorum.
+          </span>
+        </label>
+
+        <button type="submit" class="btn-signup">Devam Et — Adım 2</button>
+      </form>
+
+      <div class="divider"><span>Veya</span></div>
+
+      <div class="login-link">
+        Zaten hesabın var mı?
+        <a href="giris.html">Giriş Yap</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Password strength
+    const passInput = document.getElementById('password');
+    const passHint = document.getElementById('passHint');
+    const bars = [
+      document.getElementById('bar1'),
+      document.getElementById('bar2'),
+      document.getElementById('bar3'),
+      document.getElementById('bar4')
+    ];
+
+    passInput.addEventListener('input', () => {
+      const val = passInput.value;
+      let strength = 0;
+      if (val.length >= 8) strength++;
+      if (/[A-Z]/.test(val)) strength++;
+      if (/[0-9]/.test(val)) strength++;
+      if (/[^A-Za-z0-9]/.test(val)) strength++;
+
+      bars.forEach((bar, i) => {
+        bar.classList.remove('active', 'medium');
+        if (i < strength) {
+          bar.classList.add('active');
+          if (strength >= 3) bar.classList.add('medium');
+        }
+      });
+
+      const hints = ['Güçlü bir şifre girin', 'Zayıf', 'Orta', 'İyi', 'Çok güçlü'];
+      passHint.textContent = hints[strength];
+    });
+
+    // Aktivasyon kodu format
+    document.getElementById('activationCode').addEventListener('input', (e) => {
+      let val = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+      if (val.length > 2 && val[2] !== '-') {
+        val = val.slice(0, 2) + '-' + val.slice(2);
+      }
+      if (val.length > 7 && val[7] !== '-') {
+        val = val.slice(0, 7) + '-' + val.slice(7);
+      }
+      e.target.value = val.slice(0, 10);
+    });
+
+    function handleSignup(e) {
+      e.preventDefault();
+      const btn = document.querySelector('.btn-signup');
+      btn.textContent = 'Hesap oluşturuluyor...';
+      btn.disabled = true;
+      
+      setTimeout(() => {
+        window.location.href = 'profil-panel.html';
+      }, 1000);
+      
+      return false;
+    }
+  </script>
+</body>
+</html>

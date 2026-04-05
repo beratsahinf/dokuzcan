@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QR Kod — REDLINE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --red: #E8001D;
+      --dark-red: #9B0013;
+      --black: #080808;
+      --dark: #111;
+      --panel: #161616;
+      --border: #2a2a2a;
+      --white: #F2F0EC;
+      --grey: #888;
+      --light-grey: #bbb;
+      --green: #22c55e;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Barlow', sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+      cursor: crosshair;
+    }
+
+    /* TOP BAR */
+    .topbar {
+      background: var(--dark);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .back-link {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--grey);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--white); }
+    .logo-text {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 20px;
+      letter-spacing: 4px;
+      color: var(--white);
+    }
+    .logo-text span { color: var(--red); }
+
+    /* PAGE */
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 48px 40px;
+    }
+    .page-header {
+      margin-bottom: 40px;
+    }
+    .page-tag {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .page-tag::before {
+      content: '';
+      width: 24px; height: 1px;
+      background: var(--red);
+    }
+    .page-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 52px;
+      letter-spacing: 3px;
+      color: var(--white);
+      line-height: 0.95;
+      margin-bottom: 12px;
+    }
+    .page-desc {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 14px;
+      color: var(--grey);
+      max-width: 600px;
+      line-height: 1.7;
+    }
+
+    /* GRID */
+    .qr-grid {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 32px;
+      align-items: start;
+    }
+
+    /* QR DISPLAY CARD */
+    .qr-display {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      position: relative;
+      padding: 32px;
+    }
+    .qr-display::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--red);
+    }
+    .qr-status-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+    .qr-status-dot {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--green);
+    }
+    .qr-status-dot::before {
+      content: '';
+      width: 8px; height: 8px;
+      background: var(--green);
+      border-radius: 50%;
+      animation: dot-pulse 1.5s infinite;
+    }
+    @keyframes dot-pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.3); }
+    }
+    .qr-profile-id {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 1px;
+      color: var(--grey);
+    }
+
+    /* The QR code box */
+    .qr-box {
+      width: 100%;
+      aspect-ratio: 1;
+      background: white;
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      position: relative;
+    }
+    .qr-box::before,
+    .qr-box::after {
+      content: '';
+      position: absolute;
+      width: 24px; height: 24px;
+      border: 2px solid var(--red);
+    }
+    .qr-box::before {
+      top: 8px; left: 8px;
+      border-right: none; border-bottom: none;
+    }
+    .qr-box::after {
+      bottom: 8px; right: 8px;
+      border-left: none; border-top: none;
+    }
+    .qr-pattern {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      grid-template-columns: repeat(21, 1fr);
+      gap: 1px;
+    }
+    .qr-pixel { background: black; }
+    .qr-pixel.w { background: white; }
+
+    .qr-label {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .qr-label-brand {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 18px;
+      letter-spacing: 4px;
+      color: var(--white);
+      margin-bottom: 4px;
+    }
+    .qr-label-brand span { color: var(--red); }
+    .qr-label-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      letter-spacing: 2px;
+      color: var(--white);
+    }
+    .qr-label-tag {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-top: 6px;
+    }
+
+    /* QR ACTIONS */
+    .qr-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .btn-action {
+      padding: 12px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      text-align: center;
+      text-decoration: none;
+      cursor: crosshair;
+      transition: all 0.2s;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--white);
+      font-family: inherit;
+    }
+    .btn-action:hover { border-color: var(--red); color: var(--red); }
+    .btn-action.primary {
+      background: var(--red);
+      border-color: var(--red);
+      color: var(--black);
+      grid-column: 1 / -1;
+      padding: 14px;
+      font-size: 12px;
+      letter-spacing: 3px;
+    }
+    .btn-action.primary:hover { background: var(--dark-red); color: var(--white); }
+
+    /* INFO PANEL */
+    .info-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .info-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 24px;
+    }
+    .info-card-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      letter-spacing: 2px;
+      color: var(--white);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Sticker options */
+    .sticker-options {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    .sticker-option {
+      background: var(--black);
+      border: 1px solid var(--border);
+      padding: 16px 12px;
+      text-align: center;
+      cursor: crosshair;
+      transition: all 0.2s;
+      position: relative;
+    }
+    .sticker-option:hover { border-color: var(--red); }
+    .sticker-option.selected {
+      border-color: var(--red);
+      background: rgba(232,0,29,0.05);
+    }
+    .sticker-option.selected::before {
+      content: '✓';
+      position: absolute;
+      top: 6px; right: 8px;
+      color: var(--red);
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .sticker-visual {
+      width: 60px; height: 60px;
+      margin: 0 auto 10px;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .sticker-visual.small { width: 40px; height: 40px; }
+    .sticker-visual.large { width: 80px; height: 80px; }
+    .sticker-visual-inner {
+      width: 80%; height: 80%;
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 1px;
+    }
+    .sticker-cell { background: black; }
+    .sticker-cell.w { background: white; }
+    .sticker-label {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 14px;
+      letter-spacing: 2px;
+      color: var(--white);
+      margin-bottom: 2px;
+    }
+    .sticker-size {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: var(--grey);
+    }
+
+    /* Print tips */
+    .tips-list {
+      list-style: none;
+    }
+    .tips-list li {
+      padding: 12px 0 12px 28px;
+      border-bottom: 1px solid var(--border);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      color: var(--light-grey);
+      line-height: 1.6;
+      position: relative;
+    }
+    .tips-list li:last-child { border-bottom: none; }
+    .tips-list li::before {
+      content: '→';
+      position: absolute;
+      left: 4px;
+      color: var(--red);
+      font-weight: 700;
+    }
+
+    /* STATS */
+    .stats-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+    .stat-cell {
+      background: var(--panel);
+      padding: 18px 16px;
+    }
+    .stat-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--grey);
+      margin-bottom: 6px;
+    }
+    .stat-val {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 26px;
+      letter-spacing: 2px;
+      color: var(--white);
+      line-height: 1;
+    }
+    .stat-val.red { color: var(--red); }
+    .stat-val.green { color: var(--green); }
+
+    @media (max-width: 900px) {
+      .qr-grid { grid-template-columns: 1fr; }
+      .qr-display { max-width: 400px; margin: 0 auto; }
+      .sticker-options { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+      .topbar { padding: 14px 20px; }
+      .page { padding: 32px 20px; }
+      .page-title { font-size: 40px; }
+      .stats-strip { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <a href="profil-panel.html" class="back-link">← Panel'e Dön</a>
+    <div class="logo-text">RED<span>LINE</span></div>
+    <div></div>
+  </div>
+
+  <!-- PAGE -->
+  <div class="page">
+    <div class="page-header">
+      <div class="page-tag">QR Kod Yönetimi</div>
+      <h1 class="page-title">QR KODUN<br>HAZIR</h1>
+      <p class="page-desc">
+        Bu QR kod, kaza anında profilindeki tıbbi bilgilere erişim sağlar. Kaskına, çantana, motoruna yapıştır — her zaman erişilebilir olsun.
+      </p>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-strip">
+      <div class="stat-cell">
+        <div class="stat-label">Durum</div>
+        <div class="stat-val green">AKTİF</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-label">Toplam Tarama</div>
+        <div class="stat-val">0</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-label">Son Güncelleme</div>
+        <div class="stat-val red" style="font-size:14px;letter-spacing:1px;padding-top:4px;">12.03.2026</div>
+      </div>
+    </div>
+
+    <!-- MAIN GRID -->
+    <div class="qr-grid">
+
+      <!-- QR DISPLAY -->
+      <div class="qr-display">
+        <div class="qr-status-top">
+          <div class="qr-status-dot">Canlı</div>
+          <div class="qr-profile-id">RL-2026-00847</div>
+        </div>
+
+        <div class="qr-box">
+          <div class="qr-pattern" id="qrPattern"></div>
+        </div>
+
+        <div class="qr-label">
+          <div class="qr-label-brand">RED<span>LINE</span></div>
+          <div class="qr-label-name">MURAT YILMAZ</div>
+          <div class="qr-label-tag">⚠ Acil Tıbbi Bilgi</div>
+        </div>
+
+        <div class="qr-actions">
+          <button class="btn-action primary" onclick="downloadPDF()">⬇ PDF Etiket İndir</button>
+          <button class="btn-action" onclick="downloadPNG()">PNG</button>
+          <button class="btn-action" onclick="copyLink()">Linki Kopyala</button>
+        </div>
+      </div>
+
+      <!-- INFO -->
+      <div class="info-panel">
+
+        <!-- Etiket boyutları -->
+        <div class="info-card">
+          <div class="info-card-title">🏷 Etiket Boyutu Seç</div>
+          <div class="sticker-options">
+            <div class="sticker-option" onclick="selectSticker(this)">
+              <div class="sticker-visual small">
+                <div class="sticker-visual-inner" data-size="small"></div>
+              </div>
+              <div class="sticker-label">KÜÇÜK</div>
+              <div class="sticker-size">25×25 mm</div>
+            </div>
+            <div class="sticker-option selected" onclick="selectSticker(this)">
+              <div class="sticker-visual">
+                <div class="sticker-visual-inner" data-size="medium"></div>
+              </div>
+              <div class="sticker-label">ORTA</div>
+              <div class="sticker-size">40×40 mm</div>
+            </div>
+            <div class="sticker-option" onclick="selectSticker(this)">
+              <div class="sticker-visual large">
+                <div class="sticker-visual-inner" data-size="large"></div>
+              </div>
+              <div class="sticker-label">BÜYÜK</div>
+              <div class="sticker-size">60×60 mm</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Yapıştırma ipuçları -->
+        <div class="info-card">
+          <div class="info-card-title">📍 Nereye Yapıştır?</div>
+          <ul class="tips-list">
+            <li><strong style="color:#fff">Kask arkası:</strong> En erişilebilir yer. Kaza sonrası kaskı çıkarılan yaralıda ilk bakılan nokta.</li>
+            <li><strong style="color:#fff">Travma kiti çantası:</strong> İlk yardım edecek kişi çantayı açarken görür — büyük boy öneririz.</li>
+            <li><strong style="color:#fff">Motor deposu / sele:</strong> Orta boy uygun. UV dayanımlı film koruyucu kullan.</li>
+            <li><strong style="color:#fff">Sürücü belgesi arkası:</strong> Küçük boy. Ehliyetin yanında taşı — ambulansa hemen erişir.</li>
+            <li><strong style="color:#fff">Cüzdan / kartlık:</strong> Küçük boy. Acil kişi tespiti için yedek.</li>
+          </ul>
+        </div>
+
+        <!-- Güvenlik bilgisi -->
+        <div class="info-card">
+          <div class="info-card-title">🔒 QR Güvenliği</div>
+          <ul class="tips-list">
+            <li>QR kodun değiştirilemez — profilini güncellediğinde yeni bilgiler otomatik görünür.</li>
+            <li>Profil erişimi halka açık değil — sadece QR tarayan kişi görür.</li>
+            <li>İstediğin zaman profili pasife alabilir, QR'ı devre dışı bırakabilirsin.</li>
+            <li>Profil güncelleme tarihi, tarayan kişiye gösterilir (güven doğrulaması).</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // QR pattern generator (21x21)
+    const qrPattern = document.getElementById('qrPattern');
+    const seed = 'RL-2026-00847';
+    let hash = 0;
+    for (let i = 0; i < seed.length; i++) {
+      hash = ((hash << 5) - hash) + seed.charCodeAt(i);
+      hash |= 0;
+    }
+
+    // Generate deterministic pattern
+    for (let i = 0; i < 441; i++) {
+      const px = document.createElement('div');
+      px.className = 'qr-pixel';
+      // Finder patterns (corners)
+      const row = Math.floor(i / 21);
+      const col = i % 21;
+      const isFinderTL = row < 7 && col < 7 && (row === 0 || row === 6 || col === 0 || col === 6 || (row >= 2 && row <= 4 && col >= 2 && col <= 4));
+      const isFinderTR = row < 7 && col >= 14 && (row === 0 || row === 6 || col === 14 || col === 20 || (row >= 2 && row <= 4 && col >= 16 && col <= 18));
+      const isFinderBL = row >= 14 && col < 7 && (row === 14 || row === 20 || col === 0 || col === 6 || (row >= 16 && row <= 18 && col >= 2 && col <= 4));
+      const isFinderEmpty = (row < 7 && col < 7) || (row < 7 && col >= 14) || (row >= 14 && col < 7);
+      
+      if (isFinderTL || isFinderTR || isFinderBL) {
+        px.classList.add();
+      } else if (isFinderEmpty) {
+        px.classList.add('w');
+      } else {
+        // Deterministic random based on position and seed
+        const val = (Math.sin(i * hash * 0.1) + 1) / 2;
+        if (val < 0.5) px.classList.add('w');
+      }
+      qrPattern.appendChild(px);
+    }
+
+    // Small pattern in stickers
+    document.querySelectorAll('.sticker-visual-inner').forEach(el => {
+      const pattern = [1,1,1,0,1,1,1,1,0,1,0,1,0,1,1,1,1,0,1,1,1,0,0,0,1,0,1,0,1,1,1,0,1,0,1,1,0,0,0,1,0,1,1,1,0,1,1,1,1];
+      pattern.forEach(v => {
+        const c = document.createElement('div');
+        c.className = 'sticker-cell' + (v === 0 ? ' w' : '');
+        el.appendChild(c);
+      });
+    });
+
+    function selectSticker(el) {
+      document.querySelectorAll('.sticker-option').forEach(o => o.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+
+    function downloadPDF() {
+      const btn = event.target;
+      const original = btn.textContent;
+      btn.textContent = 'Hazırlanıyor...';
+      btn.disabled = true;
+      setTimeout(() => {
+        btn.textContent = '✓ İndirildi';
+        setTimeout(() => {
+          btn.textContent = original;
+          btn.disabled = false;
+        }, 2000);
+      }, 800);
+    }
+
+    function downloadPNG() {
+      alert('QR kod PNG olarak indiriliyor...');
+    }
+
+    function copyLink() {
+      const link = 'https://redline.moto/p/RL-2026-00847';
+      navigator.clipboard.writeText(link).then(() => {
+        const btn = event.target;
+        const original = btn.textContent;
+        btn.textContent = '✓ Kopyalandı';
+        btn.style.borderColor = '#22c55e';
+        btn.style.color = '#22c55e';
+        setTimeout(() => {
+          btn.textContent = original;
+          btn.style.borderColor = '';
+          btn.style.color = '';
+        }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>

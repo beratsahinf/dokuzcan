@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profil Yönetimi — REDLINE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --red: #E8001D;
+      --dark-red: #9B0013;
+      --black: #080808;
+      --dark: #0e0e0e;
+      --panel: #141414;
+      --panel2: #181818;
+      --border: #252525;
+      --border2: #2e2e2e;
+      --white: #F2F0EC;
+      --grey: #777;
+      --light-grey: #aaa;
+      --green: #22c55e;
+      --yellow: #f59e0b;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Barlow', sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 240px 1fr;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      background: var(--dark);
+      border-right: 1px solid var(--border);
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .sidebar-logo {
+      padding: 28px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    .logo-text {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 20px;
+      letter-spacing: 4px;
+      color: var(--white);
+    }
+    .logo-text span { color: var(--red); }
+    .logo-sub {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: var(--grey);
+      margin-top: 2px;
+    }
+
+    .sidebar-user {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .user-avatar {
+      width: 38px; height: 38px;
+      background: var(--red);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 18px;
+      letter-spacing: 1px;
+      flex-shrink: 0;
+    }
+    .user-name {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--white);
+    }
+    .user-id {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--grey);
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      padding: 16px 0;
+      overflow-y: auto;
+    }
+    .nav-group-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: #444;
+      padding: 12px 24px 6px;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 24px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: var(--grey);
+      cursor: pointer;
+      transition: color 0.2s, background 0.2s;
+      border-left: 2px solid transparent;
+      text-decoration: none;
+    }
+    .nav-item:hover { color: var(--light-grey); background: rgba(255,255,255,0.02); }
+    .nav-item.active { color: var(--white); border-left-color: var(--red); background: rgba(232,0,29,0.06); }
+    .nav-icon { font-size: 15px; width: 20px; text-align: center; }
+
+    .sidebar-footer {
+      padding: 16px 24px;
+      border-top: 1px solid var(--border);
+    }
+    .qr-status {
+      background: rgba(34,197,94,0.08);
+      border: 1px solid rgba(34,197,94,0.2);
+      padding: 12px;
+      text-align: center;
+    }
+    .qr-status-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 4px;
+    }
+    .qr-status-val {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 14px;
+      letter-spacing: 2px;
+      color: var(--green);
+    }
+    .btn-view-qr {
+      display: block;
+      margin-top: 10px;
+      text-align: center;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--grey);
+      text-decoration: none;
+      padding: 8px;
+      border: 1px solid var(--border);
+      transition: all 0.2s;
+    }
+    .btn-view-qr:hover { color: var(--white); border-color: var(--border2); }
+
+    /* ── MAIN ── */
+    .main {
+      overflow-y: auto;
+      min-height: 100vh;
+    }
+
+    /* TOP BAR */
+    .topbar {
+      position: sticky;
+      top: 0;
+      background: rgba(8,8,8,0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 10;
+    }
+    .page-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 24px;
+      letter-spacing: 3px;
+      color: var(--white);
+    }
+    .topbar-actions { display: flex; gap: 12px; align-items: center; }
+    .btn-save {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--black);
+      background: var(--red);
+      border: none;
+      padding: 10px 24px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-save:hover { background: var(--dark-red); }
+    .btn-save:disabled { background: #333; color: #666; cursor: default; }
+    .save-indicator {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--green);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .save-indicator.show { opacity: 1; }
+
+    /* CONTENT */
+    .content {
+      padding: 40px;
+      max-width: 900px;
+    }
+
+    /* STATS ROW */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+    .stat-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+    }
+    .stat-card.red::before { background: var(--red); }
+    .stat-card.green::before { background: var(--green); }
+    .stat-card.yellow::before { background: var(--yellow); }
+    .stat-card.blue::before { background: #3b82f6; }
+    .stat-card-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--grey);
+      margin-bottom: 8px;
+    }
+    .stat-card-val {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 32px;
+      letter-spacing: 2px;
+      line-height: 1;
+    }
+    .stat-card.red .stat-card-val { color: var(--red); }
+    .stat-card.green .stat-card-val { color: var(--green); }
+    .stat-card.yellow .stat-card-val { color: var(--yellow); }
+    .stat-card.blue .stat-card-val { color: #3b82f6; }
+
+    /* FORM SECTIONS */
+    .form-section {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+    .form-section-header {
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .form-section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 20px;
+      letter-spacing: 2px;
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .form-section-icon { font-size: 16px; }
+    .section-badge {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 2px;
+    }
+    .badge-critical { background: rgba(232,0,29,0.15); color: var(--red); border: 1px solid rgba(232,0,29,0.3); }
+    .badge-info { background: rgba(59,130,246,0.1); color: #3b82f6; border: 1px solid rgba(59,130,246,0.2); }
+
+    .form-body { padding: 24px; }
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .form-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .form-grid.cols-1 { grid-template-columns: 1fr; }
+
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group.full { grid-column: 1 / -1; }
+
+    label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--grey);
+    }
+    label .req { color: var(--red); }
+
+    input, select, textarea {
+      background: var(--dark);
+      border: 1px solid var(--border2);
+      color: var(--white);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 15px;
+      font-weight: 400;
+      padding: 12px 14px;
+      outline: none;
+      transition: border-color 0.2s;
+      width: 100%;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--red);
+    }
+    input::placeholder, textarea::placeholder { color: #444; }
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 36px;
+      cursor: pointer;
+    }
+    select option { background: #1a1a1a; }
+    textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
+
+    /* TOGGLE */
+    .toggle-group {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 0;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    .toggle-group:last-child { border-bottom: none; padding-bottom: 0; }
+    .toggle-info {}
+    .toggle-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--white);
+      margin-bottom: 2px;
+    }
+    .toggle-desc {
+      font-size: 12px;
+      color: var(--grey);
+    }
+    .toggle {
+      position: relative;
+      width: 44px; height: 24px;
+      flex-shrink: 0;
+    }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider {
+      position: absolute;
+      inset: 0;
+      background: #2a2a2a;
+      border: 1px solid #333;
+      cursor: pointer;
+      transition: 0.2s;
+      border-radius: 2px;
+    }
+    .toggle-slider::before {
+      content: '';
+      position: absolute;
+      width: 18px; height: 18px;
+      left: 2px; top: 2px;
+      background: #555;
+      transition: 0.2s;
+    }
+    .toggle input:checked + .toggle-slider { background: rgba(232,0,29,0.2); border-color: rgba(232,0,29,0.4); }
+    .toggle input:checked + .toggle-slider::before { transform: translateX(20px); background: var(--red); }
+
+    /* ALLERGY / CONTACT CARDS */
+    .tag-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .tag {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(232,0,29,0.08);
+      border: 1px solid rgba(232,0,29,0.2);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--light-grey);
+      padding: 6px 12px;
+    }
+    .tag-remove {
+      color: var(--red);
+      cursor: pointer;
+      font-size: 14px;
+      line-height: 1;
+      background: none;
+      border: none;
+    }
+    .tag-remove:hover { color: white; }
+    .add-tag-row { display: flex; gap: 8px; margin-top: 12px; }
+    .add-tag-row input { flex: 1; }
+    .btn-add-tag {
+      background: var(--border2);
+      border: 1px solid var(--border2);
+      color: var(--light-grey);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      padding: 0 18px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .btn-add-tag:hover { background: #333; color: var(--white); }
+
+    /* CONTACT CARDS */
+    .contact-cards { display: flex; flex-direction: column; gap: 12px; }
+    .contact-card {
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      padding: 16px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr auto;
+      gap: 12px;
+      align-items: end;
+    }
+    .btn-remove-contact {
+      background: none;
+      border: 1px solid #2a2a2a;
+      color: var(--grey);
+      font-size: 16px;
+      width: 40px; height: 40px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s;
+    }
+    .btn-remove-contact:hover { border-color: var(--red); color: var(--red); }
+    .btn-add-contact {
+      display: flex; align-items: center; gap: 8px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      color: var(--grey);
+      background: none;
+      border: 1px dashed var(--border2);
+      padding: 12px 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      width: 100%;
+      margin-top: 8px;
+    }
+    .btn-add-contact:hover { border-color: var(--red); color: var(--white); }
+
+    /* QR PREVIEW PANEL */
+    .qr-preview-panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 24px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+    .qr-box {
+      width: 80px; height: 80px;
+      background: white;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .qr-mini {
+      width: 64px; height: 64px;
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 1.5px;
+    }
+    .qr-cell { background: black; border-radius: 0.5px; }
+    .qr-cell.w { background: white; }
+
+    .qr-info { flex: 1; }
+    .qr-info-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      letter-spacing: 2px;
+      margin-bottom: 4px;
+    }
+    .qr-info-desc {
+      font-size: 13px;
+      color: var(--grey);
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+    .qr-actions { display: flex; gap: 10px; }
+    .btn-qr {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 8px 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .btn-qr-solid { background: var(--red); color: var(--black); border: none; }
+    .btn-qr-solid:hover { background: var(--dark-red); }
+    .btn-qr-outline { background: none; color: var(--grey); border: 1px solid var(--border2); }
+    .btn-qr-outline:hover { color: var(--white); border-color: #444; }
+
+    /* BOTTOM PADDING */
+    .content-end { height: 60px; }
+
+    /* TOAST */
+    .toast {
+      position: fixed;
+      bottom: 32px; right: 32px;
+      background: var(--green);
+      color: #000;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 16px;
+      letter-spacing: 3px;
+      padding: 14px 24px;
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all 0.3s;
+      z-index: 100;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+
+    @media (max-width: 800px) {
+      body { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .content { padding: 20px; }
+      .stats-row { grid-template-columns: 1fr 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+      .form-grid.cols-3 { grid-template-columns: 1fr; }
+      .contact-card { grid-template-columns: 1fr; }
+      .qr-preview-panel { flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-text">RED<span>LINE</span></div>
+      <div class="logo-sub">Profil Paneli</div>
+    </div>
+    <div class="sidebar-user">
+      <div class="user-avatar">MY</div>
+      <div>
+        <div class="user-name">Murat Yılmaz</div>
+        <div class="user-id">RL-2025-00847</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-group-label">Ana Menü</div>
+      <a class="nav-item active" href="profil-panel.html">
+        <span class="nav-icon">🏥</span> Tıbbi Profil
+      </a>
+      <a class="nav-item" href="profil-panel.html">
+        <span class="nav-icon">👤</span> Kişisel Bilgiler
+      </a>
+      <a class="nav-item" href="qr-indir.html">
+        <span class="nav-icon">📱</span> QR Kod
+      </a>
+
+      <div class="nav-group-label" style="margin-top:8px;">Kit</div>
+      <a class="nav-item" href="kitim.html">
+        <span class="nav-icon">🎒</span> Kitim
+      </a>
+      <a class="nav-item" href="kitim.html">
+        <span class="nav-icon">🔄</span> Yenileme
+      </a>
+      <a class="nav-item" href="kitim.html">
+        <span class="nav-icon">📦</span> Siparişlerim
+      </a>
+
+      <div class="nav-group-label" style="margin-top:8px;">Hesap</div>
+      <a class="nav-item" href="profil-panel.html">
+        <span class="nav-icon">⚙️</span> Ayarlar
+      </a>
+      <a class="nav-item" href="giris.html">
+        <span class="nav-icon">🚪</span> Çıkış
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="qr-status">
+        <div class="qr-status-label">QR Profil Durumu</div>
+        <div class="qr-status-val">● AKTİF</div>
+      </div>
+      <a href="qr-profil.html" target="_blank" class="btn-view-qr">QR Sayfasını Gör →</a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="topbar">
+      <div class="page-title">Tıbbi Profil</div>
+      <div class="topbar-actions">
+        <span class="save-indicator" id="saveIndicator">✓ Kaydedildi</span>
+        <button class="btn-save" id="saveBtn" onclick="saveProfile()">Kaydet</button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- STATS -->
+      <div class="stats-row">
+        <div class="stat-card red">
+          <div class="stat-card-label">Kan Grubu</div>
+          <div class="stat-card-val">A+</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-card-label">Profil Durumu</div>
+          <div class="stat-card-val">AKTİF</div>
+        </div>
+        <div class="stat-card yellow">
+          <div class="stat-card-label">Alerji Sayısı</div>
+          <div class="stat-card-val" id="allergyCount">1</div>
+        </div>
+        <div class="stat-card blue">
+          <div class="stat-card-label">Acil Kişi</div>
+          <div class="stat-card-val" id="contactCount">2</div>
+        </div>
+      </div>
+
+      <!-- QR PANEL -->
+      <div class="qr-preview-panel">
+        <div class="qr-box">
+          <div class="qr-mini" id="qrMini"></div>
+        </div>
+        <div class="qr-info">
+          <div class="qr-info-title">QR Profilin Aktif</div>
+          <div class="qr-info-desc">
+            Bu QR kodu çantandaki etikette bulunur. Herhangi bir cihazla tarandığında acil tıbbi bilgilerin anında görüntülenir.
+          </div>
+          <div class="qr-actions">
+            <a href="qr-profil.html" target="_blank" class="btn-qr btn-qr-solid">Önizleme</a>
+            <button class="btn-qr btn-qr-outline" onclick="alert('QR etiket baskı dosyası indirildi')">İndir</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TEMEL TIBBİ BİLGİLER -->
+      <div class="form-section">
+        <div class="form-section-header">
+          <div class="form-section-title">
+            <span class="form-section-icon">🩸</span> Temel Tıbbi Bilgiler
+          </div>
+          <span class="section-badge badge-critical">KRİTİK</span>
+        </div>
+        <div class="form-body">
+          <div class="form-grid cols-3">
+            <div class="form-group">
+              <label>Kan Grubu <span class="req">*</span></label>
+              <select id="bloodType">
+                <option value="">Seçin</option>
+                <option value="A+" selected>A RH+ (A Pozitif)</option>
+                <option value="A-">A RH- (A Negatif)</option>
+                <option value="B+">B RH+ (B Pozitif)</option>
+                <option value="B-">B RH- (B Negatif)</option>
+                <option value="AB+">AB RH+ (AB Pozitif)</option>
+                <option value="AB-">AB RH- (AB Negatif)</option>
+                <option value="0+">0 RH+ (0 Pozitif)</option>
+                <option value="0-">0 RH- (0 Negatif)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Doğum Tarihi <span class="req">*</span></label>
+              <input type="date" value="1991-07-15" />
+            </div>
+            <div class="form-group">
+              <label>Kilo (kg)</label>
+              <input type="number" value="82" placeholder="80" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ALERJİLER -->
+      <div class="form-section">
+        <div class="form-section-header">
+          <div class="form-section-title">
+            <span class="form-section-icon">⚠️</span> Alerjiler
+          </div>
+          <span class="section-badge badge-critical">KRİTİK</span>
+        </div>
+        <div class="form-body">
+          <div class="form-group">
+            <label>İlaç Alerjileri</label>
+            <div class="tag-list" id="allergyList">
+              <div class="tag">Penisilin <button class="tag-remove" onclick="removeTag(this, 'allergyList')">×</button></div>
+            </div>
+            <div class="add-tag-row">
+              <input type="text" id="allergyInput" placeholder="Alerji ekle (örn: Aspirin)" />
+              <button class="btn-add-tag" onclick="addTag('allergyInput','allergyList','allergyCount')">+ Ekle</button>
+            </div>
+          </div>
+          <div class="form-group" style="margin-top:16px;">
+            <label>Besin Alerjileri</label>
+            <div class="tag-list" id="foodAllergyList">
+              <span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;color:var(--grey);">Yok</span>
+            </div>
+            <div class="add-tag-row">
+              <input type="text" id="foodAllergyInput" placeholder="Besin alerjisi ekle" />
+              <button class="btn-add-tag" onclick="addTag('foodAllergyInput','foodAllergyList')">+ Ekle</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KRONİK HASTALIKLAR -->
+      <div class="form-section">
+        <div class="form-section-header">
+          <div class="form-section-title">
+            <span class="form-section-icon">💊</span> Hastalık & İlaç Bilgileri
+          </div>
+          <span class="section-badge badge-info">BİLGİ</span>
+        </div>
+        <div class="form-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Kronik Hastalıklar</label>
+              <input type="text" placeholder="örn: Diyabet, Hipertansiyon" />
+            </div>
+            <div class="form-group">
+              <label>Sürekli Kullanılan İlaçlar</label>
+              <input type="text" placeholder="örn: Metformin 500mg" />
+            </div>
+            <div class="form-group">
+              <label>Geçirilmiş Ameliyatlar</label>
+              <input type="text" value="Apandisit (2019)" />
+            </div>
+            <div class="form-group">
+              <label>Kan Sulandırıcı Kullanımı</label>
+              <select>
+                <option value="no" selected>Hayır</option>
+                <option value="yes">Evet</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group" style="margin-top:16px;">
+            <label>Ek Tıbbi Notlar</label>
+            <textarea placeholder="Sağlık ekibinin bilmesi gereken önemli notlar...">Sol dizde eski ligament ameliyatı izleri bulunmaktadır. Morfin türevi ağrı kesicilere karşı düşük tolerans gözlemlenmiştir.</textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- TERCİHLER -->
+      <div class="form-section">
+        <div class="form-section-header">
+          <div class="form-section-title">
+            <span class="form-section-icon">🔧</span> Tıbbi Tercihler
+          </div>
+          <span class="section-badge badge-info">BİLGİ</span>
+        </div>
+        <div class="form-body">
+          <div class="toggle-group">
+            <div class="toggle-info">
+              <div class="toggle-label">Organ Bağışçısı</div>
+              <div class="toggle-desc">Kaza sonrası organ bağışına onay veriyorum</div>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" checked />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="toggle-group">
+            <div class="toggle-info">
+              <div class="toggle-label">Kan Bağışı Onayı</div>
+              <div class="toggle-desc">Acil durumlarda kan bağışı onayı veriyorum</div>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" checked />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="toggle-group">
+            <div class="toggle-info">
+              <div class="toggle-label">Dini Kısıtlamalar</div>
+              <div class="toggle-desc">Tedaviye etki edebilecek dini/kültürel kısıtlamalar</div>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="form-group" style="margin-top: 16px;">
+            <label>Sigorta Şirketi & Poliçe No</label>
+            <div class="form-grid">
+              <input type="text" value="AXA Sigorta" placeholder="Sigorta şirketi" />
+              <input type="text" value="TR-498-2024" placeholder="Poliçe numarası" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACİL KİŞİLER -->
+      <div class="form-section">
+        <div class="form-section-header">
+          <div class="form-section-title">
+            <span class="form-section-icon">📞</span> Acil İletişim Kişileri
+          </div>
+          <span class="section-badge badge-critical">KRİTİK</span>
+        </div>
+        <div class="form-body">
+          <div class="contact-cards" id="contactCards">
+            <div class="contact-card">
+              <div class="form-group">
+                <label>Ad Soyad</label>
+                <input type="text" value="Ayşe Yılmaz" />
+              </div>
+              <div class="form-group">
+                <label>Yakınlık</label>
+                <select>
+                  <option selected>Eş</option>
+                  <option>Anne</option><option>Baba</option>
+                  <option>Kardeş</option><option>Arkadaş</option><option>Diğer</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Telefon</label>
+                <input type="tel" value="+90 532 111 11 11" />
+              </div>
+              <button class="btn-remove-contact" onclick="removeContact(this)">×</button>
+            </div>
+            <div class="contact-card">
+              <div class="form-group">
+                <label>Ad Soyad</label>
+                <input type="text" value="Ahmet Yılmaz" />
+              </div>
+              <div class="form-group">
+                <label>Yakınlık</label>
+                <select>
+                  <option>Eş</option><option>Anne</option><option>Baba</option>
+                  <option selected>Kardeş</option><option>Arkadaş</option><option>Diğer</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Telefon</label>
+                <input type="tel" value="+90 532 222 22 22" />
+              </div>
+              <button class="btn-remove-contact" onclick="removeContact(this)">×</button>
+            </div>
+          </div>
+          <button class="btn-add-contact" onclick="addContact()">+ Yeni Acil Kişi Ekle</button>
+        </div>
+      </div>
+
+      <div class="content-end"></div>
+    </div>
+  </main>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast">✓ PROFİL KAYDEDİLDİ</div>
+
+  <script>
+    // QR mini
+    const pattern = [1,1,1,0,1,1,1,1,0,1,0,1,0,1,1,1,1,0,1,1,1,0,0,0,1,0,1,0,1,1,1,0,1,0,1,1,0,0,0,1,0,1,1,1,0,1,1,1,1];
+    const qrMini = document.getElementById('qrMini');
+    pattern.forEach(v => {
+      const c = document.createElement('div');
+      c.className = 'qr-cell' + (v===0?' w':'');
+      qrMini.appendChild(c);
+    });
+
+    // Save
+    function saveProfile() {
+      const btn = document.getElementById('saveBtn');
+      const ind = document.getElementById('saveIndicator');
+      const toast = document.getElementById('toast');
+      btn.disabled = true;
+      btn.textContent = 'Kaydediliyor...';
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.textContent = 'Kaydet';
+        ind.classList.add('show');
+        toast.classList.add('show');
+        setTimeout(() => {
+          ind.classList.remove('show');
+          toast.classList.remove('show');
+        }, 3000);
+      }, 800);
+    }
+
+    // Tags
+    function addTag(inputId, listId, countId) {
+      const input = document.getElementById(inputId);
+      const list = document.getElementById(listId);
+      const val = input.value.trim();
+      if (!val) return;
+
+      // Remove "Yok" placeholder
+      const placeholder = list.querySelector('span');
+      if (placeholder) placeholder.remove();
+
+      const tag = document.createElement('div');
+      tag.className = 'tag';
+      tag.innerHTML = val + ` <button class="tag-remove" onclick="removeTag(this,'${listId}')">×</button>`;
+      list.appendChild(tag);
+      input.value = '';
+      if (countId) updateCount(listId, countId);
+    }
+
+    function removeTag(btn, listId) {
+      btn.closest('.tag').remove();
+      updateCount(listId, 'allergyCount');
+    }
+
+    function updateCount(listId, countId) {
+      const list = document.getElementById(listId);
+      const countEl = document.getElementById(countId);
+      if (countEl) countEl.textContent = list.querySelectorAll('.tag').length;
+    }
+
+    // Contacts
+    function removeContact(btn) {
+      btn.closest('.contact-card').remove();
+      document.getElementById('contactCount').textContent =
+        document.querySelectorAll('.contact-card').length;
+    }
+
+    function addContact() {
+      const cards = document.getElementById('contactCards');
+      const card = document.createElement('div');
+      card.className = 'contact-card';
+      card.innerHTML = `
+        <div class="form-group">
+          <label>Ad Soyad</label>
+          <input type="text" placeholder="Ad Soyad" />
+        </div>
+        <div class="form-group">
+          <label>Yakınlık</label>
+          <select>
+            <option>Eş</option><option>Anne</option><option>Baba</option>
+            <option>Kardeş</option><option>Arkadaş</option><option>Diğer</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Telefon</label>
+          <input type="tel" placeholder="+90 5XX XXX XX XX" />
+        </div>
+        <button class="btn-remove-contact" onclick="removeContact(this)">×</button>
+      `;
+      cards.appendChild(card);
+      document.getElementById('contactCount').textContent =
+        document.querySelectorAll('.contact-card').length;
+    }
+
+    // Input change tracking
+    document.querySelectorAll('input,select,textarea').forEach(el => {
+      el.addEventListener('change', () => {
+        document.getElementById('saveBtn').style.boxShadow = '0 0 0 2px rgba(232,0,29,0.4)';
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,1843 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>REDLINE MOTO TRAUMA KIT — Motosikletçiye özel travma kiti</title>
+  <meta name="description" content="Motosikletçiler için tasarlanmış profesyonel travma kiti. CAT turnike, hemostatik gaz, QR acil kimlik sistemi. Bacağa takılabilir, su geçirmez, askeri kalite." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --red: #E8001D;
+      --dark-red: #9B0013;
+      --deep-red: #5C000B;
+      --black: #080808;
+      --dark: #111111;
+      --mid: #1a1a1a;
+      --panel: #161616;
+      --border: #2a2a2a;
+      --border-light: #333333;
+      --white: #F2F0EC;
+      --grey: #888;
+      --light-grey: #bbb;
+      --dim: #555;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Barlow', sans-serif;
+      font-weight: 300;
+      overflow-x: hidden;
+      cursor: crosshair;
+    }
+
+    /* ── NOISE OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.6;
+    }
+
+    /* ── URGENCY BAR (top strip) ── */
+    .urgency-bar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 101;
+      background: var(--red);
+      color: var(--black);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      padding: 6px 48px;
+      text-align: center;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .urgency-bar-track {
+      display: inline-block;
+      animation: marquee 30s linear infinite;
+    }
+    .urgency-bar-track span { margin: 0 32px; }
+    .urgency-bar-track span::before { content: '◆'; margin-right: 12px; font-size: 8px; }
+    @keyframes marquee {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 28px; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 48px;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.3s, background 0.3s;
+    }
+    nav.scrolled {
+      background: rgba(8,8,8,0.95);
+      border-color: var(--border);
+      backdrop-filter: blur(10px);
+    }
+    .nav-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      letter-spacing: 4px;
+      color: var(--white);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .nav-logo::before {
+      content: '';
+      width: 8px; height: 8px;
+      background: var(--red);
+      display: inline-block;
+    }
+    .nav-logo span { color: var(--red); }
+    .nav-links {
+      display: flex;
+      gap: 36px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--grey);
+      text-decoration: none;
+      transition: color 0.2s;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -6px; left: 0;
+      width: 0; height: 1px;
+      background: var(--red);
+      transition: width 0.3s;
+    }
+    .nav-links a:hover { color: var(--white); }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-cta {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--black);
+      background: var(--red);
+      padding: 10px 24px;
+      text-decoration: none;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .nav-cta::before {
+      content: '';
+      width: 6px; height: 6px;
+      background: var(--black);
+      border-radius: 50%;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+    .nav-cta:hover { background: var(--dark-red); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      position: relative;
+      overflow: hidden;
+      padding-top: 28px;
+    }
+    .hero-left {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 140px 64px 80px 64px;
+      position: relative;
+      z-index: 2;
+    }
+    .hero-tag {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .hero-tag::before {
+      content: '';
+      display: block;
+      width: 32px;
+      height: 1px;
+      background: var(--red);
+    }
+    h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(72px, 8vw, 120px);
+      line-height: 0.92;
+      letter-spacing: 2px;
+      color: var(--white);
+      margin-bottom: 8px;
+    }
+    h1 .accent { color: var(--red); }
+    .hero-sub {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(28px, 3vw, 42px);
+      letter-spacing: 6px;
+      color: var(--grey);
+      margin-bottom: 36px;
+    }
+    .hero-desc {
+      font-size: 15px;
+      line-height: 1.8;
+      color: #999;
+      max-width: 400px;
+      margin-bottom: 48px;
+    }
+    .hero-buttons {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+    .btn-primary {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--black);
+      background: var(--red);
+      padding: 16px 36px;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.2s;
+      display: inline-block;
+      border: none;
+      cursor: crosshair;
+    }
+    .btn-primary:hover { background: var(--dark-red); transform: translateY(-1px); }
+    .btn-ghost {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--grey);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: color 0.2s;
+      cursor: crosshair;
+    }
+    .btn-ghost:hover { color: var(--white); }
+    .btn-ghost::after { content: '→'; transition: transform 0.2s; }
+    .btn-ghost:hover::after { transform: translateX(4px); }
+
+    .hero-right {
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-right::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, var(--black) 0%, transparent 40%);
+      z-index: 2;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 70% 50%, rgba(232,0,29,0.08) 0%, transparent 60%),
+        linear-gradient(135deg, #1a0a0a 0%, #0d0d0d 50%, #080808 100%);
+    }
+    .hero-deco {
+      position: absolute;
+      right: -20px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 280px;
+      line-height: 1;
+      color: rgba(255,255,255,0.02);
+      letter-spacing: -10px;
+      z-index: 1;
+      user-select: none;
+    }
+
+    /* Kit visual mockup */
+    .kit-visual {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 3;
+      width: 340px;
+      height: 420px;
+    }
+    .kit-bag { width: 100%; height: 100%; position: relative; }
+    .bag-body {
+      position: absolute;
+      left: 50%; top: 50%;
+      transform: translate(-50%, -50%);
+      width: 220px; height: 280px;
+      background: linear-gradient(145deg, #1e1e1e 0%, #141414 60%, #0f0f0f 100%);
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      box-shadow:
+        0 40px 80px rgba(0,0,0,0.8),
+        inset 0 1px 0 rgba(255,255,255,0.04),
+        0 0 0 1px rgba(232,0,29,0.1);
+    }
+    .bag-strap-top {
+      position: absolute;
+      left: 50%; top: 12%;
+      transform: translateX(-50%);
+      width: 36px; height: 8px;
+      background: #222;
+      border: 1px solid #333;
+      border-radius: 2px;
+    }
+    .bag-strap-mid {
+      position: absolute;
+      left: 50%; top: 48%;
+      transform: translateX(-50%);
+      width: 36px; height: 8px;
+      background: #222;
+      border: 1px solid #333;
+      border-radius: 2px;
+    }
+    .bag-zipper {
+      position: absolute;
+      top: 38%;
+      left: 14%; right: 14%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #444, var(--red), #444, transparent);
+    }
+    .bag-logo-area {
+      position: absolute;
+      top: 55%; left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+    .bag-logo-text {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 11px;
+      letter-spacing: 4px;
+      color: rgba(255,255,255,0.15);
+    }
+    .bag-red-line {
+      position: absolute;
+      left: 0; right: 0; top: 0;
+      height: 3px;
+      background: var(--red);
+      border-radius: 8px 8px 0 0;
+    }
+    .qr-badge {
+      position: absolute;
+      bottom: 18%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 48px; height: 48px;
+      background: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+    }
+    .qr-inner {
+      width: 38px; height: 38px;
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 1px;
+    }
+    .qr-pixel { background: var(--black); border-radius: 0.5px; }
+    .qr-pixel.w { background: var(--white); }
+
+    .info-card {
+      position: absolute;
+      background: rgba(22,22,22,0.95);
+      border: 1px solid var(--border);
+      padding: 12px 16px;
+      border-radius: 4px;
+      backdrop-filter: blur(10px);
+      animation: float 4s ease-in-out infinite;
+    }
+    .info-card:nth-child(2) { animation-delay: -2s; }
+    .info-card-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 9px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 4px;
+    }
+    .info-card-val {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 18px;
+      letter-spacing: 2px;
+      color: var(--white);
+    }
+    .card-blood { top: 10%; right: -10px; }
+    .card-qr { bottom: 10%; left: -20px; }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .hero-stats {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      z-index: 10;
+      background: var(--black);
+    }
+    .stat-item {
+      padding: 24px 32px;
+      border-right: 1px solid var(--border);
+    }
+    .stat-item:last-child { border-right: none; }
+    .stat-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 40px;
+      letter-spacing: 2px;
+      color: var(--white);
+      line-height: 1;
+    }
+    .stat-num span { color: var(--red); }
+    .stat-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--grey);
+      margin-top: 4px;
+    }
+
+    /* ── SECTION COMMON ── */
+    .section-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 64px;
+    }
+    .section-tag {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-tag::before {
+      content: '';
+      width: 24px; height: 1px;
+      background: var(--red);
+    }
+    h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(48px, 5vw, 72px);
+      letter-spacing: 2px;
+      line-height: 0.95;
+    }
+
+    /* ── MARCH PROTOCOL SECTION (NEW) ── */
+    .march {
+      padding: 120px 64px;
+      border-top: 1px solid var(--border);
+      position: relative;
+    }
+    .march-intro {
+      max-width: 680px;
+      font-size: 16px;
+      line-height: 1.9;
+      color: #888;
+      margin-top: 24px;
+    }
+    .march-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      margin-top: 64px;
+    }
+    .march-step {
+      background: var(--panel);
+      padding: 40px 28px;
+      position: relative;
+      transition: background 0.3s;
+      cursor: crosshair;
+    }
+    .march-step:hover { background: var(--mid); }
+    .march-letter {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 120px;
+      line-height: 0.8;
+      color: var(--red);
+      margin-bottom: 16px;
+      transition: color 0.3s;
+    }
+    .march-step:hover .march-letter { color: var(--white); }
+    .march-word {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--grey);
+      margin-bottom: 8px;
+    }
+    .march-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      letter-spacing: 2px;
+      color: var(--white);
+      margin-bottom: 16px;
+      line-height: 1.1;
+    }
+    .march-desc {
+      font-size: 13px;
+      line-height: 1.7;
+      color: #777;
+    }
+    .march-note {
+      margin-top: 48px;
+      padding: 24px 32px;
+      border-left: 2px solid var(--red);
+      background: rgba(232,0,29,0.03);
+      font-size: 14px;
+      line-height: 1.8;
+      color: var(--light-grey);
+      max-width: 800px;
+    }
+
+    /* ── FEATURES ── */
+    .features { padding: 120px 64px; position: relative; }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+    }
+    .feature-card {
+      background: var(--panel);
+      padding: 48px 40px;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.3s;
+    }
+    .feature-card:hover { background: var(--mid); }
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--red);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s ease;
+    }
+    .feature-card:hover::before { transform: scaleX(1); }
+    .feature-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 72px;
+      color: rgba(255,255,255,0.04);
+      position: absolute;
+      top: 16px; right: 24px;
+      line-height: 1;
+      transition: color 0.3s;
+    }
+    .feature-card:hover .feature-num { color: rgba(232,0,29,0.08); }
+    .feature-icon {
+      width: 48px; height: 48px;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 28px;
+      font-size: 20px;
+    }
+    .feature-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px;
+      letter-spacing: 2px;
+      margin-bottom: 12px;
+      color: var(--white);
+    }
+    .feature-desc { font-size: 14px; line-height: 1.8; color: #777; }
+
+    /* ── QR SECTION ── */
+    .qr-section {
+      padding: 120px 64px;
+      background: var(--dark);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+    .qr-content .section-tag { margin-bottom: 8px; }
+    .qr-content p {
+      font-size: 15px;
+      line-height: 1.9;
+      color: #888;
+      margin: 24px 0 40px;
+    }
+    .data-fields {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .data-field {
+      background: var(--black);
+      border: 1px solid var(--border);
+      padding: 16px 20px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.3s;
+    }
+    .data-field:hover { border-color: var(--red); }
+    .data-field-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 4px;
+    }
+    .data-field-val {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--light-grey);
+    }
+
+    .qr-mockup { position: relative; display: flex; justify-content: center; }
+    .phone {
+      width: 240px; height: 480px;
+      background: #0d0d0d;
+      border: 2px solid #2a2a2a;
+      border-radius: 36px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 60px 120px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.04);
+    }
+    .phone-notch {
+      position: absolute;
+      top: 12px; left: 50%;
+      transform: translateX(-50%);
+      width: 80px; height: 22px;
+      background: var(--black);
+      border-radius: 12px;
+      z-index: 2;
+    }
+    .phone-screen {
+      position: absolute;
+      inset: 16px;
+      border-radius: 28px;
+      background: var(--black);
+      overflow: hidden;
+    }
+    .phone-header {
+      padding: 48px 20px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .phone-alert {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--red);
+      margin-bottom: 8px;
+      animation: blink 2s infinite;
+    }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    .phone-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 20px;
+      letter-spacing: 2px;
+      color: var(--white);
+    }
+    .phone-body { padding: 20px; }
+    .phone-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .phone-key {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--grey);
+    }
+    .phone-val {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--white);
+    }
+    .phone-val.danger { color: var(--red); }
+    .phone-emergency {
+      margin-top: 16px;
+      padding: 14px;
+      background: rgba(232,0,29,0.1);
+      border: 1px solid var(--red);
+      position: relative;
+      overflow: hidden;
+    }
+    .phone-emergency::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(232,0,29,0) 20%,
+        rgba(232,0,29,0.4) 50%,
+        rgba(232,0,29,0) 80%,
+        transparent 100%
+      );
+      animation: emergency-sweep 2.5s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @keyframes emergency-sweep {
+      0% { left: -100%; }
+      100% { left: 200%; }
+    }
+    .phone-emergency > * {
+      position: relative;
+      z-index: 1;
+    }
+    .phone-emergency-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 9px;
+      letter-spacing: 2px;
+      color: var(--red);
+      margin-bottom: 4px;
+    }
+    .phone-emergency-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 16px;
+      color: var(--white);
+      letter-spacing: 1px;
+    }
+    .phone-emergency-phone {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--light-grey);
+      margin-top: 4px;
+    }
+
+    /* ── HOW TO USE (NEW) ── */
+    .howto {
+      padding: 120px 64px;
+      border-bottom: 1px solid var(--border);
+    }
+    .howto-steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      margin-top: 24px;
+    }
+    .howto-step {
+      position: relative;
+      padding-top: 32px;
+    }
+    .howto-step::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 40px; height: 2px;
+      background: var(--red);
+    }
+    .howto-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--red);
+      margin-bottom: 12px;
+    }
+    .howto-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 24px;
+      letter-spacing: 2px;
+      color: var(--white);
+      margin-bottom: 12px;
+      line-height: 1.1;
+    }
+    .howto-desc {
+      font-size: 13px;
+      line-height: 1.7;
+      color: #777;
+    }
+    .howto-time {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--grey);
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── KITS ── */
+    .kits { padding: 120px 64px; border-top: 1px solid var(--border); }
+    .kits-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .kit-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      position: relative;
+      transition: border-color 0.3s, transform 0.3s;
+      overflow: hidden;
+    }
+    .kit-card:hover { border-color: var(--red); transform: translateY(-4px); }
+    .kit-card.featured { border-color: var(--red); }
+    .kit-card.featured::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--red);
+    }
+    .kit-badge {
+      position: absolute;
+      top: 16px; right: 16px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--black);
+      background: var(--red);
+      padding: 4px 10px;
+    }
+    .kit-header {
+      padding: 32px 32px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    .kit-level {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--grey);
+      margin-bottom: 8px;
+    }
+    .kit-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 48px;
+      letter-spacing: 3px;
+      color: var(--white);
+      margin-bottom: 4px;
+      line-height: 1;
+    }
+    .kit-form {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--red);
+      margin-bottom: 16px;
+    }
+    .kit-price {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 32px;
+      letter-spacing: 1px;
+      color: var(--red);
+      line-height: 1;
+    }
+    .kit-price span {
+      font-size: 13px;
+      color: var(--grey);
+      letter-spacing: 2px;
+      font-family: 'Barlow Condensed', sans-serif;
+    }
+    .kit-body { padding: 24px 32px 32px; }
+    .kit-items {
+      list-style: none;
+      margin-bottom: 28px;
+    }
+    .kit-items li {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: 1px;
+      padding: 10px 0 10px 24px;
+      border-bottom: 1px solid var(--border);
+      color: var(--dim);
+      position: relative;
+    }
+    .kit-items li::before {
+      content: '—';
+      position: absolute;
+      left: 0;
+      color: var(--dim);
+    }
+    .kit-items li.active { color: var(--light-grey); }
+    .kit-items li.active::before { content: '✓'; color: var(--red); }
+    .btn-kit {
+      display: block;
+      text-align: center;
+      padding: 14px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+      cursor: crosshair;
+    }
+    .btn-kit-outline {
+      border: 1px solid var(--border);
+      color: var(--white);
+    }
+    .btn-kit-outline:hover { border-color: var(--red); color: var(--red); }
+    .btn-kit-solid {
+      background: var(--red);
+      color: var(--black);
+    }
+    .btn-kit-solid:hover { background: var(--dark-red); color: var(--white); }
+
+    /* ── TESTIMONIALS (NEW) ── */
+    .testimonials {
+      padding: 120px 64px;
+      background: var(--dark);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .testimonial {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 32px;
+      position: relative;
+      transition: border-color 0.3s;
+    }
+    .testimonial:hover { border-color: var(--red); }
+    .testimonial::before {
+      content: '"';
+      position: absolute;
+      top: -20px; left: 20px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 120px;
+      color: var(--red);
+      line-height: 1;
+      opacity: 0.3;
+    }
+    .testimonial-text {
+      font-size: 14px;
+      line-height: 1.8;
+      color: var(--light-grey);
+      margin-bottom: 24px;
+      position: relative;
+      z-index: 1;
+    }
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+    .testimonial-avatar {
+      width: 40px; height: 40px;
+      background: var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 14px;
+      letter-spacing: 1px;
+      color: var(--white);
+    }
+    .testimonial-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 16px;
+      letter-spacing: 2px;
+      color: var(--white);
+      line-height: 1;
+    }
+    .testimonial-role {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--grey);
+      margin-top: 4px;
+    }
+
+    /* ── FAQ (NEW) ── */
+    .faq {
+      padding: 120px 64px;
+      border-top: 1px solid var(--border);
+    }
+    .faq-list { max-width: 900px; margin-top: 48px; }
+    .faq-item {
+      border-bottom: 1px solid var(--border);
+      transition: border-color 0.3s;
+    }
+    .faq-item:first-child { border-top: 1px solid var(--border); }
+    .faq-item.open { border-color: var(--red); }
+    .faq-q {
+      padding: 28px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: crosshair;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      letter-spacing: 2px;
+      color: var(--white);
+      transition: color 0.2s;
+    }
+    .faq-q:hover { color: var(--red); }
+    .faq-toggle {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 24px;
+      color: var(--red);
+      transition: transform 0.3s;
+    }
+    .faq-item.open .faq-toggle { transform: rotate(45deg); }
+    .faq-a {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease, padding 0.4s ease;
+      font-size: 14px;
+      line-height: 1.9;
+      color: #888;
+    }
+    .faq-item.open .faq-a {
+      max-height: 400px;
+      padding: 0 0 28px;
+    }
+
+    /* ── NEWSLETTER (NEW) ── */
+    .newsletter {
+      padding: 120px 64px;
+      background: var(--dark);
+      border-top: 1px solid var(--border);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .newsletter::before {
+      content: 'READY';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 400px;
+      color: rgba(232,0,29,0.02);
+      letter-spacing: 20px;
+      z-index: 0;
+      white-space: nowrap;
+      user-select: none;
+    }
+    .newsletter-inner { position: relative; z-index: 1; max-width: 600px; margin: 0 auto; }
+    .newsletter h2 { margin-bottom: 16px; }
+    .newsletter p {
+      font-size: 15px;
+      line-height: 1.8;
+      color: #888;
+      margin-bottom: 40px;
+    }
+    .newsletter-form {
+      display: flex;
+      gap: 12px;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+    .newsletter-input {
+      flex: 1;
+      background: var(--black);
+      border: 1px solid var(--border);
+      padding: 16px 20px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 14px;
+      letter-spacing: 1px;
+      color: var(--white);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .newsletter-input:focus { border-color: var(--red); }
+    .newsletter-input::placeholder { color: var(--dim); }
+    .newsletter-btn {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--black);
+      background: var(--red);
+      padding: 16px 32px;
+      border: none;
+      cursor: crosshair;
+      transition: background 0.2s;
+    }
+    .newsletter-btn:hover { background: var(--dark-red); }
+    .newsletter-note {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin-top: 20px;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 48px 64px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 24px;
+    }
+    .footer-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      letter-spacing: 4px;
+      color: var(--white);
+    }
+    .footer-logo span { color: var(--red); }
+    .footer-copy {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--grey);
+    }
+    .footer-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+    .footer-links a {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--grey);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--red); }
+
+    /* ── STICKY MOBILE CTA (NEW) ── */
+    .mobile-cta {
+      display: none;
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: var(--red);
+      color: var(--black);
+      padding: 16px;
+      z-index: 99;
+      text-align: center;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      text-decoration: none;
+      box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
+    }
+
+    /* ── FADE-UP ── */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1024px) {
+      .hero { grid-template-columns: 1fr; }
+      .hero-right { display: none; }
+      .hero-left { padding: 140px 32px 120px; }
+      .hero-stats { position: relative; }
+      .features-grid, .kits-grid, .testimonials-grid { grid-template-columns: 1fr; }
+      .march-grid { grid-template-columns: repeat(2, 1fr); }
+      .howto-steps { grid-template-columns: repeat(2, 1fr); }
+      .qr-section { grid-template-columns: 1fr; gap: 48px; padding: 80px 32px; }
+      nav { padding: 20px 32px; }
+      .features, .kits, .march, .howto, .testimonials, .faq, .newsletter { padding: 80px 32px; }
+      footer { padding: 32px; }
+    }
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .urgency-bar { padding: 6px 16px; font-size: 9px; }
+      .hero-left { padding: 120px 20px 100px; }
+      .hero-buttons { flex-direction: column; align-items: flex-start; gap: 20px; }
+      .hero-stats { grid-template-columns: 1fr; }
+      .stat-item { border-right: none; border-bottom: 1px solid var(--border); }
+      .stat-item:last-child { border-bottom: none; }
+      .march-grid { grid-template-columns: 1fr; }
+      .march-letter { font-size: 80px; }
+      .howto-steps { grid-template-columns: 1fr; }
+      .newsletter-form { flex-direction: column; }
+      .section-header { flex-direction: column; align-items: flex-start; gap: 16px; }
+      footer { flex-direction: column; align-items: flex-start; }
+      .mobile-cta { display: block; }
+      body { padding-bottom: 60px; }
+    }
+  </style>
+</head>
+<body><div id="demoBanner" style="position:fixed;bottom:0;left:0;right:0;z-index:9999;background:#141414;border-top:2px solid #E8001D;padding:12px 32px;display:flex;align-items:center;justify-content:space-between;gap:16px;">
+  <div style="display:flex;align-items:center;gap:12px;">
+    <span style="font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:3px;color:#E8001D;">DEMO MODU</span>
+    <span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;color:#666;letter-spacing:1px;">Tüm sayfaları gezebilirsin</span>
+  </div>
+  <div style="display:flex;gap:8px;flex-shrink:0;">
+    <a href="urun.html" style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#888;text-decoration:none;padding:7px 14px;border:1px solid #2a2a2a;">Satın Al Akışı</a>
+    <a href="profil-panel.html" style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#888;text-decoration:none;padding:7px 14px;border:1px solid #2a2a2a;">Panel</a>
+    <a href="qr-profil.html" style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#080808;background:#E8001D;text-decoration:none;padding:7px 14px;">QR Profil</a>
+    <button onclick="document.getElementById('demoBanner').style.display='none'" style="background:none;border:none;color:#444;font-size:18px;cursor:pointer;padding:0 4px;">×</button>
+  </div>
+</div>
+
+  <!-- URGENCY BAR -->
+  <div class="urgency-bar">
+    <div class="urgency-bar-track">
+      <span>İlk 100 ürün için erken kayıt açıldı</span>
+      <span>Türkiye'nin ilk motorcu travma kiti</span>
+      <span>QR profil sistemi dahil</span>
+      <span>Kargo ücretsiz</span>
+      <span>İlk 100 ürün için erken kayıt açıldı</span>
+      <span>Türkiye'nin ilk motorcu travma kiti</span>
+      <span>QR profil sistemi dahil</span>
+      <span>Kargo ücretsiz</span>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <nav id="nav">
+    <a href="#" class="nav-logo">RED<span>LINE</span></a>
+    <ul class="nav-links">
+      <li><a href="#kitler">Kitler</a></li>
+      <li><a href="#qr-sistem">QR Sistem</a></li>
+      <li><a href="#march">Protokol</a></li>
+      <li><a href="#kullanim">Kullanım</a></li>
+      <li><a href="#sss">SSS</a></li>
+    </ul>
+    <a href="#kitler" class="nav-cta" href="urun.html">Satın Al</a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-left">
+      <div class="hero-tag fade-up">Motosikletçiye Özel Travma Kiti</div>
+      <h1 class="fade-up" style="transition-delay:0.1s">
+        İLK<br>
+        <span class="accent">10 DAKİKA</span><br>
+        HAYATI<br>
+        BELİRLER.
+      </h1>
+      <div class="hero-sub fade-up" style="transition-delay:0.2s">HAZIRLIKLI OL</div>
+      <p class="hero-desc fade-up" style="transition-delay:0.3s">
+        Kaza anında ambulans gelene kadar geçen süre hayatla ölüm arasındaki çizgidir. Redline, motosikletçiye özel tasarlanmış profesyonel travma kiti ile bu çizgiyi senin lehine çeker.
+      </p>
+      <div class="hero-buttons fade-up" style="transition-delay:0.4s">
+        <a href="#kitler" class="btn-primary">Kit'ini Seç</a>
+        <a href="#qr-sistem" class="btn-ghost">QR Sistem Nedir</a>
+      </div>
+    </div>
+
+    <div class="hero-right">
+      <div class="hero-bg"></div>
+      <div class="hero-deco">RED<br>LINE</div>
+      <div class="kit-visual">
+        <div class="kit-bag">
+          <div class="bag-body">
+            <div class="bag-red-line"></div>
+            <div class="bag-strap-top"></div>
+            <div class="bag-strap-mid"></div>
+            <div class="bag-zipper"></div>
+            <div class="bag-logo-area">
+              <div class="bag-logo-text">REDLINE</div>
+            </div>
+            <div class="qr-badge">
+              <div class="qr-inner" id="qrGrid"></div>
+            </div>
+          </div>
+          <div class="info-card card-blood">
+            <div class="info-card-label">Kan Grubu</div>
+            <div class="info-card-val">A RH+</div>
+          </div>
+          <div class="info-card card-qr">
+            <div class="info-card-label">QR Aktif</div>
+            <div class="info-card-val">ONLINE</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-num">%<span>90</span></div>
+        <div class="stat-label">Önlenebilir Ölüm — Kanama</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num"><span>3</span>DK</div>
+        <div class="stat-label">Arteryel Kanama Süresi</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num"><span>07</span>/24</div>
+        <div class="stat-label">QR Erişim — Her Yerde</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MARCH PROTOCOL (NEW) -->
+  <section class="march" id="march">
+    <div class="section-header fade-up">
+      <div>
+        <div class="section-tag">Protokol</div>
+        <h2>MARCH<br>STANDARDI</h2>
+      </div>
+    </div>
+    <p class="march-intro fade-up">
+      Redline kitleri, NATO kuvvetlerinin ve Amerikan Özel Kuvvetlerinin kullandığı MARCH travma protokolüne göre tasarlandı. Her malzeme, bir öldürücüyü adresliyor — dolgu yok, gereksizlik yok.
+    </p>
+    <div class="march-grid">
+      <div class="march-step fade-up">
+        <div class="march-letter">M</div>
+        <div class="march-word">Massive</div>
+        <div class="march-name">MASİF KANAMA</div>
+        <div class="march-desc">Önlenebilir ölümlerin %90'ı kanamadan. Turnike ve hemostatik gaz ilk 3 dakikada müdahale için.</div>
+      </div>
+      <div class="march-step fade-up" style="transition-delay:0.1s">
+        <div class="march-letter">A</div>
+        <div class="march-word">Airway</div>
+        <div class="march-name">HAVA YOLU</div>
+        <div class="march-desc">Bilinci kapalı yaralıda dil geriye kaçar. NPA airway açık tutar, solunumu garanti eder.</div>
+      </div>
+      <div class="march-step fade-up" style="transition-delay:0.2s">
+        <div class="march-letter">R</div>
+        <div class="march-word">Respiration</div>
+        <div class="march-name">SOLUNUM</div>
+        <div class="march-desc">Delici göğüs yaralanmalarında göğüs mührü, akciğerin çökmesini önler.</div>
+      </div>
+      <div class="march-step fade-up" style="transition-delay:0.3s">
+        <div class="march-letter">C</div>
+        <div class="march-word">Circulation</div>
+        <div class="march-name">DOLAŞIM</div>
+        <div class="march-desc">Şok yönetimi için turnike kontrolü, basınç bandajı ve yaralıyı hareketsiz tutma.</div>
+      </div>
+      <div class="march-step fade-up" style="transition-delay:0.4s">
+        <div class="march-letter">H</div>
+        <div class="march-word">Hypothermia</div>
+        <div class="march-name">HİPOTERMİ</div>
+        <div class="march-desc">Şok + kan kaybı = vücut ısısı düşer. Termal battaniye pıhtılaşmayı korur.</div>
+      </div>
+    </div>
+    <div class="march-note fade-up">
+      Bu protokol, ABD Silahlı Kuvvetlerinin TCCC (Tactical Combat Casualty Care) eğitiminden türedi. Sahada kanıtlanmış, binlerce asker hayatta tuttu. Aynı sıralama sivil travmada da kullanılıyor — çünkü öncelikler aynı.
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features" id="ozellikler">
+    <div class="section-header fade-up">
+      <div>
+        <div class="section-tag">Özellikler</div>
+        <h2>NEDEN<br>REDLINE</h2>
+      </div>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card fade-up">
+        <div class="feature-num">01</div>
+        <div class="feature-icon">◆</div>
+        <div class="feature-title">Bacağa Takılır</div>
+        <p class="feature-desc">Drop-leg tasarım motorcu ergonomisi için. Sürerken rahatsız etmez, gerektiğinde saniyede elinin altında.</p>
+      </div>
+      <div class="feature-card fade-up" style="transition-delay:0.1s">
+        <div class="feature-num">02</div>
+        <div class="feature-icon">⚡</div>
+        <div class="feature-title">Hızlı Erişim</div>
+        <p class="feature-desc">Şok ve panik altında bile tek hamlede açılan tasarım. YKK su geçirmez fermuarlar, kırmızı çekme kordonu.</p>
+      </div>
+      <div class="feature-card fade-up" style="transition-delay:0.2s">
+        <div class="feature-num">03</div>
+        <div class="feature-icon">■</div>
+        <div class="feature-title">Askeri Malzeme</div>
+        <p class="feature-desc">Cordura 1000D dış yüzey, kaynaklanmış iç bölmeler, vibrasyona dayanıklı dikiş. Her hava, her zemin.</p>
+      </div>
+      <div class="feature-card fade-up" style="transition-delay:0.3s">
+        <div class="feature-num">04</div>
+        <div class="feature-icon">▣</div>
+        <div class="feature-title">QR Profil Sistemi</div>
+        <p class="feature-desc">Kaza anında ambulans QR'ı okur, saniyeler içinde kan grubun, alerjilerin ve acil kişin ekrana gelir.</p>
+      </div>
+      <div class="feature-card fade-up" style="transition-delay:0.4s">
+        <div class="feature-num">05</div>
+        <div class="feature-icon">↻</div>
+        <div class="feature-title">Yenileme Sistemi</div>
+        <p class="feature-desc">Kullandığın veya süresi dolan malzemeler için otomatik hatırlatma. Tek tıkla yenileme siparişi.</p>
+      </div>
+      <div class="feature-card fade-up" style="transition-delay:0.5s">
+        <div class="feature-num">06</div>
+        <div class="feature-icon">★</div>
+        <div class="feature-title">Türkiye'de İlk</div>
+        <p class="feature-desc">Motosikletçiye özel, QR entegreli travma kiti konseptinde Türkiye'nin öncü markası.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- QR SECTION -->
+  <section class="qr-section" id="qr-sistem">
+    <div class="qr-content fade-up">
+      <div class="section-tag">QR Profil Sistemi</div>
+      <h2>BİLGİN<br>SENİN<br>YERİNDE</h2>
+      <p>
+        Kaza anında konuşamayabilirsin. QR kodun, senden önce konuşur. Ambulans ekibi telefonu çantana tutar, profilin anında açılır — uygulamaya gerek yok, şifreye gerek yok.
+      </p>
+      <div class="data-fields">
+        <div class="data-field">
+          <div class="data-field-label">Kan Grubu</div>
+          <div class="data-field-val">A Rh+</div>
+        </div>
+        <div class="data-field">
+          <div class="data-field-label">Alerjiler</div>
+          <div class="data-field-val">Penisilin</div>
+        </div>
+        <div class="data-field">
+          <div class="data-field-label">Kronik Hastalık</div>
+          <div class="data-field-val">Yok</div>
+        </div>
+        <div class="data-field">
+          <div class="data-field-label">Organ Bağışı</div>
+          <div class="data-field-val">Evet</div>
+        </div>
+        <div class="data-field">
+          <div class="data-field-label">Acil Kişi</div>
+          <div class="data-field-val">Ahmet Y.</div>
+        </div>
+        <div class="data-field">
+          <div class="data-field-label">Sigorta</div>
+          <div class="data-field-val">Aktif</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="qr-mockup fade-up" style="transition-delay:0.2s">
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="phone-header">
+            <div class="phone-alert">⚠ ACİL TIBBİ BİLGİ</div>
+            <div class="phone-name">MURAT YILMAZ</div>
+          </div>
+          <div class="phone-body">
+            <div class="phone-row">
+              <span class="phone-key">Kan Grubu</span>
+              <span class="phone-val danger">A RH+</span>
+            </div>
+            <div class="phone-row">
+              <span class="phone-key">Alerji</span>
+              <span class="phone-val danger">Penisilin</span>
+            </div>
+            <div class="phone-row">
+              <span class="phone-key">Kronik</span>
+              <span class="phone-val">—</span>
+            </div>
+            <div class="phone-row">
+              <span class="phone-key">İlaç</span>
+              <span class="phone-val">—</span>
+            </div>
+            <div class="phone-row">
+              <span class="phone-key">Organ Bağışı</span>
+              <span class="phone-val">Evet</span>
+            </div>
+            <div class="phone-emergency">
+              <div class="phone-emergency-label">Acil İletişim</div>
+              <div class="phone-emergency-name">Ahmet Yılmaz</div>
+              <div class="phone-emergency-phone">+90 532 000 00 00</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW TO USE (NEW) -->
+  <section class="howto" id="kullanim">
+    <div class="section-header fade-up">
+      <div>
+        <div class="section-tag">Kullanım</div>
+        <h2>KAZA ANINDA<br>NE YAPARSIN</h2>
+      </div>
+    </div>
+    <div class="howto-steps">
+      <div class="howto-step fade-up">
+        <div class="howto-num">ADIM 01</div>
+        <div class="howto-title">OLAY YERİ<br>GÜVENLİĞİ</div>
+        <div class="howto-desc">Trafikten uzaklaş. 112 çağır. Kaskı çıkarma — sadece nefes alamıyorsa ve özel eğitim aldıysan dokun.</div>
+        <div class="howto-time">0-30 saniye</div>
+      </div>
+      <div class="howto-step fade-up" style="transition-delay:0.1s">
+        <div class="howto-num">ADIM 02</div>
+        <div class="howto-title">KANAMA<br>KONTROLÜ</div>
+        <div class="howto-desc">Fışkıran kanama varsa turnikeyi yaranın üstüne, kalbe yakın tarafa uygula. Saati yaz.</div>
+        <div class="howto-time">30-90 saniye</div>
+      </div>
+      <div class="howto-step fade-up" style="transition-delay:0.2s">
+        <div class="howto-num">ADIM 03</div>
+        <div class="howto-title">HAVA YOLU<br>KONTROLÜ</div>
+        <div class="howto-desc">Bilinci kapalıysa çene itmesi ile hava yolunu aç. NPA varsa uygula. Kusma varsa yana çevir.</div>
+        <div class="howto-time">2. dakika</div>
+      </div>
+      <div class="howto-step fade-up" style="transition-delay:0.3s">
+        <div class="howto-num">ADIM 04</div>
+        <div class="howto-title">SICAK TUT<br>BEKLE</div>
+        <div class="howto-desc">Termal battaniyeyle vücut ısısını koru. QR'ı aç, ambulansa bilgi ver. Hareket ettirme.</div>
+        <div class="howto-time">Ambulansa kadar</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- KITS -->
+  <section class="kits" id="kitler">
+    <div class="section-header fade-up">
+      <div>
+        <div class="section-tag">Ürünler</div>
+        <h2>KİTİNİ<br>SEÇ</h2>
+      </div>
+    </div>
+
+    <div class="kits-grid">
+      <!-- City -->
+      <div class="kit-card fade-up">
+        <div class="kit-header">
+          <div class="kit-level">Seviye 01</div>
+          <div class="kit-name">CITY</div>
+          <div class="kit-form">Drop-Leg · Şehir içi</div>
+          <div class="kit-price">₺1.490 <span>/ kit</span></div>
+        </div>
+        <div class="kit-body">
+          <ul class="kit-items">
+            <li class="active">Turnike (CAT Gen7)</li>
+            <li class="active">Steril Sargı Bezi</li>
+            <li class="active">Spanç & Flaster Seti</li>
+            <li class="active">Nitril Eldiven (x2)</li>
+            <li class="active">Travma Makası</li>
+            <li class="active">NPA Hava Yolu</li>
+            <li class="active">Termal Battaniye</li>
+            <li class="active">QR Profil Etiketi</li>
+            <li class="active">Bacak Çantası (500D)</li>
+          </ul>
+          <a href="urun.html" class="btn-kit btn-kit-outline">Satın Al</a>
+        </div>
+      </div>
+
+      <!-- Tour -->
+      <div class="kit-card featured fade-up" style="transition-delay:0.1s">
+        <div class="kit-badge">Önerilen</div>
+        <div class="kit-header">
+          <div class="kit-level">Seviye 02</div>
+          <div class="kit-name">TOUR</div>
+          <div class="kit-form">Tank Bag · Uzun yol</div>
+          <div class="kit-price">₺2.290 <span>/ kit</span></div>
+        </div>
+        <div class="kit-body">
+          <ul class="kit-items">
+            <li class="active">City kitin tamamı</li>
+            <li class="active">2. Turnike (Yedek)</li>
+            <li class="active">Hemostatik Gaz (CELOX)</li>
+            <li class="active">İsrail Basınç Bandajı</li>
+            <li class="active">Göğüs Mührü (x2)</li>
+            <li class="active">SAM Splint 36"</li>
+            <li class="active">Yanık Jeli Seti</li>
+            <li class="active">Göz Yıkama Solüsyonu</li>
+            <li class="active">Tank Bag (1000D)</li>
+          </ul>
+          <a href="urun.html" class="btn-kit btn-kit-solid">Satın Al</a>
+        </div>
+      </div>
+
+      <!-- Off-Road -->
+      <div class="kit-card fade-up" style="transition-delay:0.2s">
+        <div class="kit-header">
+          <div class="kit-level">Seviye 03</div>
+          <div class="kit-name">OFF-ROAD</div>
+          <div class="kit-form">Modüler MOLLE · Uzak bölge</div>
+          <div class="kit-price">₺3.190 <span>/ kit</span></div>
+        </div>
+        <div class="kit-body">
+          <ul class="kit-items">
+            <li class="active">Tour kitin tamamı</li>
+            <li class="active">Pelvik Binder</li>
+            <li class="active">Ek Hemostatik Gaz</li>
+            <li class="active">Aktif Isıtma Paketi</li>
+            <li class="active">Ek NPA Ölçüleri</li>
+            <li class="active">Acil Sinyal Aynası</li>
+            <li class="active">Genişletilmiş Yanık Seti</li>
+            <li class="active">Hijyen Modülü</li>
+            <li class="active">Modüler Sırt Sistemi</li>
+          </ul>
+          <a href="urun.html" class="btn-kit btn-kit-outline">Satın Al</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS (NEW) -->
+  <section class="testimonials">
+    <div class="section-header fade-up">
+      <div>
+        <div class="section-tag">Referanslar</div>
+        <h2>SAHADAN<br>SESLER</h2>
+      </div>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testimonial fade-up">
+        <p class="testimonial-text">8 yıldır kurye olarak şehirde motor sürüyorum. İki kez kaza yaptım, ikisinde de "keşke elimin altında olsaydı" dediğim şeyler vardı. Redline City kitim artık sürekli bacağımda.</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">MK</div>
+          <div>
+            <div class="testimonial-name">Murat K.</div>
+            <div class="testimonial-role">Kurye · İstanbul</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial fade-up" style="transition-delay:0.1s">
+        <p class="testimonial-text">Karadeniz turunda arkadaşım düştü, dizi parçalandı. Yardım 40 dakika sürdü. Tour kit olmasaydı bu adam bu kadar sağlıklı değildi. Hemostatik gaz + turnike bileşeni hayat kurtarıyor.</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">EY</div>
+          <div>
+            <div class="testimonial-name">Emre Y.</div>
+            <div class="testimonial-role">Tur Motorcusu · Ankara</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial fade-up" style="transition-delay:0.2s">
+        <p class="testimonial-text">Off-road'da düşmek normal. Benim için önemli olan düştüğümde hazır olmak. QR sistem de şahane, eşim artık her yol çıktığımda panik olmuyor — çünkü bilgilerim erişilebilir.</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">SB</div>
+          <div>
+            <div class="testimonial-name">Serkan B.</div>
+            <div class="testimonial-role">Enduro Sporcusu · İzmir</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ (NEW) -->
+  <section class="faq" id="sss">
+    <div class="section-header fade-up">
+      <div>
+        <div class="section-tag">Sık Sorulan</div>
+        <h2>MERAK<br>EDİLENLER</h2>
+      </div>
+    </div>
+    <div class="faq-list fade-up">
+      <div class="faq-item">
+        <div class="faq-q">
+          <span>Tıbbi eğitimim yok, kiti kullanabilir miyim?</span>
+          <span class="faq-toggle">+</span>
+        </div>
+        <div class="faq-a">
+          Her kitin içinde Türkçe görsel kullanım kartı var. Turnike, hemostatik gaz ve NPA gibi ana malzemeler sezgisel kullanım için tasarlandı. Yine de "Stop the Bleed" temel eğitimini almanı şiddetle öneririz — 2 saatlik bir kursla kitin gerçek kapasitesini açarsın.
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">
+          <span>Çantalar su geçiriyor mu?</span>
+          <span class="faq-toggle">+</span>
+        </div>
+        <div class="faq-a">
+          Tüm çantalar YKK su geçirmez fermuar ve Cordura kumaş kullanıyor. Yağmurda sorun yok. Ancak suya tam daldırma için tasarlanmadı — göl geçmeyi planlıyorsan Off-Road kiti tercih et.
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">
+          <span>QR kod profili nasıl güncellenir?</span>
+          <span class="faq-toggle">+</span>
+        </div>
+        <div class="faq-a">
+          Kit teslim edildiğinde sana özel bir hesap oluşturulur. Profilin üzerinde istediğin zaman değişiklik yaparsın — yeni ilaç, yeni alerji, sigorta güncellemesi. QR kod değişmez, profil anlık güncellenir.
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">
+          <span>Malzemelerin son kullanma tarihi nedir?</span>
+          <span class="faq-toggle">+</span>
+        </div>
+        <div class="faq-a">
+          Turnike gibi mekanik ürünler 5 yıl, hemostatik gaz ve steril malzemeler ortalama 3-5 yıl. Her kitin içinde son kullanma takvimi gelir. Süresi yaklaştığında sistemimiz seni uyarır, yenileme paketi sipariş edebilirsin.
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">
+          <span>Kit kaç kişilik?</span>
+          <span class="faq-toggle">+</span>
+        </div>
+        <div class="faq-a">
+          Her Redline kiti tek kişilik travmaya göre boyutlandırıldı — bu IFAK (Individual First Aid Kit) standardıdır. Çift motorcu için iki kit almanı tavsiye ederiz, her kit kendi sahibinin üstünde kalsın.
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">
+          <span>İade / değişim nasıl?</span>
+          <span class="faq-toggle">+</span>
+        </div>
+        <div class="faq-a">
+          Steril malzemeler açılmamış olmak kaydıyla 14 gün içinde iade edilebilir. Çanta ve aksesuarlarda 30 gün. Hasarlı ürün geldiyse hemen değişim yaparız.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NEWSLETTER (NEW) -->
+  <section class="newsletter">
+    <div class="newsletter-inner fade-up">
+      <div class="section-tag" style="justify-content:center;display:inline-flex">Erken Erişim</div>
+      <h2>İLK 100<br>ERKEN KAYIT</h2>
+      <p>
+        İlk seri üretim sınırlıdır. Kayıt olanlara öncelik ve lansman indirimi. Spam yok, sadece gerçek güncellemeler.
+      </p>
+      <form class="newsletter-form" onsubmit="return false">
+        <input type="email" class="newsletter-input" placeholder="e-posta adresin" required />
+        <button type="submit" class="newsletter-btn">Kayıt Ol</button>
+      </form>
+      <div class="newsletter-note">Bilgilerin güvende — istediğin zaman çık.</div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo">RED<span>LINE</span></div>
+    <div class="footer-copy">© 2026 Redline Moto · Motorcuya yakın, ambulansa kadar.</div>
+    <ul class="footer-links">
+      <li><a href="#">KVKK</a></li>
+      <li><a href="#">Gizlilik</a></li>
+      <li><a href="#">İletişim</a></li>
+      <li><a href="#">Instagram</a></li>
+    </ul>
+  </footer>
+
+  <!-- MOBILE STICKY CTA -->
+  <a href="#kitler" class="mobile-cta">Kit'ini Seç — ₺1.490'dan itibaren</a>
+
+  <script>
+    // Nav scroll effect
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    // Fade-up on scroll
+    const fadeEls = document.querySelectorAll('.fade-up');
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          obs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    fadeEls.forEach(el => obs.observe(el));
+
+    // Trigger hero elements immediately
+    setTimeout(() => {
+      document.querySelectorAll('.hero .fade-up').forEach(el => el.classList.add('visible'));
+    }, 100);
+
+    // QR code pixel art generator
+    const qrGrid = document.getElementById('qrGrid');
+    if (qrGrid) {
+      const pattern = [
+        1,1,1,0,1,1,1,
+        1,0,1,0,1,0,1,
+        1,1,1,0,1,1,1,
+        0,0,0,1,0,1,0,
+        1,1,1,0,1,0,1,
+        1,0,0,0,1,0,1,
+        1,1,0,1,1,1,1
+      ];
+      pattern.forEach(v => {
+        const px = document.createElement('div');
+        px.className = 'qr-pixel' + (v === 0 ? ' w' : '');
+        qrGrid.appendChild(px);
+      });
+    }
+
+    // FAQ accordion
+    document.querySelectorAll('.faq-item').forEach(item => {
+      item.querySelector('.faq-q').addEventListener('click', () => {
+        const isOpen = item.classList.contains('open');
+        document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+        if (!isOpen) item.classList.add('open');
+      });
+    });
+
+    // Newsletter form
+    document.querySelector('.newsletter-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const input = e.target.querySelector('.newsletter-input');
+      const btn = e.target.querySelector('.newsletter-btn');
+      if (input.value) {
+        btn.textContent = 'Kaydedildi ✓';
+        btn.style.background = '#222';
+        input.value = '';
+        setTimeout(() => {
+          btn.textContent = 'Kayıt Ol';
+          btn.style.background = '';
+        }, 3000);
+      }
+    });
+  </script>
+</body>
+</html>

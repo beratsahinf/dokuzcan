@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Giriş — REDLINE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --red: #E8001D;
+      --dark-red: #9B0013;
+      --black: #080808;
+      --dark: #111;
+      --panel: #161616;
+      --border: #2a2a2a;
+      --white: #F2F0EC;
+      --grey: #888;
+      --light-grey: #bbb;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Barlow', sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      cursor: crosshair;
+      position: relative;
+      overflow: hidden;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.6;
+    }
+    body::after {
+      content: '';
+      position: fixed;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(232,0,29,0.08) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Big decorative text */
+    .bg-deco {
+      position: fixed;
+      bottom: -40px; right: -40px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 320px;
+      line-height: 0.9;
+      color: rgba(255,255,255,0.015);
+      letter-spacing: -8px;
+      z-index: 0;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .login-wrapper {
+      width: 100%;
+      max-width: 440px;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Logo top */
+    .login-logo {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+    .logo-text {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px;
+      letter-spacing: 5px;
+      color: var(--white);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo-text::before {
+      content: '';
+      width: 10px; height: 10px;
+      background: var(--red);
+    }
+    .logo-text span { color: var(--red); }
+    .logo-sub {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--grey);
+      margin-top: 8px;
+    }
+
+    /* Card */
+    .login-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 40px 36px;
+      position: relative;
+    }
+    .login-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--red);
+    }
+    .card-tag {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 12px;
+    }
+    .card-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 36px;
+      letter-spacing: 3px;
+      color: var(--white);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+    .card-desc {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      color: var(--grey);
+      margin-bottom: 32px;
+    }
+
+    /* Form */
+    .form-group { margin-bottom: 20px; }
+    label {
+      display: block;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--grey);
+      margin-bottom: 8px;
+    }
+    .input-wrap {
+      position: relative;
+    }
+    input[type="email"],
+    input[type="password"],
+    input[type="text"] {
+      width: 100%;
+      background: var(--black);
+      border: 1px solid var(--border);
+      color: var(--white);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 15px;
+      padding: 14px 16px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input:focus { border-color: var(--red); }
+    input::placeholder { color: #444; }
+
+    .toggle-pass {
+      position: absolute;
+      top: 50%; right: 14px;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--grey);
+      cursor: crosshair;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    .toggle-pass:hover { color: var(--red); }
+
+    .form-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+    .remember {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: crosshair;
+    }
+    .remember input { display: none; }
+    .check-box {
+      width: 16px; height: 16px;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--red);
+      font-size: 12px;
+    }
+    .remember input:checked + .check-box::before {
+      content: '✓';
+    }
+    .remember-text {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--grey);
+    }
+    .forgot {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--grey);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .forgot:hover { color: var(--red); }
+
+    .btn-login {
+      width: 100%;
+      background: var(--red);
+      color: var(--black);
+      border: none;
+      padding: 16px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      cursor: crosshair;
+      transition: background 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-login::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      animation: btn-sweep 2s ease-in-out infinite;
+    }
+    @keyframes btn-sweep {
+      0% { left: -100%; }
+      100% { left: 200%; }
+    }
+    .btn-login:hover { background: var(--dark-red); }
+
+    /* Divider */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 28px 0 20px;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+    .divider span {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--grey);
+    }
+
+    .signup-link {
+      text-align: center;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      letter-spacing: 1px;
+      color: var(--grey);
+    }
+    .signup-link a {
+      color: var(--red);
+      text-decoration: none;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-left: 8px;
+    }
+    .signup-link a:hover { color: var(--white); }
+
+    /* Footer */
+    .login-footer {
+      text-align: center;
+      margin-top: 40px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #333;
+    }
+    .login-footer a {
+      color: #555;
+      text-decoration: none;
+      margin: 0 8px;
+    }
+    .login-footer a:hover { color: var(--grey); }
+
+    /* Error message */
+    .error-msg {
+      background: rgba(232,0,29,0.1);
+      border: 1px solid rgba(232,0,29,0.3);
+      border-left: 2px solid var(--red);
+      padding: 10px 14px;
+      margin-bottom: 20px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px;
+      letter-spacing: 1px;
+      color: var(--red);
+      display: none;
+    }
+    .error-msg.show { display: block; }
+  </style>
+</head>
+<body>
+  <div class="bg-deco">RED<br>LINE</div>
+
+  <div class="login-wrapper">
+    <div class="login-logo">
+      <div class="logo-text">RED<span>LINE</span></div>
+      <div class="logo-sub">Profil Paneli · Giriş</div>
+    </div>
+
+    <div class="login-card">
+      <div class="card-tag">Hesabına Gir</div>
+      <div class="card-title">HOŞ GELDİN</div>
+      <div class="card-desc">E-posta ve şifrenle profiline eriş.</div>
+
+      <div class="error-msg" id="errorMsg">Yanlış e-posta veya şifre</div>
+
+      <form id="loginForm" onsubmit="return handleLogin(event)">
+        <div class="form-group">
+          <label>E-posta</label>
+          <div class="input-wrap">
+            <input type="email" id="email" placeholder="motorcu@redline.moto" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Şifre</label>
+          <div class="input-wrap">
+            <input type="password" id="password" placeholder="••••••••" required />
+            <button type="button" class="toggle-pass" onclick="togglePassword()">Göster</button>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label class="remember">
+            <input type="checkbox" id="remember" />
+            <span class="check-box"></span>
+            <span class="remember-text">Beni Hatırla</span>
+          </label>
+          <a href="#" class="forgot">Şifremi Unuttum</a>
+        </div>
+
+        <button type="submit" class="btn-login">Giriş Yap</button>
+      </form>
+
+      <div class="divider"><span>Yeni Misin</span></div>
+
+      <div class="signup-link">
+        Henüz hesabın yok mu?
+        <a href="kayit.html">Kayıt Ol</a>
+      </div>
+    </div>
+
+    <div class="login-footer">
+      © 2026 Redline Moto ·
+      <a href="#">KVKK</a>
+      <a href="#">Gizlilik</a>
+      <a href="#">Destek</a>
+    </div>
+  </div>
+
+  <script>
+    function togglePassword() {
+      const input = document.getElementById('password');
+      const btn = document.querySelector('.toggle-pass');
+      if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = 'Gizle';
+      } else {
+        input.type = 'password';
+        btn.textContent = 'Göster';
+      }
+    }
+
+    function handleLogin(e) {
+      e.preventDefault();
+      const btn = document.querySelector('.btn-login');
+      btn.textContent = 'Giriş yapılıyor...';
+      btn.disabled = true;
+      
+      setTimeout(() => {
+        // Demo: yönlendir
+        window.location.href = 'profil-panel.html';
+      }, 800);
+      
+      return false;
+    }
+  </script>
+</body>
+</html>

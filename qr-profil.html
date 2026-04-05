@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>⚠ ACİL TIBBİ BİLGİ — REDLINE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --red: #E8001D;
+      --dark-red: #9B0013;
+      --deep-red: #5C000B;
+      --black: #080808;
+      --dark: #111;
+      --panel: #161616;
+      --border: #2a2a2a;
+      --white: #F2F0EC;
+      --grey: #888;
+      --light-grey: #bbb;
+      --green: #22c55e;
+      --yellow: #f59e0b;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Barlow', sans-serif;
+      min-height: 100vh;
+    }
+
+    /* ALERT BANNER — daha güçlü */
+    .alert-banner {
+      background: var(--red);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+      animation: pulse-bg 1.5s ease-in-out infinite;
+    }
+    .alert-banner::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+      animation: banner-sweep 3s ease-in-out infinite;
+    }
+    @keyframes banner-sweep {
+      0% { left: -100%; }
+      100% { left: 200%; }
+    }
+    @keyframes pulse-bg {
+      0%, 100% { background: #E8001D; }
+      50% { background: #c5001a; }
+    }
+    .alert-icon {
+      font-size: 20px;
+      animation: blink 1s step-end infinite;
+      position: relative;
+      z-index: 1;
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+    .alert-text {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 18px;
+      letter-spacing: 4px;
+      color: white;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* SCAN TIME STRIP (NEW) */
+    .scan-strip {
+      background: #000;
+      border-bottom: 1px solid var(--border);
+      padding: 8px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: var(--grey);
+    }
+    .scan-live {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--green);
+    }
+    .scan-live-dot {
+      width: 6px; height: 6px;
+      background: var(--green);
+      border-radius: 50%;
+      animation: dot-pulse 1.5s infinite;
+    }
+    @keyframes dot-pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.3); }
+    }
+
+    /* HEADER */
+    .profile-header {
+      background: linear-gradient(135deg, #1a0808 0%, var(--dark) 100%);
+      border-bottom: 2px solid var(--red);
+      padding: 32px 24px 28px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .profile-header::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -50%;
+      width: 200%; height: 100%;
+      background: radial-gradient(ellipse at center, rgba(232,0,29,0.08) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .profile-header::after {
+      content: '';
+      position: absolute;
+      bottom: -2px; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--red), transparent);
+    }
+    .profile-header > * { position: relative; z-index: 1; }
+    .brand-tag {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: rgba(232,0,29,0.7);
+      margin-bottom: 12px;
+    }
+    .profile-avatar-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+    .profile-avatar {
+      width: 60px; height: 60px;
+      background: var(--red);
+      border: 2px solid rgba(255,255,255,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 24px;
+      letter-spacing: 2px;
+      color: white;
+      flex-shrink: 0;
+    }
+    .profile-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 42px;
+      letter-spacing: 3px;
+      color: var(--white);
+      line-height: 1;
+      text-align: left;
+    }
+    .profile-id {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--grey);
+      margin-top: 8px;
+    }
+
+    /* CRITICAL INFO */
+    .critical-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 2px;
+      background: var(--border);
+      margin: 2px 0;
+    }
+    .critical-card {
+      background: var(--panel);
+      padding: 20px 12px;
+      text-align: center;
+      position: relative;
+    }
+    .critical-card.danger-highlight::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--red);
+    }
+    .critical-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--grey);
+      margin-bottom: 6px;
+    }
+    .critical-value {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 32px;
+      letter-spacing: 2px;
+      color: var(--white);
+      line-height: 1;
+    }
+    .critical-value.danger { color: var(--red); }
+    .critical-value.ok { color: var(--green); }
+
+    /* DANGER FLAG — parlak şerit ile */
+    .danger-flag {
+      background: rgba(232,0,29,0.08);
+      border: 1px solid rgba(232,0,29,0.3);
+      border-left: 3px solid var(--red);
+      margin: 12px 16px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+    .danger-flag::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent 0%, rgba(232,0,29,0.3) 50%, transparent 100%);
+      animation: emergency-sweep 2.5s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @keyframes emergency-sweep {
+      0% { left: -100%; }
+      100% { left: 200%; }
+    }
+    .danger-flag > * { position: relative; z-index: 1; }
+    .danger-flag-icon { font-size: 18px; flex-shrink: 0; }
+    .danger-flag-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 4px;
+    }
+    .danger-flag-val {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--white);
+    }
+
+    /* CALL BUTTON — güçlü */
+    .call-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      background: var(--red);
+      color: white;
+      text-decoration: none;
+      text-align: center;
+      padding: 20px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      letter-spacing: 4px;
+      margin: 8px 16px 0;
+      transition: background 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .call-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      animation: btn-sweep 2s ease-in-out infinite;
+    }
+    @keyframes btn-sweep {
+      0% { left: -100%; }
+      100% { left: 200%; }
+    }
+    .call-btn:active { background: var(--dark-red); }
+    .call-btn > * { position: relative; z-index: 1; }
+
+    /* LOCATION BAR (NEW) */
+    .location-bar {
+      margin: 12px 16px 0;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .location-info { flex: 1; }
+    .location-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--grey);
+      margin-bottom: 4px;
+    }
+    .location-val {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--white);
+    }
+    .location-coord {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--grey);
+      margin-top: 2px;
+    }
+    .btn-share-location {
+      background: var(--border);
+      border: 1px solid #333;
+      color: var(--white);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 8px 14px;
+      cursor: pointer;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .btn-share-location:hover { background: #333; }
+
+    /* NEAREST HOSPITAL (NEW) */
+    .hospital-bar {
+      margin: 12px 16px 0;
+      background: rgba(34,197,94,0.04);
+      border: 1px solid rgba(34,197,94,0.2);
+      border-left: 3px solid var(--green);
+      padding: 14px 16px;
+    }
+    .hospital-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 6px;
+    }
+    .hospital-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 18px;
+      letter-spacing: 2px;
+      color: var(--white);
+      line-height: 1.1;
+      margin-bottom: 4px;
+    }
+    .hospital-distance {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px;
+      color: var(--light-grey);
+    }
+
+    /* SECTION */
+    .section { margin: 12px 16px; }
+    .section-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--grey);
+      padding: 0 0 8px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 2px;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 13px 0;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    .info-row:last-child { border-bottom: none; }
+    .info-key {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: 1px;
+      color: var(--grey);
+    }
+    .info-val {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--white);
+      text-align: right;
+    }
+    .info-val.danger { color: var(--red); }
+    .info-val.ok { color: var(--green); }
+    .badge {
+      display: inline-block;
+      padding: 2px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      border-radius: 2px;
+    }
+    .badge-green { background: rgba(34,197,94,0.15); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
+    .badge-red { background: rgba(232,0,29,0.15); color: var(--red); border: 1px solid rgba(232,0,29,0.3); }
+
+    /* EMERGENCY CONTACT — parlak şeritli */
+    .emergency-contact {
+      margin: 12px 16px;
+      background: var(--panel);
+      border: 1px solid var(--red);
+      overflow: hidden;
+      position: relative;
+    }
+    .emergency-contact::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 40%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent 0%, rgba(232,0,29,0.15) 50%, transparent 100%);
+      animation: emergency-sweep 3s ease-in-out infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .emergency-contact > * { position: relative; z-index: 1; }
+    .emergency-header {
+      background: var(--red);
+      padding: 10px 16px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 16px;
+      letter-spacing: 3px;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .contact-item {
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+      background: var(--panel);
+    }
+    .contact-item:last-child { border-bottom: none; }
+    .contact-relation {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 4px;
+    }
+    .contact-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      letter-spacing: 2px;
+      color: var(--white);
+      margin-bottom: 4px;
+    }
+    .contact-phone {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--white);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .contact-phone:active { color: var(--red); }
+
+    /* NOTES */
+    .notes-box {
+      margin: 12px 16px;
+      background: rgba(255,200,0,0.04);
+      border: 1px solid rgba(255,200,0,0.15);
+      border-left: 3px solid var(--yellow);
+      padding: 14px 16px;
+    }
+    .notes-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--yellow);
+      margin-bottom: 8px;
+    }
+    .notes-text {
+      font-size: 14px;
+      line-height: 1.7;
+      color: #aaa;
+    }
+
+    /* QUICK ACTIONS (NEW) */
+    .quick-actions {
+      margin: 16px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .quick-btn {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 14px 12px;
+      text-align: center;
+      text-decoration: none;
+      color: var(--white);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    .quick-btn:hover, .quick-btn:active { border-color: var(--red); color: var(--red); }
+    .quick-btn-icon {
+      display: block;
+      font-size: 20px;
+      margin-bottom: 6px;
+    }
+
+    /* FOOTER */
+    .qr-footer {
+      margin: 16px;
+      padding: 16px;
+      text-align: center;
+      border-top: 1px solid var(--border);
+    }
+    .qr-footer-brand {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 16px;
+      letter-spacing: 4px;
+      color: #555;
+      margin-bottom: 8px;
+    }
+    .qr-footer-brand span { color: var(--red); }
+    .qr-footer-tag {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 9px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #333;
+      margin-bottom: 4px;
+    }
+    .qr-footer-time {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: #444;
+    }
+    .qr-footer-update {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: #333;
+      margin-top: 2px;
+    }
+
+    /* Desktop wrapper */
+    @media (min-width: 480px) {
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 40px 20px;
+        background: #050505;
+      }
+      .phone-wrapper {
+        width: 420px;
+        background: var(--black);
+        box-shadow: 0 60px 120px rgba(0,0,0,0.9), 0 0 0 1px #222;
+        border-radius: 12px;
+        overflow: hidden;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="phone-wrapper">
+
+    <!-- ALERT BANNER -->
+    <div class="alert-banner">
+      <span class="alert-icon">🚨</span>
+      <span class="alert-text">ACİL TIBBİ BİLGİ</span>
+      <span class="alert-icon">🚨</span>
+    </div>
+
+    <!-- SCAN STRIP -->
+    <div class="scan-strip">
+      <span class="scan-live">
+        <span class="scan-live-dot"></span>
+        PROFİL AKTİF
+      </span>
+      <span id="scanTime">QR Okuma: --</span>
+    </div>
+
+    <!-- HEADER -->
+    <div class="profile-header">
+      <div class="brand-tag">REDLINE Moto · Tıbbi Profil</div>
+      <div class="profile-avatar-row">
+        <div class="profile-avatar">MY</div>
+        <div class="profile-name">MURAT<br>YILMAZ</div>
+      </div>
+      <div class="profile-id">ID: RL-2026-00847</div>
+    </div>
+
+    <!-- CRITICAL 3-LI -->
+    <div class="critical-grid">
+      <div class="critical-card danger-highlight">
+        <div class="critical-label">Kan Grubu</div>
+        <div class="critical-value danger">A RH+</div>
+      </div>
+      <div class="critical-card">
+        <div class="critical-label">Yaş</div>
+        <div class="critical-value">34</div>
+      </div>
+      <div class="critical-card">
+        <div class="critical-label">Kilo</div>
+        <div class="critical-value">82<span style="font-size:14px;color:#666;">KG</span></div>
+      </div>
+    </div>
+
+    <!-- DANGER FLAG (parlak şeritli) -->
+    <div class="danger-flag">
+      <div class="danger-flag-icon">⚠️</div>
+      <div>
+        <div class="danger-flag-title">İlaç Alerjisi — Kritik</div>
+        <div class="danger-flag-val">Penisilin Grubu Antibiyotikler</div>
+      </div>
+    </div>
+
+    <!-- ACİL ARA -->
+    <a href="tel:+905321111111" class="call-btn">
+      <span>📞</span>
+      <span>ACİL KİŞİYİ ARA</span>
+    </a>
+
+    <!-- KONUM -->
+    <div class="location-bar">
+      <div class="location-info">
+        <div class="location-label">📍 Tarama Konumu</div>
+        <div class="location-val" id="locationName">Konum alınıyor...</div>
+        <div class="location-coord" id="locationCoord">--</div>
+      </div>
+      <a href="#" class="btn-share-location" id="shareLoc">Paylaş</a>
+    </div>
+
+    <!-- EN YAKIN HASTANE -->
+    <div class="hospital-bar">
+      <div class="hospital-label">🏥 En Yakın Acil Servis</div>
+      <div class="hospital-name">Şişli Hamidiye Etfal EAH</div>
+      <div class="hospital-distance">2.4 km · Tahmini 8 dakika</div>
+    </div>
+
+    <!-- TIBBİ BİLGİLER -->
+    <div class="section" style="margin-top:20px;">
+      <div class="section-title">Tıbbi Bilgiler</div>
+      <div class="info-row">
+        <span class="info-key">Kronik Hastalık</span>
+        <span class="info-val ok">Yok</span>
+      </div>
+      <div class="info-row">
+        <span class="info-key">Sürekli İlaç</span>
+        <span class="info-val ok">Yok</span>
+      </div>
+      <div class="info-row">
+        <span class="info-key">Besin Alerjisi</span>
+        <span class="info-val ok">Yok</span>
+      </div>
+      <div class="info-row">
+        <span class="info-key">Kan Sulandırıcı</span>
+        <span class="info-val ok">Kullanmıyor</span>
+      </div>
+      <div class="info-row">
+        <span class="info-key">Geçirilmiş Ameliyat</span>
+        <span class="info-val">Apandisit (2019)</span>
+      </div>
+      <div class="info-row">
+        <span class="info-key">Organ Bağışı</span>
+        <span class="info-val"><span class="badge badge-green">EVET</span></span>
+      </div>
+      <div class="info-row">
+        <span class="info-key">Kan Bağışı Onayı</span>
+        <span class="info-val"><span class="badge badge-green">EVET</span></span>
+      </div>
+      <div class="info-row">
+        <span class="info-key">Sigorta</span>
+        <span class="info-val"><span class="badge badge-green">AXA · Aktif</span></span>
+      </div>
+      <div class="info-row">
+        <span class="info-key">Poliçe No</span>
+        <span class="info-val" style="font-family:'JetBrains Mono',monospace;font-size:13px;">TR-498-2024</span>
+      </div>
+    </div>
+
+    <!-- ACİL KİŞİLER -->
+    <div class="emergency-contact">
+      <div class="emergency-header">📞 Acil İletişim Kişileri</div>
+      <div class="contact-item">
+        <div class="contact-relation">1. Kişi — Eş</div>
+        <div class="contact-name">Ayşe Yılmaz</div>
+        <a href="tel:+905321111111" class="contact-phone">📱 +90 532 111 11 11</a>
+      </div>
+      <div class="contact-item">
+        <div class="contact-relation">2. Kişi — Kardeş</div>
+        <div class="contact-name">Ahmet Yılmaz</div>
+        <a href="tel:+905322222222" class="contact-phone">📱 +90 532 222 22 22</a>
+      </div>
+    </div>
+
+    <!-- NOTLAR -->
+    <div class="notes-box">
+      <div class="notes-title">⚠ Ek Tıbbi Notlar</div>
+      <div class="notes-text">
+        Sol dizde eski ligament ameliyatı izleri bulunmaktadır. Morfin türevi ağrı kesicilere karşı düşük tolerans gözlemlenmiştir — dikkatli dozaj.
+      </div>
+    </div>
+
+    <!-- HIZLI AKSIYONLAR -->
+    <div class="quick-actions">
+      <a href="tel:112" class="quick-btn">
+        <span class="quick-btn-icon">🚑</span>
+        112 Ara
+      </a>
+      <a href="#" class="quick-btn" id="copyBtn">
+        <span class="quick-btn-icon">📋</span>
+        Bilgileri Kopyala
+      </a>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="qr-footer">
+      <div class="qr-footer-brand">RED<span>LINE</span> MOTO</div>
+      <div class="qr-footer-tag">Motorcuya yakın · Ambulansa kadar</div>
+      <div class="qr-footer-time" id="scanTimeFooter"></div>
+      <div class="qr-footer-update">Profil güncellenme: 12.03.2026</div>
+    </div>
+
+  </div>
+
+  <script>
+    // Scan time
+    const now = new Date();
+    const timeStr = now.toLocaleString('tr-TR', {
+      day: '2-digit', month: '2-digit', year: 'numeric',
+      hour: '2-digit', minute: '2-digit'
+    });
+    document.getElementById('scanTime').textContent = 'QR: ' + timeStr;
+    document.getElementById('scanTimeFooter').textContent = 'Tarama zamanı: ' + timeStr;
+
+    // Geolocation
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const lat = pos.coords.latitude.toFixed(6);
+          const lng = pos.coords.longitude.toFixed(6);
+          document.getElementById('locationName').textContent = 'Konum tespit edildi';
+          document.getElementById('locationCoord').textContent = lat + ', ' + lng;
+          document.getElementById('shareLoc').href = 
+            'https://maps.google.com/?q=' + lat + ',' + lng;
+        },
+        () => {
+          document.getElementById('locationName').textContent = 'Konum erişimi reddedildi';
+          document.getElementById('locationCoord').textContent = 'Manuel olarak paylaşın';
+        },
+        { timeout: 5000 }
+      );
+    } else {
+      document.getElementById('locationName').textContent = 'Konum desteklenmiyor';
+    }
+
+    // Copy info
+    document.getElementById('copyBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      const text = `ACİL TIBBİ BİLGİ
+Ad: Murat Yılmaz
+Kan Grubu: A RH+
+Yaş: 34
+ALERJİ: Penisilin grubu antibiyotik
+Kronik: Yok
+İlaç: Yok
+Organ Bağışı: Evet
+Acil: Ayşe Yılmaz +90 532 111 11 11
+Sigorta: AXA TR-498-2024`;
+      
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = e.currentTarget;
+        const original = btn.innerHTML;
+        btn.innerHTML = '<span class="quick-btn-icon">✓</span>Kopyalandı';
+        btn.style.borderColor = '#22c55e';
+        btn.style.color = '#22c55e';
+        setTimeout(() => {
+          btn.innerHTML = original;
+          btn.style.borderColor = '';
+          btn.style.color = '';
+        }, 2000);
+      });
+    });
+  </script>
+</body>
+</html>
