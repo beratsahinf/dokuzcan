@@ -1,0 +1,4 @@
+const supabaseUrl = "https://fascsdkzcmnmaaxvldxf.supabase.co"
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZhc2NzZGt6Y21ubWFheHZsZHhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4MTMxMTMsImV4cCI6MjA5MzM4OTExM30.Unlfg8DHP7ce2CtFCcCgRaydstrCB-dwAIEebFRUQm4"
+
+const supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
