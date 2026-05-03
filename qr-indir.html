@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>QR Kod — REDLINE</title>
+  <title>QR Kod — DOKUZCAN</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
@@ -412,8 +412,8 @@
 
   <!-- TOPBAR -->
   <div class="topbar">
-    <a href="profil-panel.html" class="back-link">← Panel'e Dön</a>
-    <div class="logo-text">RED<span>LINE</span></div>
+    <a href="profil-panel" class="back-link">← Panel'e Dön</a>
+    <div class="logo-text">DOKU<span>ZCAN</span></div>
     <div></div>
   </div>
 
@@ -450,7 +450,7 @@
       <div class="qr-display">
         <div class="qr-status-top">
           <div class="qr-status-dot">Canlı</div>
-          <div class="qr-profile-id">RL-2026-00847</div>
+          <div class="qr-profile-id" id="qrProfileId">—</div>
         </div>
 
         <div class="qr-box">
@@ -458,8 +458,8 @@
         </div>
 
         <div class="qr-label">
-          <div class="qr-label-brand">RED<span>LINE</span></div>
-          <div class="qr-label-name">MURAT YILMAZ</div>
+          <div class="qr-label-brand">DOKU<span>ZCAN</span></div>
+          <div class="qr-label-name" id="qrLabelName">— —</div>
           <div class="qr-label-tag">⚠ Acil Tıbbi Bilgi</div>
         </div>
 
@@ -531,7 +531,7 @@
   <script>
     // QR pattern generator (21x21)
     const qrPattern = document.getElementById('qrPattern');
-    const seed = 'RL-2026-00847';
+    const seed = userSlug || 'DOKUZCAN';
     let hash = 0;
     for (let i = 0; i < seed.length; i++) {
       hash = ((hash << 5) - hash) + seed.charCodeAt(i);
@@ -596,7 +596,8 @@
     }
 
     function copyLink() {
-      const link = 'https://redline.moto/p/RL-2026-00847';
+      const slug = userSlug || 'unknown'
+      const link = window.location.origin + '/qr-profil?slug=' + slug;
       navigator.clipboard.writeText(link).then(() => {
         const btn = event.target;
         const original = btn.textContent;

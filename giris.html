@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Giriş — REDLINE</title>
+  <title>Giriş — DOKUZCAN</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
@@ -335,12 +335,12 @@
   </style>
 </head>
 <body>
-  <div class="bg-deco">RED<br>LINE</div>
+  <div class="bg-deco">DOKU<br>ZCAN</div>
 
   <div class="login-wrapper">
     <div class="login-logo">
-      <div class="logo-text">RED<span>LINE</span></div>
-      <div class="logo-sub">Profil Paneli · Giriş</div>
+      <div class="logo-text">DOKU<span>ZCAN</span></div>
+      <div class="logo-sub">Acil Profil Sistemi · Giriş</div>
     </div>
 
     <div class="login-card">
@@ -354,7 +354,7 @@
         <div class="form-group">
           <label>E-posta</label>
           <div class="input-wrap">
-            <input type="email" id="email" placeholder="motorcu@redline.moto" required />
+            <input type="email" id="email" placeholder="eposta@adresin.com" required />
           </div>
         </div>
 
@@ -382,12 +382,12 @@
 
       <div class="signup-link">
         Henüz hesabın yok mu?
-        <a href="kayit.html">Kayıt Ol</a>
+        <a href="kayit">Kayıt Ol</a>
       </div>
     </div>
 
     <div class="login-footer">
-      © 2026 Redline Moto ·
+      © 2026 Dokuzcan ·
       <a href="#">KVKK</a>
       <a href="#">Gizlilik</a>
       <a href="#">Destek</a>
@@ -399,11 +399,6 @@
     const SUPABASE_URL = 'https://fascsdkzcmnmaaxvldxf.supabase.co'
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZhc2NzZGt6Y21ubWFheHZsZHhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4MTMxMTMsImV4cCI6MjA5MzM4OTExM30.Unlfg8DHP7ce2CtFCcCgRaydstrCB-dwAIEebFRUQm4'
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
-
-    // Zaten giriş yapmışsa direkt panele gönder
-    sb.auth.getSession().then(({ data }) => {
-      if (data.session) window.location.href = 'profil-panel.html'
-    })
 
     function togglePassword() {
       const input = document.getElementById('password')
@@ -439,7 +434,7 @@
         return
       }
 
-      window.location.href = 'profil-panel.html'
+      window.location.href = 'profil-panel'
     }
   </script>
 </body>

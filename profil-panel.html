@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Profil Yönetimi — REDLINE</title>
+  <title>Profil Yönetimi — DOKUZCAN</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
@@ -574,41 +574,41 @@
   <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sidebar-logo">
-      <div class="logo-text">RED<span>LINE</span></div>
+      <div class="logo-text">DOKU<span>ZCAN</span></div>
       <div class="logo-sub">Profil Paneli</div>
     </div>
     <div class="sidebar-user">
-      <div class="user-avatar">MY</div>
+      <div class="user-avatar" id="userAvatar">--</div>
       <div>
-        <div class="user-name">Murat Yılmaz</div>
-        <div class="user-id">RL-2025-00847</div>
+        <div class="user-name" id="userName">Yükleniyor...</div>
+        <div class="user-id" id="userId">—</div>
       </div>
     </div>
     <nav class="sidebar-nav">
       <div class="nav-group-label">Ana Menü</div>
-      <a class="nav-item active" href="profil-panel.html">
+      <a class="nav-item active" href="profil-panel">
         <span class="nav-icon">🏥</span> Tıbbi Profil
       </a>
-      <a class="nav-item" href="profil-panel.html">
+      <a class="nav-item" href="profil-panel">
         <span class="nav-icon">👤</span> Kişisel Bilgiler
       </a>
-      <a class="nav-item" href="qr-indir.html">
+      <a class="nav-item" href="qr-indir">
         <span class="nav-icon">📱</span> QR Kod
       </a>
 
       <div class="nav-group-label" style="margin-top:8px;">Kit</div>
-      <a class="nav-item" href="kitim.html">
+      <a class="nav-item" href="kitim">
         <span class="nav-icon">🎒</span> Kitim
       </a>
-      <a class="nav-item" href="kitim.html">
+      <a class="nav-item" href="kitim">
         <span class="nav-icon">🔄</span> Yenileme
       </a>
-      <a class="nav-item" href="kitim.html">
+      <a class="nav-item" href="kitim">
         <span class="nav-icon">📦</span> Siparişlerim
       </a>
 
       <div class="nav-group-label" style="margin-top:8px;">Hesap</div>
-      <a class="nav-item" href="profil-panel.html">
+      <a class="nav-item" href="profil-panel">
         <span class="nav-icon">⚙️</span> Ayarlar
       </a>
       <a class="nav-item" href="#" onclick="logout(); return false;">
@@ -620,7 +620,7 @@
         <div class="qr-status-label">QR Profil Durumu</div>
         <div class="qr-status-val">● AKTİF</div>
       </div>
-      <a href="qr-profil.html" target="_blank" class="btn-view-qr">QR Sayfasını Gör →</a>
+      <a href="qr-profil" target="_blank" class="btn-view-qr" id="qrViewBtn">QR Sayfasını Gör →</a>
     </div>
   </aside>
 
@@ -640,7 +640,7 @@
       <div class="stats-row">
         <div class="stat-card red">
           <div class="stat-card-label">Kan Grubu</div>
-          <div class="stat-card-val">A+</div>
+          <div class="stat-card-val" id="bloodTypeStat">—</div>
         </div>
         <div class="stat-card green">
           <div class="stat-card-label">Profil Durumu</div>
@@ -648,11 +648,11 @@
         </div>
         <div class="stat-card yellow">
           <div class="stat-card-label">Alerji Sayısı</div>
-          <div class="stat-card-val" id="allergyCount">1</div>
+          <div class="stat-card-val" id="allergyCount">0</div>
         </div>
         <div class="stat-card blue">
           <div class="stat-card-label">Acil Kişi</div>
-          <div class="stat-card-val" id="contactCount">2</div>
+          <div class="stat-card-val" id="contactCount">0</div>
         </div>
       </div>
 
@@ -667,7 +667,7 @@
             Bu QR kodu çantandaki etikette bulunur. Herhangi bir cihazla tarandığında acil tıbbi bilgilerin anında görüntülenir.
           </div>
           <div class="qr-actions">
-            <a href="qr-profil.html" target="_blank" class="btn-qr btn-qr-solid">Önizleme</a>
+            <a href="qr-profil" target="_blank" class="btn-qr btn-qr-solid" id="qrPreviewBtn">Önizleme</a>
             <button class="btn-qr btn-qr-outline" onclick="alert('QR etiket baskı dosyası indirildi')">İndir</button>
           </div>
         </div>
@@ -687,7 +687,7 @@
               <label>Kan Grubu <span class="req">*</span></label>
               <select id="bloodType">
                 <option value="">Seçin</option>
-                <option value="A+" selected>A RH+ (A Pozitif)</option>
+                <option value="A+">A RH+ (A Pozitif)</option>
                 <option value="A-">A RH- (A Negatif)</option>
                 <option value="B+">B RH+ (B Pozitif)</option>
                 <option value="B-">B RH- (B Negatif)</option>
@@ -721,7 +721,6 @@
           <div class="form-group">
             <label>İlaç Alerjileri</label>
             <div class="tag-list" id="allergyList">
-              <div class="tag">Penisilin <button class="tag-remove" onclick="removeTag(this, 'allergyList')">×</button></div>
             </div>
             <div class="add-tag-row">
               <input type="text" id="allergyInput" placeholder="Alerji ekle (örn: Aspirin)" />
@@ -757,23 +756,28 @@
             </div>
             <div class="form-group">
               <label>Sürekli Kullanılan İlaçlar</label>
-              <input type="text" placeholder="örn: Metformin 500mg" />
+              <div class="tag-list" id="medList"></div>
+              <div style="display:flex;gap:8px;margin-top:8px;">
+                <input type="text" id="medInput" placeholder="örn: Metformin 500mg" style="flex:1;" />
+                <button class="btn-add-tag" onclick="addTag('medInput','medList')">+ Ekle</button>
+              </div>
             </div>
             <div class="form-group">
               <label>Geçirilmiş Ameliyatlar</label>
-              <input type="text" value="Apandisit (2019)" />
+              <input type="text" id="surgeries" placeholder="Geçirilmiş ameliyatlar" />
             </div>
             <div class="form-group">
               <label>Kan Sulandırıcı Kullanımı</label>
-              <select>
-                <option value="no" selected>Hayır</option>
+              <select id="bloodThinner">
+                <option value="">Seçin</option>
+                <option value="no">Hayır</option>
                 <option value="yes">Evet</option>
               </select>
             </div>
           </div>
           <div class="form-group" style="margin-top:16px;">
             <label>Ek Tıbbi Notlar</label>
-            <textarea placeholder="Sağlık ekibinin bilmesi gereken önemli notlar...">Sol dizde eski ligament ameliyatı izleri bulunmaktadır. Morfin türevi ağrı kesicilere karşı düşük tolerans gözlemlenmiştir.</textarea>
+            <textarea placeholder="Sağlık ekibinin bilmesi gereken önemli notlar..."></textarea>
           </div>
         </div>
       </div>
@@ -820,8 +824,8 @@
           <div class="form-group" style="margin-top: 16px;">
             <label>Sigorta Şirketi & Poliçe No</label>
             <div class="form-grid">
-              <input type="text" value="AXA Sigorta" placeholder="Sigorta şirketi" />
-              <input type="text" value="TR-498-2024" placeholder="Poliçe numarası" />
+              <input type="text" placeholder="Sigorta şirketi" placeholder="Sigorta şirketi" />
+              <input type="text" placeholder="Poliçe numarası" placeholder="Poliçe numarası" />
             </div>
           </div>
         </div>
@@ -840,7 +844,7 @@
             <div class="contact-card">
               <div class="form-group">
                 <label>Ad Soyad</label>
-                <input type="text" value="Ayşe Yılmaz" />
+                <input type="text" placeholder="Ad Soyad" />
               </div>
               <div class="form-group">
                 <label>Yakınlık</label>
@@ -852,14 +856,14 @@
               </div>
               <div class="form-group">
                 <label>Telefon</label>
-                <input type="tel" value="+90 532 111 11 11" />
+                <input type="tel" placeholder="+90 5XX XXX XX XX" />
               </div>
               <button class="btn-remove-contact" onclick="removeContact(this)">×</button>
             </div>
             <div class="contact-card">
               <div class="form-group">
                 <label>Ad Soyad</label>
-                <input type="text" value="Ahmet Yılmaz" />
+                <input type="text" placeholder="Ad Soyad" />
               </div>
               <div class="form-group">
                 <label>Yakınlık</label>
@@ -870,7 +874,7 @@
               </div>
               <div class="form-group">
                 <label>Telefon</label>
-                <input type="tel" value="+90 532 222 22 22" />
+                <input type="tel" placeholder="+90 5XX XXX XX XX" />
               </div>
               <button class="btn-remove-contact" onclick="removeContact(this)">×</button>
             </div>
@@ -909,7 +913,7 @@
     async function init() {
       const { data: { session } } = await sb.auth.getSession()
       if (!session) {
-        window.location.href = 'giris.html'
+        window.location.href = 'giris'
         return
       }
       currentUser = session.user
@@ -944,8 +948,10 @@
         userKit = data
         document.querySelector('.user-id').textContent = data.slug
         // QR önizleme linkini slug ile güncelle
-        const qrLinks = document.querySelectorAll('a[href="qr-profil.html"]')
-        qrLinks.forEach(a => a.href = 'qr-profil.html?slug=' + data.slug)
+        const previewBtn = document.getElementById('qrPreviewBtn')
+        const viewBtn = document.getElementById('qrViewBtn')
+        if (previewBtn) previewBtn.href = 'qr-profil?slug=' + data.slug
+        if (viewBtn) viewBtn.href = 'qr-profil?slug=' + data.slug
       }
     }
 
@@ -972,7 +978,7 @@
         if (data.blood_type) {
           const sel = document.getElementById('bloodType')
           sel.value = data.blood_type
-          document.querySelector('.stat-card.red .stat-card-val').textContent = data.blood_type
+          document.getElementById('bloodTypeStat').textContent = data.blood_type
         }
         // Alerjiler
         if (data.allergies) {
@@ -1013,6 +1019,38 @@
           const notesEl = document.querySelector('textarea')
           if (notesEl) notesEl.value = data.notes
         }
+        // Ameliyat
+        if (data.surgeries) {
+          const s = document.getElementById('surgeries')
+          if (s) s.value = data.surgeries
+        }
+        // Sigorta
+        if (data.insurance_company) {
+          const ic = document.getElementById('insuranceCompany')
+          if (ic) ic.value = data.insurance_company
+        }
+        if (data.insurance_policy) {
+          const ip = document.getElementById('insurancePolicy')
+          if (ip) ip.value = data.insurance_policy
+        }
+        // Kan sulandırıcı
+        if (data.blood_thinner) {
+          const bt2 = document.getElementById('bloodThinner')
+          if (bt2) bt2.value = data.blood_thinner
+        }
+        // Besin alerjileri
+        if (data.food_allergies) {
+          const list = document.getElementById('foodAllergyList')
+          if (list) {
+            list.innerHTML = ''
+            data.food_allergies.split(',').filter(Boolean).forEach(a => {
+              const tag = document.createElement('div')
+              tag.className = 'tag'
+              tag.innerHTML = a.trim() + ` <button class="tag-remove" onclick="removeTag(this,'foodAllergyList')">×</button>`
+              list.appendChild(tag)
+            })
+          }
+        }
       }
     }
 
@@ -1045,13 +1083,25 @@
       const birthDate = document.getElementById('birthDate') ? document.getElementById('birthDate').value : null
       const weight = document.getElementById('weight') ? document.getElementById('weight').value : null
 
+      const surgeries = document.getElementById('surgeries') ? document.getElementById('surgeries').value : ''
+      const bloodThinner = document.getElementById('bloodThinner') ? document.getElementById('bloodThinner').value : ''
+      const insuranceCompany = document.getElementById('insuranceCompany') ? document.getElementById('insuranceCompany').value : ''
+      const insurancePolicy = document.getElementById('insurancePolicy') ? document.getElementById('insurancePolicy').value : ''
+      const foodAllergyTags = document.querySelectorAll('#foodAllergyList .tag')
+      const foodAllergies = Array.from(foodAllergyTags).map(t => t.textContent.replace('×','').trim()).join(',')
+
       const payload = {
         user_id: currentUser.id,
         blood_type: bloodType,
         birth_date: birthDate || null,
         weight: weight ? parseInt(weight) : null,
         allergies,
+        food_allergies: foodAllergies,
         medications,
+        surgeries,
+        insurance_company: insuranceCompany,
+        insurance_policy: insurancePolicy,
+        blood_thinner: bloodThinner,
         emergency_contact_name: emergencyName,
         emergency_contact_phone: emergencyPhone,
         notes,
@@ -1067,7 +1117,7 @@
         ind.classList.add('show')
         toast.classList.add('show')
         // Kan grubu stat kartını güncelle
-        document.querySelector('.stat-card.red .stat-card-val').textContent = bloodType || '—'
+        document.getElementById('bloodTypeStat').textContent = bloodType || '—'
         setTimeout(() => {
           ind.classList.remove('show')
           toast.classList.remove('show')
@@ -1080,7 +1130,7 @@
     // Çıkış
     async function logout() {
       await sb.auth.signOut()
-      window.location.href = 'giris.html'
+      window.location.href = 'giris'
     }
 
     // Tags

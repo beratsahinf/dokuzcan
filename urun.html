@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kit Satın Al — REDLINE</title>
+  <title>Kit Satın Al — DOKUZCAN</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
@@ -603,13 +603,13 @@
 
   <!-- NAV -->
   <nav>
-    <a href="index.html" class="nav-logo">RED<span>LINE</span></a>
+    <a href="/" class="nav-logo">DOKU<span>ZCAN</span></a>
     <div class="nav-steps">
       <div class="nav-step active" id="step1"><span class="step-dot"></span>Kit Seç</div>
       <div class="nav-step" id="step2"><span class="step-dot"></span>Bilgiler & Ödeme</div>
       <div class="nav-step" id="step3"><span class="step-dot"></span>Tamamlandı</div>
     </div>
-    <a href="index.html" class="nav-back">← Ana Sayfa</a>
+    <a href="/" class="nav-back">← Ana Sayfa</a>
   </nav>
 
   <!-- ═══════════════════════════════════
@@ -805,15 +805,15 @@
           <div class="form-grid">
             <div class="form-group">
               <label>Ad <span class="req">*</span></label>
-              <input type="text" id="firstName" placeholder="Murat" />
+              <input type="text" id="firstName" placeholder="Adın" />
             </div>
             <div class="form-group">
               <label>Soyad <span class="req">*</span></label>
-              <input type="text" id="lastName" placeholder="Yılmaz" />
+              <input type="text" id="lastName" placeholder="Soyadın" />
             </div>
             <div class="form-group full">
               <label>E-posta <span class="req">*</span></label>
-              <input type="email" id="email" placeholder="motorcu@redline.moto" />
+              <input type="email" id="email" placeholder="E-posta adresin" />
             </div>
             <div class="form-group full">
               <label>Telefon <span class="req">*</span></label>
@@ -921,7 +921,7 @@
           <div class="form-grid cols1">
             <div class="form-group">
               <label>E-posta</label>
-              <input type="email" placeholder="motorcu@redline.moto" />
+              <input type="email" placeholder="E-posta adresin" />
             </div>
             <div class="form-group">
               <label>Şifre</label>
@@ -1021,19 +1021,19 @@
         <div class="ac-title">✓ Hesabın Oluşturuldu</div>
         <div class="ac-row">
           <span class="ac-key">Ad Soyad</span>
-          <span class="ac-val" id="acName">Murat Yılmaz</span>
+          <span class="ac-val" id="acName">—</span>
         </div>
         <div class="ac-row">
           <span class="ac-key">E-posta</span>
-          <span class="ac-val" id="acEmail">motorcu@redline.moto</span>
+          <span class="ac-val" id="acEmail">—</span>
         </div>
         <div class="ac-row">
           <span class="ac-key">Profil ID</span>
-          <span class="ac-val mono" id="acId">RL-2025-00847</span>
+          <span class="ac-val mono" id="acId">—</span>
         </div>
         <div class="ac-row">
           <span class="ac-key">Sipariş No</span>
-          <span class="ac-val mono" id="acOrder">#RL-2025-4821</span>
+          <span class="ac-val mono" id="acOrder">—</span>
         </div>
         <div class="ac-row">
           <span class="ac-key">Kargo</span>
@@ -1046,8 +1046,8 @@
       </div>
 
       <div class="success-actions">
-        <a href="profil-panel.html" class="btn-go-panel">Profilimi Doldur →</a>
-        <a href="index.html" class="btn-go-home">Ana Sayfa</a>
+        <a href="profil-panel" class="btn-go-panel">Profilimi Doldur →</a>
+        <a href="/" class="btn-go-home">Ana Sayfa</a>
       </div>
     </div>
   </div>
@@ -1121,10 +1121,9 @@
       btn.textContent = 'İşleniyor...';
       btn.disabled = true;
 
-      // Demo: form değerlerini al
-      const fname = document.getElementById('firstName')?.value || 'Murat';
-      const lname = document.getElementById('lastName')?.value || 'Yılmaz';
-      const email = document.getElementById('email')?.value || 'motorcu@redline.moto';
+      const fname = document.getElementById('firstName')?.value || '';
+      const lname = document.getElementById('lastName')?.value || '';
+      const email = document.getElementById('email')?.value || '';
 
       setTimeout(() => {
         // Başarı ekranı
@@ -1135,12 +1134,12 @@
         document.getElementById('step3').classList.add('active');
 
         // Bilgileri yaz
-        document.getElementById('acName').textContent = (fname + ' ' + lname).trim() || 'Murat Yılmaz';
+        document.getElementById('acName').textContent = (fname + ' ' + lname).trim() || '—';
         document.getElementById('acEmail').textContent = email;
 
         // Random sipariş no üret
-        const ordNo = '#RL-2025-' + Math.floor(4000 + Math.random() * 5000);
-        const profId = 'RL-2025-' + Math.floor(10000 + Math.random() * 89999);
+        const ordNo = '#DC-' + Math.floor(100000 + Math.random() * 899999);
+        const profId = 'DC-' + Math.floor(10000 + Math.random() * 89999);
         document.getElementById('acOrder').textContent = ordNo;
         document.getElementById('acId').textContent = profId;
 

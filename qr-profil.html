@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>⚠ ACİL TIBBİ BİLGİ — REDLINE</title>
+  <title>⚠ ACİL TIBBİ BİLGİ — DOKUZCAN</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
@@ -623,7 +623,7 @@
 
     <!-- HEADER -->
     <div class="profile-header">
-      <div class="brand-tag">REDLINE Moto · Tıbbi Profil</div>
+      <div class="brand-tag">Dokuzcan · Tıbbi Profil</div>
       <div class="profile-avatar-row">
         <div class="profile-avatar" id="profileAvatar">--</div>
         <div class="profile-name" id="profileName">YÜKLENİYOR</div>
@@ -675,8 +675,8 @@
     <!-- EN YAKIN HASTANE -->
     <div class="hospital-bar">
       <div class="hospital-label">🏥 En Yakın Acil Servis</div>
-      <div class="hospital-name">Şişli Hamidiye Etfal EAH</div>
-      <div class="hospital-distance">2.4 km · Tahmini 8 dakika</div>
+      <div class="hospital-name" id="hospitalName">Konum alınıyor...</div>
+      <div class="hospital-distance" id="hospitalDistance">En yakın acil servis hesaplanıyor</div>
     </div>
 
     <!-- TIBBİ BİLGİLER -->
@@ -700,7 +700,7 @@
       </div>
       <div class="info-row">
         <span class="info-key">Geçirilmiş Ameliyat</span>
-        <span class="info-val">Apandisit (2019)</span>
+        <span class="info-val" id="surgeriesVal">—</span>
       </div>
       <div class="info-row">
         <span class="info-key">Organ Bağışı</span>
@@ -712,11 +712,11 @@
       </div>
       <div class="info-row">
         <span class="info-key">Sigorta</span>
-        <span class="info-val"><span class="badge badge-green">AXA · Aktif</span></span>
+        <span class="info-val" id="insuranceVal">—</span>
       </div>
       <div class="info-row">
         <span class="info-key">Poliçe No</span>
-        <span class="info-val" style="font-family:'JetBrains Mono',monospace;font-size:13px;">TR-498-2024</span>
+        <span class="info-val" id="insurancePolicyVal" style="font-family:'JetBrains Mono',monospace;font-size:13px;">—</span>
       </div>
     </div>
 
@@ -748,7 +748,7 @@
 
     <!-- FOOTER -->
     <div class="qr-footer">
-      <div class="qr-footer-brand">RED<span>LINE</span> MOTO</div>
+      <div class="qr-footer-brand">DOKU<span>ZCAN</span> MOTO</div>
       <div class="qr-footer-tag">Motorcuya yakın · Ambulansa kadar</div>
       <div class="qr-footer-time" id="scanTimeFooter"></div>
       <div class="qr-footer-update" id="updateDate">Profil güncellenme: —</div>
@@ -781,6 +781,13 @@
           document.getElementById('locationCoord').textContent = lat + ', ' + lng;
           document.getElementById('shareLoc').href = 
             'https://maps.google.com/?q=' + lat + ',' + lng;
+          // En yakın hastane arama linki
+          const hospitalName = document.getElementById('hospitalName')
+          const hospitalDist = document.getElementById('hospitalDistance')
+          if (hospitalName) {
+            hospitalName.innerHTML = '<a href="https://maps.google.com/?q=acil+servis+hastane&near=' + lat + ',' + lng + '" target="_blank" style="color:#22c55e;text-decoration:none;">Haritada Göster →</a>'
+            hospitalDist.textContent = 'Konumunuza en yakın acil servis'
+          }
         },
         () => {
           document.getElementById('locationName').textContent = 'Konum erişimi reddedildi';
@@ -870,6 +877,17 @@
 
         // Notlar
         document.getElementById('notesVal').textContent = med.notes || '—'
+        // Ameliyat
+        if (document.getElementById('surgeriesVal'))
+          document.getElementById('surgeriesVal').textContent = med.surgeries || 'Yok'
+        // Sigorta
+        if (document.getElementById('insuranceVal'))
+          document.getElementById('insuranceVal').textContent = med.insurance_company || '—'
+        if (document.getElementById('insurancePolicyVal'))
+          document.getElementById('insurancePolicyVal').textContent = med.insurance_policy || '—'
+        // Besin alerjileri - kronik satırına ekle
+        if (document.getElementById('chronicVal'))
+          document.getElementById('chronicVal').textContent = med.chronic_conditions || 'Yok'
 
         // Acil kişi
         const contactList = document.getElementById('contactList')
@@ -899,7 +917,7 @@
         document.getElementById('copyBtn').addEventListener('click', (e) => {
           e.preventDefault()
           const text = [
-            'ACİL TIBBİ BİLGİ — REDLINE MOTO',
+            'ACİL TIBBİ BİLGİ — DOKUZCAN',
             'Ad: ' + (profile ? profile.first_name + ' ' + profile.last_name : '—'),
             'Kan Grubu: ' + bt,
             'Alerji: ' + (allergies.join(', ') || 'Yok'),
