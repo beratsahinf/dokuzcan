@@ -46,38 +46,10 @@
       opacity: 0.6;
     }
 
-    /* ── URGENCY BAR (top strip) ── */
-    .urgency-bar {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 101;
-      background: var(--red);
-      color: var(--black);
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      padding: 6px 48px;
-      text-align: center;
-      overflow: hidden;
-      white-space: nowrap;
-    }
-    .urgency-bar-track {
-      display: inline-block;
-      animation: marquee 30s linear infinite;
-    }
-    .urgency-bar-track span { margin: 0 32px; }
-    .urgency-bar-track span::before { content: '◆'; margin-right: 12px; font-size: 8px; }
-    @keyframes marquee {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
-    }
-
     /* ── NAV ── */
     nav {
       position: fixed;
-      top: 28px; left: 0; right: 0;
+      top: 0; left: 0; right: 0;
       z-index: 100;
       display: flex;
       align-items: center;
@@ -169,7 +141,6 @@
       grid-template-columns: 1fr 1fr;
       position: relative;
       overflow: hidden;
-      padding-top: 28px;
     }
     .hero-left {
       display: flex;
@@ -1217,7 +1188,6 @@
     }
     @media (max-width: 640px) {
       .nav-links { display: none; }
-      .urgency-bar { padding: 6px 16px; font-size: 9px; }
       .hero-left { padding: 120px 20px 100px; }
       .hero-buttons { flex-direction: column; align-items: flex-start; gap: 20px; }
       .hero-stats { grid-template-columns: 1fr; }
@@ -1243,19 +1213,6 @@
 </div>
 
   <!-- URGENCY BAR -->
-  <div class="urgency-bar">
-    <div class="urgency-bar-track">
-      <span>İlk 100 ürün için erken kayıt açıldı</span>
-      <span>Türkiye'nin ilk motorcu travma kiti</span>
-      <span>QR profil sistemi dahil</span>
-      <span>Kargo ücretsiz</span>
-      <span>İlk 100 ürün için erken kayıt açıldı</span>
-      <span>Türkiye'nin ilk motorcu travma kiti</span>
-      <span>QR profil sistemi dahil</span>
-      <span>Kargo ücretsiz</span>
-    </div>
-  </div>
-
   <!-- NAV -->
   <nav id="nav">
     <a href="#" class="nav-logo">DOKUZ<span>CAN</span></a>
@@ -1266,7 +1223,7 @@
       <li><a href="#kullanim">Kullanım</a></li>
       <li><a href="#sss">SSS</a></li>
     </ul>
-    <a href="#kitler" class="nav-cta" href="urun">Satın Al</a>
+    <a href="urun" class="nav-cta">Satın Al</a>
   </nav>
 
   <!-- HERO -->
@@ -1284,7 +1241,7 @@
         Kaza anında ambulans gelene kadar geçen süre hayatla ölüm arasındaki çizgidir. Dokuzcan, motosikletçiye özel tasarlanmış profesyonel travma kiti ile bu çizgiyi senin lehine çeker.
       </p>
       <div class="hero-buttons fade-up" style="transition-delay:0.4s">
-        <a href="#kitler" class="btn-primary">Kit'ini Seç</a>
+        <a href="urun" class="btn-primary">Kit'ini Seç</a>
         <a href="#qr-sistem" class="btn-ghost">QR Sistem Nedir</a>
       </div>
     </div>
