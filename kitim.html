@@ -476,9 +476,9 @@
       <div class="logo-sub">Profil Paneli</div>
     </div>
     <div class="sidebar-user">
-      <div class="user-avatar">MY</div>
+      <div class="user-avatar" id="userAvatar">--</div>
       <div>
-        <div class="user-name">Murat Yılmaz</div>
+        <div class="user-name" id="userName">Yükleniyor...</div>
         <div class="user-id">RL-2026-00847</div>
       </div>
     </div>
@@ -507,7 +507,7 @@
       <a class="nav-item" href="#">
         <span class="nav-icon">⚙️</span> Ayarlar
       </a>
-      <a class="nav-item" href="giris.html">
+      <a class="nav-item" href="#" onclick="logout(); return false;">
         <span class="nav-icon">🚪</span> Çıkış
       </a>
     </nav>
@@ -525,11 +525,11 @@
       <!-- KIT OVERVIEW -->
       <div class="kit-overview">
         <div class="kit-overview-info">
-          <div class="kit-level">Seviye 02</div>
-          <div class="kit-name">TOUR</div>
+          <div class="kit-level" id="kitLevel">—</div>
+          <div class="kit-name" id="kitName">—</div>
           <div class="kit-meta">
             <span>Satın Alma: 15.03.2026</span>
-            <span>Seri No: RL-T2-8473</span>
+            <span>Seri No: <span id="kitSlug">—</span></span>
             <span>Tank Bag · 1000D</span>
           </div>
         </div>
@@ -823,5 +823,45 @@
     </div>
   </main>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = 'https://fascsdkzcmnmaaxvldxf.supabase.co'
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZhc2NzZGt6Y21ubWFheHZsZHhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4MTMxMTMsImV4cCI6MjA5MzM4OTExM30.Unlfg8DHP7ce2CtFCcCgRaydstrCB-dwAIEebFRUQm4'
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+
+    async function init() {
+      const { data: { session } } = await sb.auth.getSession()
+      if (!session) { window.location.href = 'giris.html'; return }
+
+      const user = session.user
+
+      // Profil
+      const { data: profile } = await sb.from('profiles').select('*').eq('id', user.id).single()
+      if (profile) {
+        document.getElementById('userAvatar').textContent = (profile.first_name[0] + profile.last_name[0]).toUpperCase()
+        document.getElementById('userName').textContent = profile.first_name + ' ' + profile.last_name
+      }
+
+      // Kit
+      const { data: kit } = await sb.from('kits').select('*').eq('user_id', user.id).single()
+      if (kit) {
+        document.getElementById('kitSlug').textContent = kit.slug
+        const typeMap = { basic: 'BASIC', advanced: 'ADVANCED', pro: 'PRO' }
+        const levelMap = { basic: 'Seviye 01', advanced: 'Seviye 02', pro: 'Seviye 03' }
+        document.getElementById('kitName').textContent = typeMap[kit.kit_type] || kit.kit_type.toUpperCase()
+        document.getElementById('kitLevel').textContent = levelMap[kit.kit_type] || 'Seviye 01'
+      } else {
+        document.getElementById('kitName').textContent = 'Kit Bulunamadı'
+        document.getElementById('kitLevel').textContent = '—'
+      }
+    }
+
+    async function logout() {
+      await sb.auth.signOut()
+      window.location.href = 'giris.html'
+    }
+
+    init()
+  </script>
 </body>
 </html>

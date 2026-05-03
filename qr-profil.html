@@ -625,25 +625,25 @@
     <div class="profile-header">
       <div class="brand-tag">REDLINE Moto · Tıbbi Profil</div>
       <div class="profile-avatar-row">
-        <div class="profile-avatar">MY</div>
-        <div class="profile-name">MURAT<br>YILMAZ</div>
+        <div class="profile-avatar" id="profileAvatar">--</div>
+        <div class="profile-name" id="profileName">YÜKLENİYOR</div>
       </div>
-      <div class="profile-id">ID: RL-2026-00847</div>
+      <div class="profile-id" id="profileId">ID: --</div>
     </div>
 
     <!-- CRITICAL 3-LI -->
     <div class="critical-grid">
       <div class="critical-card danger-highlight">
         <div class="critical-label">Kan Grubu</div>
-        <div class="critical-value danger">A RH+</div>
+        <div class="critical-value danger" id="bloodTypeVal">--</div>
       </div>
       <div class="critical-card">
         <div class="critical-label">Yaş</div>
-        <div class="critical-value">34</div>
+        <div class="critical-value" id="ageVal">--</div>
       </div>
       <div class="critical-card">
         <div class="critical-label">Kilo</div>
-        <div class="critical-value">82<span style="font-size:14px;color:#666;">KG</span></div>
+        <div class="critical-value" id="weightVal">--<span style="font-size:14px;color:#666;">KG</span></div>
       </div>
     </div>
 
@@ -652,12 +652,12 @@
       <div class="danger-flag-icon">⚠️</div>
       <div>
         <div class="danger-flag-title">İlaç Alerjisi — Kritik</div>
-        <div class="danger-flag-val">Penisilin Grubu Antibiyotikler</div>
+        <div class="danger-flag-val" id="allergyFlag">Yükleniyor...</div>
       </div>
     </div>
 
     <!-- ACİL ARA -->
-    <a href="tel:+905321111111" class="call-btn">
+    <a href="#" class="call-btn" id="callBtn">
       <span>📞</span>
       <span>ACİL KİŞİYİ ARA</span>
     </a>
@@ -684,11 +684,11 @@
       <div class="section-title">Tıbbi Bilgiler</div>
       <div class="info-row">
         <span class="info-key">Kronik Hastalık</span>
-        <span class="info-val ok">Yok</span>
+        <span class="info-val" id="chronicVal">—</span>
       </div>
       <div class="info-row">
         <span class="info-key">Sürekli İlaç</span>
-        <span class="info-val ok">Yok</span>
+        <span class="info-val" id="medsVal">—</span>
       </div>
       <div class="info-row">
         <span class="info-key">Besin Alerjisi</span>
@@ -723,23 +723,14 @@
     <!-- ACİL KİŞİLER -->
     <div class="emergency-contact">
       <div class="emergency-header">📞 Acil İletişim Kişileri</div>
-      <div class="contact-item">
-        <div class="contact-relation">1. Kişi — Eş</div>
-        <div class="contact-name">Ayşe Yılmaz</div>
-        <a href="tel:+905321111111" class="contact-phone">📱 +90 532 111 11 11</a>
-      </div>
-      <div class="contact-item">
-        <div class="contact-relation">2. Kişi — Kardeş</div>
-        <div class="contact-name">Ahmet Yılmaz</div>
-        <a href="tel:+905322222222" class="contact-phone">📱 +90 532 222 22 22</a>
-      </div>
+      <div id="contactList"><div style="padding:12px;color:#666;font-size:13px;">Yükleniyor...</div></div>
     </div>
 
     <!-- NOTLAR -->
     <div class="notes-box">
       <div class="notes-title">⚠ Ek Tıbbi Notlar</div>
       <div class="notes-text">
-        Sol dizde eski ligament ameliyatı izleri bulunmaktadır. Morfin türevi ağrı kesicilere karşı düşük tolerans gözlemlenmiştir — dikkatli dozaj.
+        <span id="notesVal">—</span>
       </div>
     </div>
 
@@ -760,12 +751,17 @@
       <div class="qr-footer-brand">RED<span>LINE</span> MOTO</div>
       <div class="qr-footer-tag">Motorcuya yakın · Ambulansa kadar</div>
       <div class="qr-footer-time" id="scanTimeFooter"></div>
-      <div class="qr-footer-update">Profil güncellenme: 12.03.2026</div>
+      <div class="qr-footer-update" id="updateDate">Profil güncellenme: —</div>
     </div>
 
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
+    const SUPABASE_URL = 'https://fascsdkzcmnmaaxvldxf.supabase.co'
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZhc2NzZGt6Y21ubWFheHZsZHhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4MTMxMTMsImV4cCI6MjA5MzM4OTExM30.Unlfg8DHP7ce2CtFCcCgRaydstrCB-dwAIEebFRUQm4'
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+
     // Scan time
     const now = new Date();
     const timeStr = now.toLocaleString('tr-TR', {
@@ -796,33 +792,144 @@
       document.getElementById('locationName').textContent = 'Konum desteklenmiyor';
     }
 
-    // Copy info
-    document.getElementById('copyBtn').addEventListener('click', (e) => {
-      e.preventDefault();
-      const text = `ACİL TIBBİ BİLGİ
-Ad: Murat Yılmaz
-Kan Grubu: A RH+
-Yaş: 34
-ALERJİ: Penisilin grubu antibiyotik
-Kronik: Yok
-İlaç: Yok
-Organ Bağışı: Evet
-Acil: Ayşe Yılmaz +90 532 111 11 11
-Sigorta: AXA TR-498-2024`;
-      
-      navigator.clipboard.writeText(text).then(() => {
-        const btn = e.currentTarget;
-        const original = btn.innerHTML;
-        btn.innerHTML = '<span class="quick-btn-icon">✓</span>Kopyalandı';
-        btn.style.borderColor = '#22c55e';
-        btn.style.color = '#22c55e';
-        setTimeout(() => {
-          btn.innerHTML = original;
-          btn.style.borderColor = '';
-          btn.style.color = '';
-        }, 2000);
-      });
-    });
+    // URL'den slug al ve veriyi yükle
+    async function loadProfile() {
+      const params = new URLSearchParams(window.location.search)
+      const slug = params.get('slug')
+
+      if (!slug) {
+        showError('Geçersiz QR kodu. Slug bulunamadı.')
+        return
+      }
+
+      // Kiti slug ile bul
+      const { data: kit, error: kitError } = await sb
+        .from('kits')
+        .select('user_id, slug, kit_type')
+        .eq('slug', slug)
+        .single()
+
+      if (kitError || !kit || !kit.user_id) {
+        showError('Bu QR koda ait profil bulunamadı.')
+        return
+      }
+
+      // Profil bilgilerini çek
+      const { data: profile } = await sb
+        .from('profiles')
+        .select('*')
+        .eq('id', kit.user_id)
+        .single()
+
+      // Tıbbi verileri çek
+      const { data: med } = await sb
+        .from('medical_data')
+        .select('*')
+        .eq('user_id', kit.user_id)
+        .single()
+
+      // DOM'u doldur
+      if (profile) {
+        const firstName = profile.first_name.toUpperCase()
+        const lastName = profile.last_name.toUpperCase()
+        const initials = profile.first_name[0] + profile.last_name[0]
+        document.getElementById('profileAvatar').textContent = initials.toUpperCase()
+        document.getElementById('profileName').innerHTML = firstName + '<br>' + lastName
+        document.getElementById('profileId').textContent = 'ID: ' + slug
+      }
+
+      if (med) {
+        // Kan grubu
+        const bt = med.blood_type || '—'
+        document.getElementById('bloodTypeVal').textContent = bt
+        document.querySelector('.stat-card-val') && (document.querySelector('.stat-card-val').textContent = bt)
+
+        // Yaş (doğum tarihi varsa hesapla)
+        if (med.birth_date) {
+          const age = Math.floor((new Date() - new Date(med.birth_date)) / (365.25*24*3600*1000))
+          document.getElementById('ageVal').textContent = age
+        } else {
+          document.getElementById('ageVal').textContent = '—'
+        }
+
+        // Kilo
+        document.getElementById('weightVal').innerHTML = (med.weight || '—') + '<span style="font-size:14px;color:#666;">KG</span>'
+
+        // Alerji flag
+        const allergies = med.allergies ? med.allergies.split(',').filter(Boolean) : []
+        if (allergies.length > 0) {
+          document.getElementById('allergyFlag').textContent = allergies.join(', ')
+          document.querySelector('.danger-flag').style.display = 'flex'
+        } else {
+          document.querySelector('.danger-flag').style.display = 'none'
+        }
+
+        // Kronik / ilaç
+        document.getElementById('chronicVal').textContent = med.chronic_conditions || 'Yok'
+        document.getElementById('medsVal').textContent = med.medications || 'Yok'
+
+        // Notlar
+        document.getElementById('notesVal').textContent = med.notes || '—'
+
+        // Acil kişi
+        const contactList = document.getElementById('contactList')
+        if (med.emergency_contact_name) {
+          contactList.innerHTML = `
+            <div class="contact-item">
+              <div class="contact-relation">Acil Kişi</div>
+              <div class="contact-name">${med.emergency_contact_name}</div>
+              <a href="tel:${med.emergency_contact_phone || ''}" class="contact-phone">📱 ${med.emergency_contact_phone || '—'}</a>
+            </div>`
+          // Acil ara butonunu güncelle
+          const callBtn = document.getElementById('callBtn')
+          if (callBtn && med.emergency_contact_phone) {
+            callBtn.href = 'tel:' + med.emergency_contact_phone
+          }
+        } else {
+          contactList.innerHTML = '<div style="padding:12px;color:#666;font-size:13px;">Acil kişi eklenmemiş</div>'
+        }
+
+        // Güncelleme tarihi
+        if (med.updated_at) {
+          const d = new Date(med.updated_at)
+          document.getElementById('updateDate').textContent = 'Profil güncellenme: ' + d.toLocaleDateString('tr-TR')
+        }
+
+        // Kopyalama butonu
+        document.getElementById('copyBtn').addEventListener('click', (e) => {
+          e.preventDefault()
+          const text = [
+            'ACİL TIBBİ BİLGİ — REDLINE MOTO',
+            'Ad: ' + (profile ? profile.first_name + ' ' + profile.last_name : '—'),
+            'Kan Grubu: ' + bt,
+            'Alerji: ' + (allergies.join(', ') || 'Yok'),
+            'Kronik: ' + (med.chronic_conditions || 'Yok'),
+            'İlaç: ' + (med.medications || 'Yok'),
+            'Acil Kişi: ' + (med.emergency_contact_name || '—') + ' ' + (med.emergency_contact_phone || ''),
+            'Not: ' + (med.notes || '—'),
+          ].join('\n')
+          navigator.clipboard.writeText(text).then(() => {
+            const btn = e.currentTarget
+            const original = btn.innerHTML
+            btn.innerHTML = '<span class="quick-btn-icon">✓</span>Kopyalandı'
+            btn.style.borderColor = '#22c55e'
+            btn.style.color = '#22c55e'
+            setTimeout(() => { btn.innerHTML = original; btn.style.borderColor = ''; btn.style.color = '' }, 2000)
+          })
+        })
+      }
+    }
+
+    function showError(msg) {
+      document.querySelector('.phone-wrapper').innerHTML = `
+        <div style="padding:40px 24px;text-align:center;">
+          <div style="font-size:48px;margin-bottom:16px;">⚠️</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;color:#E8001D;margin-bottom:8px;">PROFİL BULUNAMADI</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:14px;color:#888;">${msg}</div>
+        </div>`
+    }
+
+    loadProfile()
   </script>
 </body>
 </html>

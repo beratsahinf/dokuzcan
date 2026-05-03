@@ -611,7 +611,7 @@
       <a class="nav-item" href="profil-panel.html">
         <span class="nav-icon">⚙️</span> Ayarlar
       </a>
-      <a class="nav-item" href="giris.html">
+      <a class="nav-item" href="#" onclick="logout(); return false;">
         <span class="nav-icon">🚪</span> Çıkış
       </a>
     </nav>
@@ -699,11 +699,11 @@
             </div>
             <div class="form-group">
               <label>Doğum Tarihi <span class="req">*</span></label>
-              <input type="date" value="1991-07-15" />
+              <input type="date" id="birthDate" />
             </div>
             <div class="form-group">
               <label>Kilo (kg)</label>
-              <input type="number" value="82" placeholder="80" />
+              <input type="number" id="weight" placeholder="80" />
             </div>
           </div>
         </div>
@@ -886,76 +886,241 @@
   <!-- TOAST -->
   <div class="toast" id="toast">✓ PROFİL KAYDEDİLDİ</div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // QR mini
-    const pattern = [1,1,1,0,1,1,1,1,0,1,0,1,0,1,1,1,1,0,1,1,1,0,0,0,1,0,1,0,1,1,1,0,1,0,1,1,0,0,0,1,0,1,1,1,0,1,1,1,1];
-    const qrMini = document.getElementById('qrMini');
-    pattern.forEach(v => {
-      const c = document.createElement('div');
-      c.className = 'qr-cell' + (v===0?' w':'');
-      qrMini.appendChild(c);
-    });
+    const SUPABASE_URL = 'https://fascsdkzcmnmaaxvldxf.supabase.co'
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZhc2NzZGt6Y21ubWFheHZsZHhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4MTMxMTMsImV4cCI6MjA5MzM4OTExM30.Unlfg8DHP7ce2CtFCcCgRaydstrCB-dwAIEebFRUQm4'
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
 
-    // Save
-    function saveProfile() {
-      const btn = document.getElementById('saveBtn');
-      const ind = document.getElementById('saveIndicator');
-      const toast = document.getElementById('toast');
-      btn.disabled = true;
-      btn.textContent = 'Kaydediliyor...';
-      setTimeout(() => {
-        btn.disabled = false;
-        btn.textContent = 'Kaydet';
-        ind.classList.add('show');
-        toast.classList.add('show');
+    let currentUser = null
+    let userKit = null
+    let medicalData = null
+
+    // QR mini dekoratif
+    const pattern = [1,1,1,0,1,1,1,1,0,1,0,1,0,1,1,1,1,0,1,1,1,0,0,0,1,0,1,0,1,1,1,0,1,0,1,1,0,0,0,1,0,1,1,1,0,1,1,1,1]
+    const qrMini = document.getElementById('qrMini')
+    pattern.forEach(v => {
+      const c = document.createElement('div')
+      c.className = 'qr-cell' + (v===0?' w':'')
+      qrMini.appendChild(c)
+    })
+
+    // Sayfa yüklenince oturumu kontrol et
+    async function init() {
+      const { data: { session } } = await sb.auth.getSession()
+      if (!session) {
+        window.location.href = 'giris.html'
+        return
+      }
+      currentUser = session.user
+      await loadProfile()
+      await loadMedicalData()
+      await loadKit()
+    }
+
+    async function loadProfile() {
+      const { data } = await sb
+        .from('profiles')
+        .select('*')
+        .eq('id', currentUser.id)
+        .single()
+
+      if (data) {
+        const fullName = data.first_name + ' ' + data.last_name
+        const initials = (data.first_name[0] + data.last_name[0]).toUpperCase()
+        document.querySelector('.user-avatar').textContent = initials
+        document.querySelector('.user-name').textContent = fullName
+      }
+    }
+
+    async function loadKit() {
+      const { data } = await sb
+        .from('kits')
+        .select('*')
+        .eq('user_id', currentUser.id)
+        .single()
+
+      if (data) {
+        userKit = data
+        document.querySelector('.user-id').textContent = data.slug
+        // QR önizleme linkini slug ile güncelle
+        const qrLinks = document.querySelectorAll('a[href="qr-profil.html"]')
+        qrLinks.forEach(a => a.href = 'qr-profil.html?slug=' + data.slug)
+      }
+    }
+
+    async function loadMedicalData() {
+      const { data } = await sb
+        .from('medical_data')
+        .select('*')
+        .eq('user_id', currentUser.id)
+        .single()
+
+      if (data) {
+        medicalData = data
+        // Doğum tarihi
+        if (data.birth_date) {
+          const bd = document.getElementById('birthDate')
+          if (bd) bd.value = data.birth_date
+        }
+        // Kilo
+        if (data.weight) {
+          const wt = document.getElementById('weight')
+          if (wt) wt.value = data.weight
+        }
+        // Kan grubu
+        if (data.blood_type) {
+          const sel = document.getElementById('bloodType')
+          sel.value = data.blood_type
+          document.querySelector('.stat-card.red .stat-card-val').textContent = data.blood_type
+        }
+        // Alerjiler
+        if (data.allergies) {
+          const list = document.getElementById('allergyList')
+          list.innerHTML = ''
+          data.allergies.split(',').filter(Boolean).forEach(a => {
+            const tag = document.createElement('div')
+            tag.className = 'tag'
+            tag.innerHTML = a.trim() + ` <button class="tag-remove" onclick="removeTag(this,'allergyList')">×</button>`
+            list.appendChild(tag)
+          })
+          document.getElementById('allergyCount').textContent = list.querySelectorAll('.tag').length
+        }
+        // İlaçlar
+        if (data.medications) {
+          const list = document.getElementById('medList')
+          if (list) {
+            list.innerHTML = ''
+            data.medications.split(',').filter(Boolean).forEach(m => {
+              const tag = document.createElement('div')
+              tag.className = 'tag'
+              tag.innerHTML = m.trim() + ` <button class="tag-remove" onclick="removeTag(this,'medList')">×</button>`
+              list.appendChild(tag)
+            })
+          }
+        }
+        // Acil kişi
+        if (data.emergency_contact_name) {
+          const cards = document.getElementById('contactCards')
+          if (cards) {
+            const inputs = cards.querySelectorAll('input')
+            if (inputs[0]) inputs[0].value = data.emergency_contact_name
+            if (inputs[1]) inputs[1].value = data.emergency_contact_phone || ''
+          }
+        }
+        // Notlar
+        if (data.notes) {
+          const notesEl = document.querySelector('textarea')
+          if (notesEl) notesEl.value = data.notes
+        }
+      }
+    }
+
+    async function saveProfile() {
+      const btn = document.getElementById('saveBtn')
+      const ind = document.getElementById('saveIndicator')
+      const toast = document.getElementById('toast')
+      btn.disabled = true
+      btn.textContent = 'Kaydediliyor...'
+
+      // Alerjileri topla
+      const allergyTags = document.querySelectorAll('#allergyList .tag')
+      const allergies = Array.from(allergyTags).map(t => t.textContent.replace('×','').trim()).join(',')
+
+      // İlaçları topla
+      const medTags = document.querySelectorAll('#medList .tag')
+      const medications = Array.from(medTags).map(t => t.textContent.replace('×','').trim()).join(',')
+
+      // Kan grubu
+      const bloodType = document.getElementById('bloodType').value
+
+      // Acil kişi
+      const contactInputs = document.querySelectorAll('#contactCards input')
+      const emergencyName = contactInputs[0] ? contactInputs[0].value : ''
+      const emergencyPhone = contactInputs[1] ? contactInputs[1].value : ''
+
+      // Notlar
+      const notes = document.querySelector('textarea') ? document.querySelector('textarea').value : ''
+
+      const birthDate = document.getElementById('birthDate') ? document.getElementById('birthDate').value : null
+      const weight = document.getElementById('weight') ? document.getElementById('weight').value : null
+
+      const payload = {
+        user_id: currentUser.id,
+        blood_type: bloodType,
+        birth_date: birthDate || null,
+        weight: weight ? parseInt(weight) : null,
+        allergies,
+        medications,
+        emergency_contact_name: emergencyName,
+        emergency_contact_phone: emergencyPhone,
+        notes,
+        updated_at: new Date().toISOString()
+      }
+
+      const { error } = await sb.from('medical_data').upsert(payload, { onConflict: 'user_id' })
+
+      btn.disabled = false
+      btn.textContent = 'Kaydet'
+
+      if (!error) {
+        ind.classList.add('show')
+        toast.classList.add('show')
+        // Kan grubu stat kartını güncelle
+        document.querySelector('.stat-card.red .stat-card-val').textContent = bloodType || '—'
         setTimeout(() => {
-          ind.classList.remove('show');
-          toast.classList.remove('show');
-        }, 3000);
-      }, 800);
+          ind.classList.remove('show')
+          toast.classList.remove('show')
+        }, 3000)
+      } else {
+        alert('Kayıt hatası: ' + error.message)
+      }
+    }
+
+    // Çıkış
+    async function logout() {
+      await sb.auth.signOut()
+      window.location.href = 'giris.html'
     }
 
     // Tags
     function addTag(inputId, listId, countId) {
-      const input = document.getElementById(inputId);
-      const list = document.getElementById(listId);
-      const val = input.value.trim();
-      if (!val) return;
-
-      // Remove "Yok" placeholder
-      const placeholder = list.querySelector('span');
-      if (placeholder) placeholder.remove();
-
-      const tag = document.createElement('div');
-      tag.className = 'tag';
-      tag.innerHTML = val + ` <button class="tag-remove" onclick="removeTag(this,'${listId}')">×</button>`;
-      list.appendChild(tag);
-      input.value = '';
-      if (countId) updateCount(listId, countId);
+      const input = document.getElementById(inputId)
+      const list = document.getElementById(listId)
+      const val = input.value.trim()
+      if (!val) return
+      const placeholder = list.querySelector('span')
+      if (placeholder) placeholder.remove()
+      const tag = document.createElement('div')
+      tag.className = 'tag'
+      tag.innerHTML = val + ` <button class="tag-remove" onclick="removeTag(this,'${listId}')">×</button>`
+      list.appendChild(tag)
+      input.value = ''
+      if (countId) updateCount(listId, countId)
     }
 
     function removeTag(btn, listId) {
-      btn.closest('.tag').remove();
-      updateCount(listId, 'allergyCount');
+      btn.closest('.tag').remove()
+      updateCount(listId, 'allergyCount')
     }
 
     function updateCount(listId, countId) {
-      const list = document.getElementById(listId);
-      const countEl = document.getElementById(countId);
-      if (countEl) countEl.textContent = list.querySelectorAll('.tag').length;
+      const list = document.getElementById(listId)
+      const countEl = document.getElementById(countId)
+      if (countEl) countEl.textContent = list.querySelectorAll('.tag').length
     }
 
     // Contacts
     function removeContact(btn) {
-      btn.closest('.contact-card').remove();
+      btn.closest('.contact-card').remove()
       document.getElementById('contactCount').textContent =
-        document.querySelectorAll('.contact-card').length;
+        document.querySelectorAll('.contact-card').length
     }
 
     function addContact() {
-      const cards = document.getElementById('contactCards');
-      const card = document.createElement('div');
-      card.className = 'contact-card';
+      const cards = document.getElementById('contactCards')
+      const card = document.createElement('div')
+      card.className = 'contact-card'
       card.innerHTML = `
         <div class="form-group">
           <label>Ad Soyad</label>
@@ -973,18 +1138,21 @@
           <input type="tel" placeholder="+90 5XX XXX XX XX" />
         </div>
         <button class="btn-remove-contact" onclick="removeContact(this)">×</button>
-      `;
-      cards.appendChild(card);
+      `
+      cards.appendChild(card)
       document.getElementById('contactCount').textContent =
-        document.querySelectorAll('.contact-card').length;
+        document.querySelectorAll('.contact-card').length
     }
 
     // Input change tracking
     document.querySelectorAll('input,select,textarea').forEach(el => {
       el.addEventListener('change', () => {
-        document.getElementById('saveBtn').style.boxShadow = '0 0 0 2px rgba(232,0,29,0.4)';
-      });
-    });
+        document.getElementById('saveBtn').style.boxShadow = '0 0 0 2px rgba(232,0,29,0.4)'
+      })
+    })
+
+    // Başlat
+    init()
   </script>
 </body>
 </html>

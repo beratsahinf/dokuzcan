@@ -459,60 +459,137 @@
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // Password strength
-    const passInput = document.getElementById('password');
-    const passHint = document.getElementById('passHint');
+    const SUPABASE_URL = 'https://fascsdkzcmnmaaxvldxf.supabase.co'
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZhc2NzZGt6Y21ubWFheHZsZHhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4MTMxMTMsImV4cCI6MjA5MzM4OTExM30.Unlfg8DHP7ce2CtFCcCgRaydstrCB-dwAIEebFRUQm4'
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+
+    // Zaten giris yapmissa direkt panele gönder
+    sb.auth.getSession().then(({ data }) => {
+      if (data.session) window.location.href = 'profil-panel.html'
+    })
+
+    // Sifre güçlülük göstergesi
+    const passInput = document.getElementById('password')
+    const passHint = document.getElementById('passHint')
     const bars = [
       document.getElementById('bar1'),
       document.getElementById('bar2'),
       document.getElementById('bar3'),
       document.getElementById('bar4')
-    ];
+    ]
 
     passInput.addEventListener('input', () => {
-      const val = passInput.value;
-      let strength = 0;
-      if (val.length >= 8) strength++;
-      if (/[A-Z]/.test(val)) strength++;
-      if (/[0-9]/.test(val)) strength++;
-      if (/[^A-Za-z0-9]/.test(val)) strength++;
+      const val = passInput.value
+      let strength = 0
+      if (val.length >= 8) strength++
+      if (/[A-Z]/.test(val)) strength++
+      if (/[0-9]/.test(val)) strength++
+      if (/[^A-Za-z0-9]/.test(val)) strength++
 
       bars.forEach((bar, i) => {
-        bar.classList.remove('active', 'medium');
+        bar.classList.remove('active', 'medium')
         if (i < strength) {
-          bar.classList.add('active');
-          if (strength >= 3) bar.classList.add('medium');
+          bar.classList.add('active')
+          if (strength >= 3) bar.classList.add('medium')
         }
-      });
+      })
 
-      const hints = ['Güçlü bir şifre girin', 'Zayıf', 'Orta', 'İyi', 'Çok güçlü'];
-      passHint.textContent = hints[strength];
-    });
+      const hints = ['Güçlü bir sifre girin', 'Zayif', 'Orta', 'Iyi', 'Çok güçlü']
+      passHint.textContent = hints[strength]
+    })
 
-    // Aktivasyon kodu format
+    // Aktivasyon kodu otomatik format
     document.getElementById('activationCode').addEventListener('input', (e) => {
-      let val = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-      if (val.length > 2 && val[2] !== '-') {
-        val = val.slice(0, 2) + '-' + val.slice(2);
-      }
-      if (val.length > 7 && val[7] !== '-') {
-        val = val.slice(0, 7) + '-' + val.slice(7);
-      }
-      e.target.value = val.slice(0, 10);
-    });
+      let val = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '')
+      if (val.length > 2) val = val.slice(0, 2) + '-' + val.slice(2)
+      if (val.length > 7) val = val.slice(0, 7) + '-' + val.slice(7)
+      e.target.value = val.slice(0, 10)
+    })
 
-    function handleSignup(e) {
-      e.preventDefault();
-      const btn = document.querySelector('.btn-signup');
-      btn.textContent = 'Hesap oluşturuluyor...';
-      btn.disabled = true;
-      
-      setTimeout(() => {
-        window.location.href = 'profil-panel.html';
-      }, 1000);
-      
-      return false;
+    function showError(msg) {
+      let box = document.getElementById('errorBox')
+      if (!box) {
+        box = document.createElement('div')
+        box.id = 'errorBox'
+        box.style.cssText = 'background:rgba(232,0,29,0.1);border:1px solid rgba(232,0,29,0.3);border-left:2px solid #E8001D;padding:10px 14px;margin-bottom:20px;font-family:Barlow Condensed,sans-serif;font-size:12px;letter-spacing:1px;color:#E8001D;'
+        document.getElementById('signupForm').prepend(box)
+      }
+      box.textContent = msg
+      box.style.display = 'block'
+    }
+
+    async function handleSignup(e) {
+      e.preventDefault()
+      const btn = document.querySelector('.btn-signup')
+      btn.textContent = 'Hesap oluşturuluyor...'
+      btn.disabled = true
+
+      const activationCode = document.getElementById('activationCode').value.trim()
+      const firstName = document.getElementById('firstName').value.trim()
+      const lastName = document.getElementById('lastName').value.trim()
+      const email = document.getElementById('email').value.trim()
+      const phone = document.getElementById('phone').value.trim()
+      const password = document.getElementById('password').value
+
+      // 1) Aktivasyon kodunu kontrol et
+      const { data: kit, error: kitError } = await sb
+        .from('kits')
+        .select('id, user_id')
+        .eq('activation_code', activationCode)
+        .single()
+
+      if (kitError || !kit) {
+        showError('Aktivasyon kodu geçersiz. Lütfen kontrol et.')
+        btn.textContent = 'Devam Et — Adim 2'
+        btn.disabled = false
+        return
+      }
+
+      if (kit.user_id) {
+        showError('Bu aktivasyon kodu zaten kullanilmis.')
+        btn.textContent = 'Devam Et — Adim 2'
+        btn.disabled = false
+        return
+      }
+
+      // 2) Supabase Auth ile hesap olustur
+      const { data: authData, error: authError } = await sb.auth.signUp({ email, password })
+
+      if (authError) {
+        showError(authError.message === 'User already registered'
+          ? 'Bu e-posta zaten kayitli.'
+          : 'Kayit sirasinda hata: ' + authError.message)
+        btn.textContent = 'Devam Et — Adim 2'
+        btn.disabled = false
+        return
+      }
+
+      const userId = authData.user.id
+
+      // 3) Profiles tablosuna kaydet
+      const { error: profileError } = await sb.from('profiles').insert({
+        id: userId,
+        first_name: firstName,
+        last_name: lastName,
+        phone: phone
+      })
+
+      if (profileError) {
+        showError('Profil olusturulamadi: ' + profileError.message)
+        btn.textContent = 'Devam Et — Adim 2'
+        btn.disabled = false
+        return
+      }
+
+      // 4) Kiti bu kullaniciya bagla
+      await sb.from('kits')
+        .update({ user_id: userId, activated_at: new Date().toISOString() })
+        .eq('id', kit.id)
+
+      // 5) Panele yönlendir
+      window.location.href = 'profil-panel.html'
     }
   </script>
 </body>

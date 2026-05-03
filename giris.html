@@ -394,31 +394,52 @@
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
+    const SUPABASE_URL = 'https://fascsdkzcmnmaaxvldxf.supabase.co'
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZhc2NzZGt6Y21ubWFheHZsZHhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4MTMxMTMsImV4cCI6MjA5MzM4OTExM30.Unlfg8DHP7ce2CtFCcCgRaydstrCB-dwAIEebFRUQm4'
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+
+    // Zaten giriş yapmışsa direkt panele gönder
+    sb.auth.getSession().then(({ data }) => {
+      if (data.session) window.location.href = 'profil-panel.html'
+    })
+
     function togglePassword() {
-      const input = document.getElementById('password');
-      const btn = document.querySelector('.toggle-pass');
+      const input = document.getElementById('password')
+      const btn = document.querySelector('.toggle-pass')
       if (input.type === 'password') {
-        input.type = 'text';
-        btn.textContent = 'Gizle';
+        input.type = 'text'
+        btn.textContent = 'Gizle'
       } else {
-        input.type = 'password';
-        btn.textContent = 'Göster';
+        input.type = 'password'
+        btn.textContent = 'Göster'
       }
     }
 
-    function handleLogin(e) {
-      e.preventDefault();
-      const btn = document.querySelector('.btn-login');
-      btn.textContent = 'Giriş yapılıyor...';
-      btn.disabled = true;
-      
-      setTimeout(() => {
-        // Demo: yönlendir
-        window.location.href = 'profil-panel.html';
-      }, 800);
-      
-      return false;
+    async function handleLogin(e) {
+      e.preventDefault()
+      const btn = document.querySelector('.btn-login')
+      const errorMsg = document.getElementById('errorMsg')
+      errorMsg.classList.remove('show')
+
+      btn.textContent = 'Giriş yapılıyor...'
+      btn.disabled = true
+
+      const email = document.getElementById('email').value
+      const password = document.getElementById('password').value
+
+      const { error } = await sb.auth.signInWithPassword({ email, password })
+
+      if (error) {
+        errorMsg.textContent = 'Yanlış e-posta veya şifre'
+        errorMsg.classList.add('show')
+        btn.textContent = 'Giriş Yap'
+        btn.disabled = false
+        return
+      }
+
+      window.location.href = 'profil-panel.html'
     }
   </script>
 </body>
