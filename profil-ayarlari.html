@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Siparişler & Ayarlar — DOKUZCAN</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --red: #E8001D;
+      --dark-red: #9B0013;
+      --black: #080808;
+      --dark: #0e0e0e;
+      --panel: #141414;
+      --border: #252525;
+      --border2: #2e2e2e;
+      --white: #F2F0EC;
+      --grey: #777;
+      --light-grey: #aaa;
+      --green: #22c55e;
+      --yellow: #f59e0b;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Barlow', sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+      cursor: crosshair;
+    }
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 9998; opacity: 0.5;
+    }
+
+    /* TOPBAR */
+    .topbar {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(8,8,8,0.97);
+      border-bottom: 1px solid var(--border);
+      padding: 0 40px; height: 60px;
+      display: flex; align-items: center; justify-content: space-between;
+      backdrop-filter: blur(10px);
+    }
+    .topbar-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 4px; color: var(--white); text-decoration: none; }
+    .topbar-logo span { color: var(--red); }
+    .topbar-center { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; color: var(--grey); }
+    .btn-back { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--grey); text-decoration: none; transition: color 0.2s; }
+    .btn-back:hover { color: var(--white); }
+
+    /* PAGE */
+    .page { max-width: 680px; margin: 0 auto; padding: 40px 24px 80px; }
+
+    /* User card */
+    .user-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 24px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .user-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--red); }
+    .user-avatar {
+      width: 52px; height: 52px;
+      background: var(--red);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px; letter-spacing: 2px; color: white;
+      flex-shrink: 0;
+    }
+    .user-meta {}
+    .user-name { font-family: 'Bebas Neue', sans-serif; font-size: 24px; letter-spacing: 2px; color: var(--white); line-height: 1; }
+    .user-email { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; color: var(--grey); margin-top: 4px; }
+    .user-since { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: #444; margin-top: 2px; }
+
+    /* Sections */
+    .section {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+    .section-head {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 18px; letter-spacing: 2px; color: var(--white);
+    }
+    .section-body { padding: 20px 24px; }
+
+    /* Kit info card */
+    .kit-info-card {
+      background: var(--dark);
+      border: 1px solid var(--border2);
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: center;
+    }
+    .kit-type-label { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--red); margin-bottom: 4px; }
+    .kit-type-name { font-family: 'Bebas Neue', sans-serif; font-size: 32px; letter-spacing: 3px; color: var(--white); line-height: 1; }
+    .kit-meta-row { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; color: var(--grey); margin-top: 8px; display: flex; gap: 16px; flex-wrap: wrap; }
+    .kit-meta-row span { display: flex; align-items: center; gap: 6px; }
+    .kit-status {
+      display: flex; align-items: center; gap: 6px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--green);
+    }
+    .kit-status::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
+
+    .no-kit {
+      text-align: center; padding: 32px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 14px; color: var(--grey);
+    }
+    .no-kit a { color: var(--red); text-decoration: none; font-weight: 700; }
+    .no-kit a:hover { color: var(--white); }
+
+    /* Form */
+    .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+    .form-group:last-child { margin-bottom: 0; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    label { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--grey); }
+    input {
+      background: var(--dark);
+      border: 1px solid var(--border2);
+      color: var(--white);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 15px; font-weight: 400;
+      padding: 11px 14px; outline: none;
+      transition: border-color 0.2s; width: 100%;
+    }
+    input:focus { border-color: var(--red); }
+    input::placeholder { color: #383838; }
+    input:disabled { color: var(--grey); cursor: not-allowed; }
+
+    .btn-primary {
+      background: var(--red); color: var(--black);
+      border: none; padding: 12px 28px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px; font-weight: 700; letter-spacing: 3px;
+      text-transform: uppercase; cursor: crosshair;
+      transition: background 0.2s; margin-top: 16px;
+    }
+    .btn-primary:hover { background: var(--dark-red); }
+    .btn-primary:disabled { background: #333; color: #666; cursor: not-allowed; }
+
+    .btn-danger {
+      background: transparent;
+      border: 1px solid rgba(232,0,29,0.3);
+      color: rgba(232,0,29,0.6);
+      padding: 11px 20px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; cursor: crosshair;
+      transition: all 0.2s;
+    }
+    .btn-danger:hover { border-color: var(--red); color: var(--red); }
+
+    .btn-logout {
+      width: 100%;
+      background: transparent;
+      border: 1px solid var(--border2);
+      color: var(--grey);
+      padding: 12px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px; font-weight: 700; letter-spacing: 3px;
+      text-transform: uppercase; cursor: crosshair;
+      transition: all 0.2s;
+    }
+    .btn-logout:hover { border-color: var(--red); color: var(--red); }
+
+    .info-msg {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px; letter-spacing: 1px;
+      color: var(--green); margin-top: 8px;
+      display: none;
+    }
+    .info-msg.show { display: block; }
+    .err-msg { color: var(--red); }
+
+    .danger-zone {
+      margin-top: 8px;
+      padding: 16px;
+      background: rgba(232,0,29,0.03);
+      border: 1px dashed rgba(232,0,29,0.15);
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    }
+    .danger-zone-text { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; color: var(--grey); }
+
+    /* Toast */
+    .toast { position: fixed; bottom: 32px; right: 32px; background: var(--green); color: #000; font-family: 'Bebas Neue', sans-serif; font-size: 15px; letter-spacing: 3px; padding: 13px 24px; transform: translateY(80px); opacity: 0; transition: all 0.3s; z-index: 9999; }
+    .toast.show { transform: translateY(0); opacity: 1; }
+
+    .page-loading { display: flex; align-items: center; justify-content: center; min-height: calc(100vh - 60px); font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 3px; text-transform: uppercase; color: var(--grey); }
+
+    @media (max-width: 640px) {
+      .topbar { padding: 0 20px; }
+      .topbar-center { display: none; }
+      .page { padding: 24px 16px 80px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .kit-info-card { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="topbar">
+    <a href="/" class="topbar-logo">DOKUZ<span>CAN</span></a>
+    <div class="topbar-center">Siparişler & Ayarlar</div>
+    <a href="/" class="btn-back">← Ana Sayfa</a>
+  </div>
+
+  <div class="page-loading" id="pageLoading">Yükleniyor...</div>
+
+  <div class="page" id="mainPage" style="display:none;">
+
+    <!-- KULLANICI KARTI -->
+    <div class="user-card">
+      <div class="user-avatar" id="userAvatar">—</div>
+      <div class="user-meta">
+        <div class="user-name" id="userName">—</div>
+        <div class="user-email" id="userEmail">—</div>
+        <div class="user-since" id="userSince">—</div>
+      </div>
+    </div>
+
+    <!-- SİPARİŞLERİM / KİT BİLGİSİ -->
+    <div class="section">
+      <div class="section-head">📦 Kitim & Siparişlerim</div>
+      <div class="section-body" id="kitSection">
+        <div class="no-kit">
+          <p>Henüz aktif kit bulunamadı.</p>
+          <p style="margin-top:8px;"><a href="urun">Kit satın al →</a></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- KİŞİSEL BİLGİLER -->
+    <div class="section">
+      <div class="section-head">👤 Kişisel Bilgiler</div>
+      <div class="section-body">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Ad</label>
+            <input type="text" id="firstName" placeholder="Adın" />
+          </div>
+          <div class="form-group">
+            <label>Soyad</label>
+            <input type="text" id="lastName" placeholder="Soyadın" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Telefon</label>
+          <input type="tel" id="phone" placeholder="+90 5XX XXX XX XX" />
+        </div>
+        <div class="form-group">
+          <label>E-posta</label>
+          <input type="email" id="email" disabled />
+        </div>
+        <button class="btn-primary" onclick="saveProfile()">Bilgileri Güncelle</button>
+        <div class="info-msg" id="profileMsg">✓ Bilgiler güncellendi</div>
+      </div>
+    </div>
+
+    <!-- ŞİFRE DEĞİŞTİR -->
+    <div class="section">
+      <div class="section-head">🔒 Şifre Değiştir</div>
+      <div class="section-body">
+        <div class="form-group">
+          <label>Yeni Şifre</label>
+          <input type="password" id="newPass" placeholder="En az 8 karakter" />
+        </div>
+        <div class="form-group">
+          <label>Yeni Şifre (Tekrar)</label>
+          <input type="password" id="newPass2" placeholder="Şifreyi tekrar girin" />
+        </div>
+        <button class="btn-primary" onclick="changePassword()">Şifreyi Güncelle</button>
+        <div class="info-msg" id="passMsg">✓ Şifre güncellendi</div>
+      </div>
+    </div>
+
+    <!-- ÇIKIŞ & HESAP -->
+    <div class="section">
+      <div class="section-head">⚙️ Hesap İşlemleri</div>
+      <div class="section-body">
+        <button class="btn-logout" onclick="doLogout()">Çıkış Yap</button>
+        <div class="danger-zone" style="margin-top:20px;">
+          <div class="danger-zone-text">
+            Hesabını ve tüm verilerini kalıcı olarak sil.
+          </div>
+          <button class="btn-danger" onclick="confirmDelete()">Hesabı Sil</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="toast" id="toast">✓ GÜNCELLENDİ</div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = 'https://fascsdkzcmnmaaxvldxf.supabase.co'
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZhc2NzZGt6Y21ubWFheHZsZHhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4MTMxMTMsImV4cCI6MjA5MzM4OTExM30.Unlfg8DHP7ce2CtFCcCgRaydstrCB-dwAIEebFRUQm4'
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+
+    let currentUser = null
+
+    const kitTypeNames = { basic: 'CITY', advanced: 'TOUR', pro: 'OFF-ROAD' }
+    const kitLevelNames = { basic: 'Seviye 01', advanced: 'Seviye 02', pro: 'Seviye 03' }
+
+    async function init() {
+      const { data: { session } } = await sb.auth.getSession()
+      if (!session) { window.location.href = 'giris'; return }
+      currentUser = session.user
+
+      // Profile
+      const { data: profile } = await sb.from('profiles').select('*').eq('id', currentUser.id).single()
+
+      if (profile) {
+        const initials = (profile.first_name[0] + profile.last_name[0]).toUpperCase()
+        document.getElementById('userAvatar').textContent = initials
+        document.getElementById('userName').textContent = profile.first_name + ' ' + profile.last_name
+        document.getElementById('firstName').value = profile.first_name
+        document.getElementById('lastName').value = profile.last_name
+        document.getElementById('phone').value = profile.phone || ''
+      }
+      document.getElementById('userEmail').textContent = currentUser.email
+      document.getElementById('email').value = currentUser.email
+
+      // Created at
+      const created = new Date(currentUser.created_at)
+      document.getElementById('userSince').textContent = 'Üye: ' + created.toLocaleDateString('tr-TR', { year:'numeric', month:'long' })
+
+      // Kit
+      const { data: kit } = await sb.from('kits').select('*').eq('user_id', currentUser.id).single()
+      if (kit) {
+        const typeName = kitTypeNames[kit.kit_type] || kit.kit_type?.toUpperCase()
+        const levelName = kitLevelNames[kit.kit_type] || 'Seviye 01'
+        const activatedDate = kit.activated_at ? new Date(kit.activated_at).toLocaleDateString('tr-TR') : '—'
+        document.getElementById('kitSection').innerHTML = `
+          <div class="kit-info-card">
+            <div>
+              <div class="kit-type-label">${levelName} — Drop-Leg Kit</div>
+              <div class="kit-type-name">${typeName}</div>
+              <div class="kit-meta-row">
+                <span>🔑 ${kit.slug}</span>
+                <span>📅 Aktivasyon: ${activatedDate}</span>
+              </div>
+            </div>
+            <div class="kit-status">AKTİF</div>
+          </div>
+          <div style="margin-top:12px;font-family:'Barlow Condensed',sans-serif;font-size:12px;color:var(--grey);line-height:1.6;">
+            Kit içeriği hakkında sorularınız veya yenileme talebiniz için <a href="mailto:destek@dokuzcan.com" style="color:var(--red);text-decoration:none;">destek@dokuzcan.com</a> adresine yazabilirsiniz.
+          </div>`
+      }
+
+      document.getElementById('pageLoading').style.display = 'none'
+      document.getElementById('mainPage').style.display = 'block'
+    }
+
+    async function saveProfile() {
+      const btn = event.target
+      btn.textContent = 'Güncelleniyor...'
+      btn.disabled = true
+
+      const { error } = await sb.from('profiles').update({
+        first_name: document.getElementById('firstName').value.trim(),
+        last_name: document.getElementById('lastName').value.trim(),
+        phone: document.getElementById('phone').value.trim()
+      }).eq('id', currentUser.id)
+
+      btn.textContent = 'Bilgileri Güncelle'
+      btn.disabled = false
+
+      const msg = document.getElementById('profileMsg')
+      if (!error) {
+        msg.classList.add('show')
+        msg.classList.remove('err-msg')
+        msg.textContent = '✓ Bilgiler güncellendi'
+        // Nav'daki ismi de güncelle
+        document.getElementById('userName').textContent =
+          document.getElementById('firstName').value + ' ' + document.getElementById('lastName').value
+        setTimeout(() => msg.classList.remove('show'), 3000)
+      } else {
+        msg.classList.add('show', 'err-msg')
+        msg.textContent = 'Hata: ' + error.message
+      }
+    }
+
+    async function changePassword() {
+      const btn = event.target
+      const p1 = document.getElementById('newPass').value
+      const p2 = document.getElementById('newPass2').value
+      const msg = document.getElementById('passMsg')
+
+      if (p1.length < 8) {
+        msg.classList.add('show', 'err-msg')
+        msg.textContent = 'Şifre en az 8 karakter olmalı'
+        return
+      }
+      if (p1 !== p2) {
+        msg.classList.add('show', 'err-msg')
+        msg.textContent = 'Şifreler eşleşmiyor'
+        return
+      }
+
+      btn.textContent = 'Güncelleniyor...'
+      btn.disabled = true
+
+      const { error } = await sb.auth.updateUser({ password: p1 })
+
+      btn.textContent = 'Şifreyi Güncelle'
+      btn.disabled = false
+
+      if (!error) {
+        msg.classList.add('show')
+        msg.classList.remove('err-msg')
+        msg.textContent = '✓ Şifre güncellendi'
+        document.getElementById('newPass').value = ''
+        document.getElementById('newPass2').value = ''
+        setTimeout(() => msg.classList.remove('show'), 3000)
+      } else {
+        msg.classList.add('show', 'err-msg')
+        msg.textContent = 'Hata: ' + error.message
+      }
+    }
+
+    async function doLogout() {
+      await sb.auth.signOut()
+      window.location.href = '/'
+    }
+
+    function confirmDelete() {
+      if (confirm('Hesabın ve tüm tıbbi verilerin kalıcı olarak silinecek. Emin misin?')) {
+        alert('Hesap silme talebiniz alındı. Bu özellik yakında aktif olacak. Şimdilik destek@dokuzcan.com adresine yazabilirsiniz.')
+      }
+    }
+
+    init()
+  </script>
+</body>
+</html>
