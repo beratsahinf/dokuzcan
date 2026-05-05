@@ -8,6 +8,78 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
+    /* Profile nav dropdown */
+    .nav-right { display: flex; align-items: center; gap: 12px; }
+    .profile-nav { position: relative; }
+    .profile-btn {
+      width: 36px; height: 36px;
+      background: var(--red);
+      border: none;
+      cursor: crosshair;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 14px;
+      letter-spacing: 1px;
+      color: var(--black);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+    .profile-btn:hover { background: var(--dark-red); color: white; }
+    .profile-dropdown {
+      position: absolute;
+      top: calc(100% + 12px);
+      right: 0;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      min-width: 200px;
+      z-index: 200;
+      display: none;
+    }
+    .profile-dropdown.open { display: block; }
+    .profile-dropdown::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--red);
+    }
+    .profile-dropdown-user {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .profile-dropdown-name {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--white);
+    }
+    .profile-dropdown-email {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      letter-spacing: 1px;
+      color: var(--grey);
+      margin-top: 2px;
+    }
+    .profile-dropdown a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: var(--grey);
+      text-decoration: none;
+      border-bottom: 1px solid #1a1a1a;
+      transition: color 0.2s, background 0.2s;
+      cursor: crosshair;
+    }
+    .profile-dropdown a:last-child { border-bottom: none; }
+    .profile-dropdown a:hover { color: var(--white); background: rgba(255,255,255,0.03); }
+    .profile-dropdown a.danger { color: #555; }
+    .profile-dropdown a.danger:hover { color: var(--red); }
     :root {
       --red: #E8001D;
       --dark-red: #9B0013;
@@ -1206,10 +1278,8 @@
 </head>
 <body>
 
-  <!-- URGENCY BAR -->
-  <!-- NAV -->
   <nav id="nav">
-    <a href="#" class="nav-logo">DOKUZ<span>CAN</span></a>
+    <a href="/" class="nav-logo">DOKUZ<span>CAN</span></a>
     <ul class="nav-links">
       <li><a href="#kitler">Kitler</a></li>
       <li><a href="#qr-sistem">QR Sistem</a></li>
@@ -1217,7 +1287,22 @@
       <li><a href="#kullanim">Kullanım</a></li>
       <li><a href="#sss">SSS</a></li>
     </ul>
-    <a href="urun" class="nav-cta">Satın Al</a>
+    <div class="nav-right">
+      <a href="urun" class="nav-cta" id="navCta">Satın Al</a>
+      <!-- Oturum varken görünür -->
+      <div class="profile-nav" id="profileNav" style="display:none;">
+        <button class="profile-btn" id="profileBtn" onclick="toggleDropdown()">—</button>
+        <div class="profile-dropdown" id="profileDropdown">
+          <div class="profile-dropdown-user">
+            <div class="profile-dropdown-name" id="ddName">—</div>
+            <div class="profile-dropdown-email" id="ddEmail">—</div>
+          </div>
+          <a href="tibbi-profil">🏥 Tıbbi Profilim</a>
+          <a href="profil-ayarlari">📦 Siparişler & Ayarlar</a>
+          <a href="#" onclick="doLogout(); return false;" class="danger">🚪 Çıkış Yap</a>
+        </div>
+      </div>
+    </div>
   </nav>
 
   <!-- HERO -->
@@ -1717,7 +1802,52 @@
   <!-- MOBILE STICKY CTA -->
   <a href="#kitler" class="mobile-cta">Kit'ini Seç — ₺1.490'dan itibaren</a>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
+    const SUPABASE_URL = 'https://fascsdkzcmnmaaxvldxf.supabase.co'
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZhc2NzZGt6Y21ubWFheHZsZHhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4MTMxMTMsImV4cCI6MjA5MzM4OTExM30.Unlfg8DHP7ce2CtFCcCgRaydstrCB-dwAIEebFRUQm4'
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+
+    // Oturum kontrolü
+    async function checkSession() {
+      const { data: { session } } = await sb.auth.getSession()
+      if (!session) return
+
+      const user = session.user
+      const { data: profile } = await sb.from('profiles').select('first_name, last_name').eq('id', user.id).single()
+
+      const profileNav = document.getElementById('profileNav')
+      const profileBtn = document.getElementById('profileBtn')
+      const ddName = document.getElementById('ddName')
+      const ddEmail = document.getElementById('ddEmail')
+
+      if (profile) {
+        const initials = (profile.first_name[0] + profile.last_name[0]).toUpperCase()
+        profileBtn.textContent = initials
+        ddName.textContent = profile.first_name + ' ' + profile.last_name
+      } else {
+        profileBtn.textContent = '👤'
+      }
+      ddEmail.textContent = user.email
+      profileNav.style.display = 'block'
+    }
+
+    function toggleDropdown() {
+      document.getElementById('profileDropdown').classList.toggle('open')
+    }
+
+    // Dışarı tıklayınca kapat
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.profile-nav')) {
+        document.getElementById('profileDropdown')?.classList.remove('open')
+      }
+    })
+
+    async function doLogout() {
+      await sb.auth.signOut()
+      window.location.reload()
+    }
+
     // Nav scroll effect
     const nav = document.getElementById('nav');
     window.addEventListener('scroll', () => {
@@ -1784,6 +1914,8 @@
         }, 3000);
       }
     });
+
+    checkSession();
   </script>
 </body>
 </html>

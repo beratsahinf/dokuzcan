@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tıbbi Profilim — DOKUZCAN</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --red: #E8001D;
+      --dark-red: #9B0013;
+      --black: #080808;
+      --dark: #0e0e0e;
+      --panel: #141414;
+      --border: #252525;
+      --border2: #2e2e2e;
+      --white: #F2F0EC;
+      --grey: #777;
+      --light-grey: #aaa;
+      --green: #22c55e;
+      --yellow: #f59e0b;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Barlow', sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+      cursor: crosshair;
+    }
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 9998; opacity: 0.5;
+    }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(8,8,8,0.97);
+      border-bottom: 1px solid var(--border);
+      padding: 0 40px;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 60px;
+      backdrop-filter: blur(10px);
+    }
+    .topbar-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 20px; letter-spacing: 4px;
+      color: var(--white); text-decoration: none;
+    }
+    .topbar-logo span { color: var(--red); }
+    .topbar-center {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px; font-weight: 700; letter-spacing: 4px;
+      text-transform: uppercase; color: var(--grey);
+    }
+    .topbar-actions { display: flex; gap: 10px; align-items: center; }
+    .btn-home {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--grey);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .btn-home:hover { color: var(--white); }
+    .btn-save {
+      background: var(--red); color: var(--black);
+      border: none; padding: 9px 24px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px; font-weight: 700; letter-spacing: 3px;
+      text-transform: uppercase; cursor: crosshair;
+      transition: background 0.2s;
+    }
+    .btn-save:hover { background: var(--dark-red); }
+    .save-ok {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px; letter-spacing: 2px;
+      color: var(--green); opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .save-ok.show { opacity: 1; }
+
+    /* ── LAYOUT ── */
+    .page {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    /* ── QR CARD ── */
+    .qr-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      margin-bottom: 20px;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .qr-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: var(--red);
+    }
+
+    /* QR code box */
+    .qr-img-wrap {
+      padding: 24px;
+      display: flex; align-items: center; justify-content: center;
+      border-right: 1px solid var(--border);
+    }
+    .qr-canvas-box {
+      width: 120px; height: 120px;
+      background: white;
+      padding: 6px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    #qrCanvas { width: 108px; height: 108px; }
+
+    /* QR info */
+    .qr-info { padding: 20px 24px; }
+    .qr-info-tag {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px; font-weight: 700; letter-spacing: 4px;
+      text-transform: uppercase; color: var(--red); margin-bottom: 6px;
+    }
+    .qr-info-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 26px; letter-spacing: 2px; color: var(--white);
+      margin-bottom: 4px; line-height: 1;
+    }
+    .qr-slug {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; letter-spacing: 1px; color: var(--grey);
+      margin-bottom: 16px;
+    }
+
+    /* Active toggle */
+    .qr-toggle-row {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 12px;
+    }
+    .toggle-switch { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .toggle-track {
+      position: absolute; inset: 0;
+      background: #222; border: 1px solid #333;
+      cursor: crosshair; transition: 0.2s;
+    }
+    .toggle-track::before {
+      content: '';
+      position: absolute;
+      width: 18px; height: 18px; left: 2px; top: 2px;
+      background: #555; transition: 0.2s;
+    }
+    .toggle-switch input:checked + .toggle-track { background: rgba(34,197,94,0.2); border-color: rgba(34,197,94,0.4); }
+    .toggle-switch input:checked + .toggle-track::before { transform: translateX(20px); background: var(--green); }
+    .toggle-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px; font-weight: 600; color: var(--light-grey);
+    }
+    .status-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--grey); flex-shrink: 0;
+      transition: background 0.3s;
+    }
+    .status-dot.active { background: var(--green); animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+    /* QR actions */
+    .qr-actions-col {
+      padding: 20px;
+      display: flex; flex-direction: column; justify-content: center;
+      gap: 8px; border-left: 1px solid var(--border);
+      min-width: 140px;
+    }
+    .btn-qr-action {
+      display: block;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; text-align: center; text-decoration: none;
+      padding: 10px 14px; cursor: crosshair;
+      transition: all 0.2s; border: none;
+      font-family: inherit;
+    }
+    .btn-qr-solid { background: var(--red); color: var(--black); }
+    .btn-qr-solid:hover { background: var(--dark-red); }
+    .btn-qr-outline { background: transparent; color: var(--grey); border: 1px solid var(--border2); }
+    .btn-qr-outline:hover { color: var(--white); border-color: #444; }
+
+    /* ── FORM SECTIONS ── */
+    .form-section {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+    .section-head {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .section-head-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 18px; letter-spacing: 2px; color: var(--white);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .badge-critical {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 9px; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; padding: 3px 8px;
+      background: rgba(232,0,29,0.12); color: var(--red);
+      border: 1px solid rgba(232,0,29,0.25);
+    }
+    .section-body { padding: 20px 24px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .form-grid.c3 { grid-template-columns: 1fr 1fr 1fr; }
+    .form-grid.c1 { grid-template-columns: 1fr; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group.full { grid-column: 1 / -1; }
+
+    label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px; font-weight: 700; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--grey);
+    }
+    input, select, textarea {
+      background: var(--dark);
+      border: 1px solid var(--border2);
+      color: var(--white);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 15px; font-weight: 400;
+      padding: 11px 14px; outline: none;
+      transition: border-color 0.2s; width: 100%;
+      appearance: none; -webkit-appearance: none;
+    }
+    input:focus, select:focus, textarea:focus { border-color: var(--red); }
+    input::placeholder, textarea::placeholder { color: #383838; }
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23555' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 14px center;
+      padding-right: 36px; cursor: pointer;
+    }
+    select option { background: #1a1a1a; }
+    textarea { resize: vertical; min-height: 72px; line-height: 1.6; }
+
+    /* Tags */
+    .tag-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; min-height: 28px; }
+    .tag {
+      display: flex; align-items: center; gap: 6px;
+      background: rgba(232,0,29,0.08);
+      border: 1px solid rgba(232,0,29,0.2);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px; font-weight: 600;
+      color: var(--light-grey); padding: 5px 10px;
+    }
+    .tag-x { background: none; border: none; color: var(--red); cursor: crosshair; font-size: 14px; line-height: 1; padding: 0; }
+    .tag-x:hover { color: white; }
+    .add-tag-row { display: flex; gap: 8px; margin-top: 10px; }
+    .add-tag-row input { flex: 1; }
+    .btn-add-tag {
+      background: var(--border2); border: 1px solid var(--border2);
+      color: var(--light-grey); font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px; font-weight: 700; letter-spacing: 2px;
+      padding: 0 16px; cursor: crosshair; transition: all 0.2s; white-space: nowrap;
+    }
+    .btn-add-tag:hover { background: #333; color: var(--white); }
+
+    /* Emergency contact simple */
+    .contact-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 140px;
+      gap: 12px;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed; bottom: 32px; right: 32px;
+      background: var(--green); color: #000;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 15px; letter-spacing: 3px;
+      padding: 13px 24px;
+      transform: translateY(80px); opacity: 0;
+      transition: all 0.3s; z-index: 9999;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+
+    /* Error banner */
+    .error-banner {
+      background: rgba(232,0,29,0.08);
+      border: 1px solid rgba(232,0,29,0.25);
+      border-left: 3px solid var(--red);
+      padding: 12px 16px; margin-bottom: 16px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px; color: var(--red);
+      display: none;
+    }
+    .error-banner.show { display: block; }
+
+    /* Loading state */
+    .page-loading {
+      display: flex; align-items: center; justify-content: center;
+      min-height: calc(100vh - 60px);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px; letter-spacing: 3px; text-transform: uppercase;
+      color: var(--grey);
+    }
+
+    @media (max-width: 700px) {
+      .topbar { padding: 0 20px; }
+      .topbar-center { display: none; }
+      .qr-card { grid-template-columns: 1fr; }
+      .qr-img-wrap { border-right: none; border-bottom: 1px solid var(--border); }
+      .qr-actions-col { border-left: none; border-top: 1px solid var(--border); flex-direction: row; }
+      .form-grid, .form-grid.c3 { grid-template-columns: 1fr; }
+      .contact-row { grid-template-columns: 1fr; }
+      .page { padding: 24px 16px 80px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <a href="/" class="topbar-logo">DOKUZ<span>CAN</span></a>
+    <div class="topbar-center">Tıbbi Profilim</div>
+    <div class="topbar-actions">
+      <a href="/" class="btn-home">← Ana Sayfa</a>
+      <span class="save-ok" id="saveOk">✓ Kaydedildi</span>
+      <button class="btn-save" onclick="saveProfile()">Kaydet</button>
+    </div>
+  </div>
+
+  <!-- LOADING -->
+  <div class="page-loading" id="pageLoading">Profil yükleniyor...</div>
+
+  <!-- MAIN -->
+  <div class="page" id="mainPage" style="display:none;">
+
+    <div class="error-banner" id="errorBanner"></div>
+
+    <!-- QR CARD -->
+    <div class="qr-card">
+      <div class="qr-img-wrap">
+        <div class="qr-canvas-box">
+          <canvas id="qrCanvas"></canvas>
+        </div>
+      </div>
+      <div class="qr-info">
+        <div class="qr-info-tag">QR Acil Profil</div>
+        <div class="qr-info-title" id="qrUserName">—</div>
+        <div class="qr-slug" id="qrSlug">—</div>
+        <div class="qr-toggle-row">
+          <label class="toggle-switch">
+            <input type="checkbox" id="qrActive" checked onchange="toggleQRStatus(this.checked)">
+            <span class="toggle-track"></span>
+          </label>
+          <span class="status-dot active" id="statusDot"></span>
+          <span class="toggle-label" id="toggleLabel">Profil Aktif — QR taranabilir</span>
+        </div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:1px;color:var(--grey);">
+          Pasif yapınca QR "profil bulunamadı" gösterir. Veriler silinmez.
+        </div>
+      </div>
+      <div class="qr-actions-col">
+        <button class="btn-qr-action btn-qr-solid" onclick="downloadQR()">⬇ İndir</button>
+        <a class="btn-qr-action btn-qr-outline" id="previewLink" href="#" target="_blank">Önizle →</a>
+      </div>
+    </div>
+
+    <!-- TIBBİ BİLGİLER -->
+    <div class="form-section">
+      <div class="section-head">
+        <div class="section-head-title">🩸 Temel Tıbbi Bilgiler</div>
+        <span class="badge-critical">Kritik</span>
+      </div>
+      <div class="section-body">
+        <div class="form-grid c3">
+          <div class="form-group">
+            <label>Kan Grubu</label>
+            <select id="bloodType">
+              <option value="">Seçin</option>
+              <option value="A+">A RH+</option>
+              <option value="A-">A RH−</option>
+              <option value="B+">B RH+</option>
+              <option value="B-">B RH−</option>
+              <option value="AB+">AB RH+</option>
+              <option value="AB-">AB RH−</option>
+              <option value="0+">0 RH+</option>
+              <option value="0-">0 RH−</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Doğum Tarihi</label>
+            <input type="date" id="birthDate" />
+          </div>
+          <div class="form-group">
+            <label>Kilo (kg)</label>
+            <input type="number" id="weight" placeholder="75" min="20" max="300" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ALERJİLER -->
+    <div class="form-section">
+      <div class="section-head">
+        <div class="section-head-title">⚠️ Alerjiler</div>
+        <span class="badge-critical">Kritik</span>
+      </div>
+      <div class="section-body">
+        <div class="form-group">
+          <label>İlaç Alerjileri</label>
+          <div class="tag-list" id="allergyList"></div>
+          <div class="add-tag-row">
+            <input type="text" id="allergyInput" placeholder="örn: Penisilin, Aspirin" />
+            <button class="btn-add-tag" onclick="addTag('allergyInput','allergyList')">+ Ekle</button>
+          </div>
+        </div>
+        <div class="form-group" style="margin-top:16px;">
+          <label>Besin Alerjileri</label>
+          <div class="tag-list" id="foodAllergyList"></div>
+          <div class="add-tag-row">
+            <input type="text" id="foodInput" placeholder="örn: Gluten, Laktoz" />
+            <button class="btn-add-tag" onclick="addTag('foodInput','foodAllergyList')">+ Ekle</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- İLAÇ & HASTALIK -->
+    <div class="form-section">
+      <div class="section-head">
+        <div class="section-head-title">💊 İlaç & Hastalık</div>
+      </div>
+      <div class="section-body">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Kronik Hastalıklar</label>
+            <input type="text" id="chronicConditions" placeholder="örn: Diyabet, Hipertansiyon" />
+          </div>
+          <div class="form-group">
+            <label>Kan Sulandırıcı</label>
+            <select id="bloodThinner">
+              <option value="">Seçin</option>
+              <option value="no">Hayır</option>
+              <option value="yes">Evet — Kullanıyorum</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group" style="margin-top:14px;">
+          <label>Sürekli Kullanılan İlaçlar</label>
+          <div class="tag-list" id="medList"></div>
+          <div class="add-tag-row">
+            <input type="text" id="medInput" placeholder="örn: Metformin 500mg" />
+            <button class="btn-add-tag" onclick="addTag('medInput','medList')">+ Ekle</button>
+          </div>
+        </div>
+        <div class="form-group" style="margin-top:14px;">
+          <label>Ek Tıbbi Notlar</label>
+          <textarea id="notes" placeholder="Sağlık ekibinin bilmesi gereken önemli notlar..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACİL KİŞİ -->
+    <div class="form-section">
+      <div class="section-head">
+        <div class="section-head-title">📞 Acil İletişim</div>
+        <span class="badge-critical">Kritik</span>
+      </div>
+      <div class="section-body">
+        <div class="contact-row">
+          <div class="form-group">
+            <label>Ad Soyad</label>
+            <input type="text" id="contactName" placeholder="Acil kişinin adı" />
+          </div>
+          <div class="form-group">
+            <label>Telefon</label>
+            <input type="tel" id="contactPhone" placeholder="+90 5XX XXX XX XX" />
+          </div>
+          <div class="form-group">
+            <label>Yakınlık</label>
+            <select id="contactRelation">
+              <option value="Eş">Eş</option>
+              <option value="Anne">Anne</option>
+              <option value="Baba">Baba</option>
+              <option value="Kardeş">Kardeş</option>
+              <option value="Arkadaş">Arkadaş</option>
+              <option value="Diğer">Diğer</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SİGORTA -->
+    <div class="form-section">
+      <div class="section-head">
+        <div class="section-head-title">🛡 Sigorta Bilgileri</div>
+      </div>
+      <div class="section-body">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Sigorta Şirketi</label>
+            <input type="text" id="insuranceCompany" placeholder="Axa, Allianz..." />
+          </div>
+          <div class="form-group">
+            <label>Poliçe Numarası</label>
+            <input type="text" id="insurancePolicy" placeholder="Poliçe no" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /page -->
+
+  <!-- TOAST -->
+  <div class="toast" id="toast">✓ PROFİL KAYDEDİLDİ</div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <script>
+    const SUPABASE_URL = 'https://fascsdkzcmnmaaxvldxf.supabase.co'
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZhc2NzZGt6Y21ubWFheHZsZHhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4MTMxMTMsImV4cCI6MjA5MzM4OTExM30.Unlfg8DHP7ce2CtFCcCgRaydstrCB-dwAIEebFRUQm4'
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+
+    let currentUser = null
+    let userKit = null
+    let qrIsActive = true
+
+    function getQRUrl() {
+      const base = window.location.origin
+      const path = window.location.pathname.replace('tibbi-profil', 'qr-profil').replace('tibbi-profil.html', 'qr-profil.html')
+      return base + path + '?slug=' + (userKit?.slug || 'unknown')
+    }
+
+    function generateQR() {
+      const canvas = document.getElementById('qrCanvas')
+      if (!canvas || !userKit) return
+      QRCode.toCanvas(canvas, getQRUrl(), {
+        width: 108, margin: 1,
+        color: { dark: '#000000', light: '#ffffff' }
+      })
+    }
+
+    function toggleQRStatus(active) {
+      qrIsActive = active
+      const dot = document.getElementById('statusDot')
+      const label = document.getElementById('toggleLabel')
+      if (active) {
+        dot.classList.add('active')
+        label.textContent = 'Profil Aktif — QR taranabilir'
+      } else {
+        dot.classList.remove('active')
+        label.textContent = 'Profil Pasif — QR erişimi kapalı'
+      }
+      // Supabase'de durum güncelle
+      if (userKit) {
+        sb.from('kits').update({ is_active: active }).eq('id', userKit.id)
+      }
+    }
+
+    function downloadQR() {
+      const canvas = document.getElementById('qrCanvas')
+      if (!canvas) return
+      const link = document.createElement('a')
+      link.download = 'dokuzcan-qr-' + (userKit?.slug || 'profil') + '.png'
+      link.href = canvas.toDataURL('image/png')
+      link.click()
+    }
+
+    /* ── TAG HELPERS ── */
+    function addTag(inputId, listId) {
+      const input = document.getElementById(inputId)
+      const list = document.getElementById(listId)
+      const val = input.value.trim()
+      if (!val) return
+      const tag = document.createElement('div')
+      tag.className = 'tag'
+      tag.innerHTML = val + `<button class="tag-x" onclick="this.closest('.tag').remove()" type="button">×</button>`
+      list.appendChild(tag)
+      input.value = ''
+    }
+
+    function getTags(listId) {
+      return Array.from(document.querySelectorAll('#' + listId + ' .tag'))
+        .map(t => t.childNodes[0].textContent.trim())
+        .filter(Boolean)
+        .join(',')
+    }
+
+    function loadTags(listId, csv) {
+      const list = document.getElementById(listId)
+      if (!list || !csv) return
+      list.innerHTML = ''
+      csv.split(',').filter(Boolean).forEach(v => {
+        const tag = document.createElement('div')
+        tag.className = 'tag'
+        tag.innerHTML = v.trim() + `<button class="tag-x" onclick="this.closest('.tag').remove()" type="button">×</button>`
+        list.appendChild(tag)
+      })
+    }
+
+    /* ── ENTER KEY FOR TAGS ── */
+    function setupTagEnter(inputId, listId) {
+      document.getElementById(inputId)?.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); addTag(inputId, listId) }
+      })
+    }
+
+    /* ── LOAD ── */
+    async function init() {
+      const { data: { session } } = await sb.auth.getSession()
+      if (!session) {
+        window.location.href = 'giris'
+        return
+      }
+      currentUser = session.user
+
+      // Kit
+      const { data: kit } = await sb.from('kits').select('*').eq('user_id', currentUser.id).single()
+      userKit = kit
+
+      // Profile
+      const { data: profile } = await sb.from('profiles').select('*').eq('id', currentUser.id).single()
+
+      // Medical
+      const { data: med } = await sb.from('medical_data').select('*').eq('user_id', currentUser.id).single()
+
+      // Populate UI
+      if (profile) {
+        document.getElementById('qrUserName').textContent = profile.first_name + ' ' + profile.last_name
+      }
+      if (kit) {
+        document.getElementById('qrSlug').textContent = kit.slug
+        document.getElementById('previewLink').href = getQRUrl()
+        const isActive = kit.is_active !== false // default true
+        document.getElementById('qrActive').checked = isActive
+        toggleQRStatus(isActive)
+        generateQR()
+      }
+      if (med) {
+        if (med.blood_type) document.getElementById('bloodType').value = med.blood_type
+        if (med.birth_date) document.getElementById('birthDate').value = med.birth_date
+        if (med.weight) document.getElementById('weight').value = med.weight
+        loadTags('allergyList', med.allergies)
+        loadTags('foodAllergyList', med.food_allergies)
+        loadTags('medList', med.medications)
+        if (med.chronic_conditions) document.getElementById('chronicConditions').value = med.chronic_conditions
+        if (med.blood_thinner) document.getElementById('bloodThinner').value = med.blood_thinner
+        if (med.notes) document.getElementById('notes').value = med.notes
+        if (med.emergency_contact_name) document.getElementById('contactName').value = med.emergency_contact_name
+        if (med.emergency_contact_phone) document.getElementById('contactPhone').value = med.emergency_contact_phone
+        if (med.emergency_contact_relation) document.getElementById('contactRelation').value = med.emergency_contact_relation
+        if (med.insurance_company) document.getElementById('insuranceCompany').value = med.insurance_company
+        if (med.insurance_policy) document.getElementById('insurancePolicy').value = med.insurance_policy
+      }
+
+      document.getElementById('pageLoading').style.display = 'none'
+      document.getElementById('mainPage').style.display = 'block'
+
+      // Setup tag enter keys
+      setupTagEnter('allergyInput', 'allergyList')
+      setupTagEnter('foodInput', 'foodAllergyList')
+      setupTagEnter('medInput', 'medList')
+    }
+
+    /* ── SAVE ── */
+    async function saveProfile() {
+      const btn = document.querySelector('.btn-save')
+      const ok = document.getElementById('saveOk')
+      const toast = document.getElementById('toast')
+      btn.textContent = 'Kaydediliyor...'
+      btn.disabled = true
+
+      const payload = {
+        user_id: currentUser.id,
+        blood_type: document.getElementById('bloodType').value,
+        birth_date: document.getElementById('birthDate').value || null,
+        weight: document.getElementById('weight').value ? parseInt(document.getElementById('weight').value) : null,
+        allergies: getTags('allergyList'),
+        food_allergies: getTags('foodAllergyList'),
+        medications: getTags('medList'),
+        chronic_conditions: document.getElementById('chronicConditions').value,
+        blood_thinner: document.getElementById('bloodThinner').value,
+        notes: document.getElementById('notes').value,
+        emergency_contact_name: document.getElementById('contactName').value,
+        emergency_contact_phone: document.getElementById('contactPhone').value,
+        emergency_contact_relation: document.getElementById('contactRelation').value,
+        insurance_company: document.getElementById('insuranceCompany').value,
+        insurance_policy: document.getElementById('insurancePolicy').value,
+        updated_at: new Date().toISOString()
+      }
+
+      const { error } = await sb.from('medical_data').upsert(payload, { onConflict: 'user_id' })
+
+      btn.textContent = 'Kaydet'
+      btn.disabled = false
+
+      if (!error) {
+        ok.classList.add('show')
+        toast.classList.add('show')
+        setTimeout(() => { ok.classList.remove('show'); toast.classList.remove('show') }, 3000)
+      } else {
+        const err = document.getElementById('errorBanner')
+        err.textContent = 'Kayıt hatası: ' + error.message
+        err.classList.add('show')
+        setTimeout(() => err.classList.remove('show'), 5000)
+      }
+    }
+
+    init()
+  </script>
+</body>
+</html>

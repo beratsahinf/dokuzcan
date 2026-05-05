@@ -467,7 +467,7 @@
 
     // Zaten giris yapmissa direkt panele gönder
     sb.auth.getSession().then(({ data }) => {
-      if (data.session) window.location.href = 'profil-panel'
+      window.location.href = '/'
     })
 
     // Sifre güçlülük göstergesi
@@ -588,8 +588,8 @@
         .update({ user_id: userId, activated_at: new Date().toISOString() })
         .eq('id', kit.id)
 
-      // 5) Panele yönlendir
-      window.location.href = 'profil-panel'
+      // 5) Ana sayfaya yönlendir
+      window.location.href = '/'
     }
   </script>
 </body>
