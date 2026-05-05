@@ -38,7 +38,33 @@
       pointer-events: none; z-index: 9998; opacity: 0.5;
     }
 
-    /* ── NAV ── */
+    /* Profile dropdown */
+    .profile-nav { position: relative; }
+    .profile-btn {
+      width: 34px; height: 34px; background: var(--red); border: none;
+      cursor: crosshair; font-family: 'Bebas Neue', sans-serif;
+      font-size: 13px; letter-spacing: 1px; color: var(--black);
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s;
+    }
+    .profile-btn:hover { background: var(--dark-red); color: white; }
+    .profile-dropdown {
+      position: absolute; top: calc(100% + 10px); right: 0;
+      background: #141414; border: 1px solid #252525; min-width: 190px;
+      z-index: 200; display: none;
+    }
+    .profile-dropdown.open { display: block; }
+    .profile-dropdown::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--red); }
+    .profile-dropdown a {
+      display: flex; align-items: center; gap: 10px;
+      padding: 11px 14px;
+      font-family: 'Barlow Condensed', sans-serif; font-size: 13px;
+      font-weight: 600; letter-spacing: 1px; color: #777;
+      text-decoration: none; border-bottom: 1px solid #1a1a1a;
+      transition: color 0.2s; cursor: crosshair;
+    }
+    .profile-dropdown a:last-child { border-bottom: none; }
+    .profile-dropdown a:hover { color: var(--white); }
     nav {
       position: sticky; top: 0; z-index: 100;
       background: rgba(8,8,8,0.97);
@@ -609,7 +635,17 @@
       <div class="nav-step" id="step2"><span class="step-dot"></span>Bilgiler & Ödeme</div>
       <div class="nav-step" id="step3"><span class="step-dot"></span>Tamamlandı</div>
     </div>
-    <a href="/" class="nav-back">← Ana Sayfa</a>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <a href="/" class="nav-back">← Ana Sayfa</a>
+      <div class="profile-nav" id="profileNav" style="display:none;">
+        <button class="profile-btn" id="profileBtn" onclick="toggleDropdown()">—</button>
+        <div class="profile-dropdown" id="profileDropdown">
+          <a href="tibbi-profil">🏥 Tıbbi Profilim</a>
+          <a href="profil-ayarlari">⚙️ Ayarlar</a>
+          <a href="#" onclick="doLogout();return false;">🚪 Çıkış</a>
+        </div>
+      </div>
+    </div>
   </nav>
 
   <!-- ═══════════════════════════════════
@@ -1046,13 +1082,18 @@
       </div>
 
       <div class="success-actions">
-        <a href="profil-panel" class="btn-go-panel">Profilimi Doldur →</a>
+        <a href="tibbi-profil" class="btn-go-panel">Profilimi Doldur →</a>
         <a href="/" class="btn-go-home">Ana Sayfa</a>
       </div>
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
+    const SUPABASE_URL = 'https://fascsdkzcmnmaaxvldxf.supabase.co'
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZhc2NzZGt6Y21ubWFheHZsZHhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4MTMxMTMsImV4cCI6MjA5MzM4OTExM30.Unlfg8DHP7ce2CtFCcCgRaydstrCB-dwAIEebFRUQm4'
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+
     // State
     let selectedKit = { name: 'ADVANCED', price: 2290 };
     let shippingCost = 0;
@@ -1115,18 +1156,120 @@
       window.scrollTo(0, 0);
     }
 
-    // Sipariş ver
-    function placeOrder() {
+    // Benzersiz slug üret
+    function generateSlug() {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      let slug = 'DC-';
+      for (let i = 0; i < 8; i++) slug += chars[Math.floor(Math.random() * chars.length)];
+      return slug;
+    }
+
+    // Aktivasyon kodu üret
+    function generateActivationCode() {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      let part1 = '', part2 = '';
+      for (let i = 0; i < 4; i++) part1 += chars[Math.floor(Math.random() * chars.length)];
+      for (let i = 0; i < 2; i++) part2 += chars[Math.floor(Math.random() * chars.length)];
+      return 'RL-' + part1 + '-' + part2;
+    }
+
+    // Sipariş ver — Supabase entegreli
+    async function placeOrder() {
       const btn = event.target;
+      const activeTab = document.getElementById('tabNew').classList.contains('active') ? 'new' : 'existing';
+
+      const fname = document.getElementById('firstName')?.value.trim() || '';
+      const lname = document.getElementById('lastName')?.value.trim() || '';
+      const email = document.getElementById('email')?.value.trim() || '';
+      const phone = document.getElementById('phone')?.value.trim() || '';
+      const password = document.getElementById('password')?.value || '';
+
+      if (activeTab === 'new' && (!fname || !lname || !email || !password)) {
+        alert('Lütfen ad, soyad, e-posta ve şifre alanlarını doldurun.');
+        return;
+      }
+
       btn.textContent = 'İşleniyor...';
       btn.disabled = true;
 
-      const fname = document.getElementById('firstName')?.value || '';
-      const lname = document.getElementById('lastName')?.value || '';
-      const email = document.getElementById('email')?.value || '';
+      try {
+        let userId, userEmail;
 
-      setTimeout(() => {
-        // Başarı ekranı
+        if (activeTab === 'new') {
+          // 1. Supabase Auth ile yeni hesap oluştur
+          const { data: authData, error: authError } = await sb.auth.signUp({ email, password });
+          if (authError) {
+            if (authError.message.includes('already registered') || authError.message.includes('already exists')) {
+              alert('Bu e-posta adresi zaten kayıtlı. Lütfen "Zaten Hesabım Var" sekmesini kullanın.');
+            } else {
+              alert('Hesap oluşturulamadı: ' + authError.message);
+            }
+            btn.textContent = 'Ödemeyi Tamamla →';
+            btn.disabled = false;
+            return;
+          }
+          userId = authData.user.id;
+          userEmail = email;
+
+          // 2. Profil kaydı oluştur
+          const { error: profileError } = await sb.from('profiles').insert({
+            id: userId,
+            first_name: fname,
+            last_name: lname,
+            phone: phone
+          });
+          if (profileError && !profileError.message.includes('duplicate')) {
+            console.error('Profil hatası:', profileError.message);
+          }
+
+        } else {
+          // Mevcut hesapla giriş yap
+          const existingEmail = document.querySelector('#tabExisting input[type="email"]')?.value.trim();
+          const existingPass = document.querySelector('#tabExisting input[type="password"]')?.value;
+          const { data: loginData, error: loginError } = await sb.auth.signInWithPassword({
+            email: existingEmail,
+            password: existingPass
+          });
+          if (loginError) {
+            alert('Giriş yapılamadı: ' + loginError.message);
+            btn.textContent = 'Ödemeyi Tamamla →';
+            btn.disabled = false;
+            return;
+          }
+          userId = loginData.user.id;
+          userEmail = existingEmail;
+
+          // Mevcut profil bilgilerini al
+          const { data: existingProfile } = await sb.from('profiles').select('*').eq('id', userId).single();
+          if (existingProfile) {
+            fname || (document.getElementById('acName').textContent = existingProfile.first_name + ' ' + existingProfile.last_name);
+          }
+        }
+
+        // 3. Benzersiz slug ve aktivasyon kodu üret (çakışma kontrolü ile)
+        let slug, isUnique = false;
+        while (!isUnique) {
+          slug = generateSlug();
+          const { data: existing } = await sb.from('kits').select('id').eq('slug', slug).single();
+          if (!existing) isUnique = true;
+        }
+        const activationCode = generateActivationCode();
+
+        // 4. Kit kaydı oluştur
+        const kitTypeMap = { 'BASIC': 'basic', 'ADVANCED': 'advanced', 'PRO': 'pro' };
+        const { data: kitData, error: kitError } = await sb.from('kits').insert({
+          user_id: userId,
+          slug: slug,
+          activation_code: activationCode,
+          kit_type: kitTypeMap[selectedKit.name] || 'advanced',
+          activated_at: new Date().toISOString()
+        }).select().single();
+
+        if (kitError) {
+          console.error('Kit hatası:', kitError.message);
+        }
+
+        // 5. Başarı ekranını göster
         document.getElementById('screen2').classList.remove('active');
         document.getElementById('screen3').classList.add('active');
         document.getElementById('step2').classList.remove('active');
@@ -1134,17 +1277,26 @@
         document.getElementById('step3').classList.add('active');
 
         // Bilgileri yaz
-        document.getElementById('acName').textContent = (fname + ' ' + lname).trim() || '—';
-        document.getElementById('acEmail').textContent = email;
+        const displayName = activeTab === 'new' ? (fname + ' ' + lname).trim() : (userEmail || '—');
+        document.getElementById('acName').textContent = displayName || '—';
+        document.getElementById('acEmail').textContent = userEmail || email || '—';
 
-        // Random sipariş no üret
         const ordNo = '#DC-' + Math.floor(100000 + Math.random() * 899999);
-        const profId = 'DC-' + Math.floor(10000 + Math.random() * 89999);
         document.getElementById('acOrder').textContent = ordNo;
-        document.getElementById('acId').textContent = profId;
+        document.getElementById('acId').textContent = slug;
+
+        // Profil paneli butonunu güncelle
+        const panelBtn = document.querySelector('.btn-go-panel');
+        if (panelBtn) panelBtn.href = 'tibbi-profil';
 
         window.scrollTo(0, 0);
-      }, 1800);
+
+      } catch (err) {
+        console.error('Sipariş hatası:', err);
+        alert('Bir hata oluştu, lütfen tekrar deneyin.');
+        btn.textContent = 'Ödemeyi Tamamla →';
+        btn.disabled = false;
+      }
     }
 
     // Tab geçiş
@@ -1195,6 +1347,21 @@
     }
 
     updateSummary();
+
+    // Profil nav
+    async function initNav() {
+      const { data: { session } } = await sb.auth.getSession()
+      if (!session) return
+      document.getElementById('profileNav').style.display = 'block'
+      const { data: profile } = await sb.from('profiles').select('first_name,last_name').eq('id', session.user.id).single()
+      if (profile) {
+        document.getElementById('profileBtn').textContent = (profile.first_name[0] + profile.last_name[0]).toUpperCase()
+      }
+    }
+    function toggleDropdown() { document.getElementById('profileDropdown').classList.toggle('open') }
+    document.addEventListener('click', e => { if (!e.target.closest('.profile-nav')) document.getElementById('profileDropdown')?.classList.remove('open') })
+    async function doLogout() { await sb.auth.signOut(); window.location.href = '/' }
+    initNav()
   </script>
 </body>
 </html>

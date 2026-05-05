@@ -8,7 +8,173 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
-    /* Profile nav dropdown */
+    /* ── AUTH MODAL ── */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.25s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      width: 100%; max-width: 420px;
+      position: relative;
+      transform: translateY(20px);
+      transition: transform 0.25s;
+    }
+    .modal-overlay.open .modal { transform: translateY(0); }
+    .modal::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: var(--red);
+    }
+    .modal-close {
+      position: absolute; top: 16px; right: 16px;
+      background: none; border: none; color: var(--grey);
+      font-size: 20px; cursor: crosshair; line-height: 1;
+      transition: color 0.2s;
+    }
+    .modal-close:hover { color: var(--white); }
+
+    /* Tabs */
+    .modal-tabs {
+      display: grid; grid-template-columns: 1fr 1fr;
+      border-bottom: 1px solid var(--border);
+    }
+    .modal-tab {
+      padding: 18px; text-align: center;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px; font-weight: 700; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--grey);
+      background: none; border: none; cursor: crosshair;
+      transition: color 0.2s; border-right: 1px solid var(--border);
+      position: relative;
+    }
+    .modal-tab:last-child { border-right: none; }
+    .modal-tab.active { color: var(--white); }
+    .modal-tab.active::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+      background: var(--red);
+    }
+
+    /* Panel */
+    .modal-panel { display: none; padding: 28px; }
+    .modal-panel.active { display: block; }
+    .modal-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 32px; letter-spacing: 3px;
+      color: var(--white); margin-bottom: 6px; line-height: 1;
+    }
+    .modal-desc {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px; color: var(--grey); margin-bottom: 24px;
+    }
+
+    /* Form elements inside modal */
+    .m-group { margin-bottom: 16px; }
+    .m-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .m-label {
+      display: block;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px; font-weight: 700; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--grey); margin-bottom: 7px;
+    }
+    .m-input {
+      width: 100%;
+      background: var(--black);
+      border: 1px solid var(--border);
+      color: var(--white);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 15px; padding: 13px 14px; outline: none;
+      transition: border-color 0.2s;
+    }
+    .m-input:focus { border-color: var(--red); }
+    .m-input::placeholder { color: #444; }
+    .m-pass-wrap { position: relative; }
+    .m-pass-toggle {
+      position: absolute; right: 12px; top: 50%;
+      transform: translateY(-50%);
+      background: none; border: none; color: var(--grey);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px; font-weight: 700; letter-spacing: 2px;
+      cursor: crosshair;
+    }
+    .m-pass-toggle:hover { color: var(--red); }
+
+    /* Error / success */
+    .m-error {
+      background: rgba(232,0,29,0.08);
+      border: 1px solid rgba(232,0,29,0.25);
+      border-left: 2px solid var(--red);
+      padding: 10px 12px; margin-bottom: 16px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px; letter-spacing: 1px; color: var(--red);
+      display: none;
+    }
+    .m-error.show { display: block; }
+    .m-success {
+      background: rgba(34,197,94,0.08);
+      border: 1px solid rgba(34,197,94,0.25);
+      border-left: 2px solid var(--green);
+      padding: 14px 16px; margin-bottom: 16px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px; color: var(--green);
+      display: none;
+    }
+    .m-success.show { display: block; }
+
+    /* Submit button */
+    .m-btn {
+      width: 100%; background: var(--red); color: var(--black);
+      border: none; padding: 15px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px; font-weight: 700; letter-spacing: 4px;
+      text-transform: uppercase; cursor: crosshair;
+      transition: background 0.2s; position: relative; overflow: hidden;
+    }
+    .m-btn::before {
+      content: ''; position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+      animation: sweep 2.5s ease-in-out infinite;
+    }
+    @keyframes sweep { 0%{left:-100%} 100%{left:200%} }
+    .m-btn:hover { background: var(--dark-red); }
+    .m-btn:disabled { background: #333; color: #666; cursor: not-allowed; }
+    .m-btn:disabled::before { display: none; }
+
+    /* Switch link */
+    .m-switch {
+      text-align: center; margin-top: 20px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px; color: var(--grey);
+    }
+    .m-switch a {
+      color: var(--red); text-decoration: none;
+      font-weight: 700; letter-spacing: 1px;
+    }
+    .m-switch a:hover { color: var(--white); }
+
+    /* Pass strength bars */
+    .pass-bars { display: flex; gap: 3px; margin-top: 6px; }
+    .pass-bar { flex: 1; height: 2px; background: var(--border); transition: background 0.2s; }
+    .pass-bar.weak { background: var(--red); }
+    .pass-bar.ok { background: var(--green); }
+
+    /* Nav button for login */
+    .btn-login-nav {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px; font-weight: 700; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--grey);
+      background: none; border: 1px solid var(--border);
+      padding: 8px 16px; cursor: crosshair;
+      transition: all 0.2s;
+    }
+    .btn-login-nav:hover { color: var(--white); border-color: #444; }
+
     .nav-right { display: flex; align-items: center; gap: 12px; }
     .profile-nav { position: relative; }
     .profile-btn {
@@ -1289,7 +1455,9 @@
     </ul>
     <div class="nav-right">
       <a href="urun" class="nav-cta" id="navCta">Satın Al</a>
-      <!-- Oturum varken görünür -->
+      <!-- Oturum KAPALI → giriş butonu -->
+      <button class="btn-login-nav" id="navLoginBtn" style="display:none;" onclick="openModal('login')">Giriş Yap</button>
+      <!-- Oturum AÇIK → profil dropdown -->
       <div class="profile-nav" id="profileNav" style="display:none;">
         <button class="profile-btn" id="profileBtn" onclick="toggleDropdown()">—</button>
         <div class="profile-dropdown" id="profileDropdown">
@@ -1802,21 +1970,225 @@
   <!-- MOBILE STICKY CTA -->
   <a href="#kitler" class="mobile-cta">Kit'ini Seç — ₺1.490'dan itibaren</a>
 
+  <!-- ══════════════════════════════════════
+       AUTH MODAL — GİRİŞ / KAYIT OL
+  ══════════════════════════════════════ -->
+  <div class="modal-overlay" id="authModal" onclick="handleOverlayClick(event)">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+
+      <div class="modal-tabs">
+        <button class="modal-tab active" id="tabBtnLogin" onclick="switchTab('login')">Giriş Yap</button>
+        <button class="modal-tab" id="tabBtnRegister" onclick="switchTab('register')">Kayıt Ol</button>
+      </div>
+
+      <!-- GİRİŞ PANEL -->
+      <div class="modal-panel active" id="panelLogin">
+        <div class="modal-title">HOŞ GELDİN</div>
+        <div class="modal-desc">E-posta ve şifrenle profiline eriş.</div>
+        <div class="m-error" id="loginError"></div>
+        <div class="m-success" id="loginSuccess"></div>
+        <div class="m-group">
+          <label class="m-label">E-posta</label>
+          <input class="m-input" type="email" id="loginEmail" placeholder="eposta@adresin.com" />
+        </div>
+        <div class="m-group">
+          <label class="m-label">Şifre</label>
+          <div class="m-pass-wrap">
+            <input class="m-input" type="password" id="loginPass" placeholder="••••••••" />
+            <button class="m-pass-toggle" type="button" onclick="togglePass('loginPass',this)">Göster</button>
+          </div>
+        </div>
+        <button class="m-btn" id="loginBtn" onclick="doLogin()">Giriş Yap</button>
+        <div class="m-switch">Hesabın yok mu? <a href="#" onclick="switchTab('register');return false;">Kayıt Ol</a></div>
+      </div>
+
+      <!-- KAYIT PANEL -->
+      <div class="modal-panel" id="panelRegister">
+        <div class="modal-title">HESAP AÇ</div>
+        <div class="modal-desc">Birkaç saniyede profilini oluştur.</div>
+        <div class="m-error" id="regError"></div>
+        <div class="m-success" id="regSuccess"></div>
+        <div class="m-row m-group">
+          <div>
+            <label class="m-label">Ad</label>
+            <input class="m-input" type="text" id="regFirst" placeholder="Adın" />
+          </div>
+          <div>
+            <label class="m-label">Soyad</label>
+            <input class="m-input" type="text" id="regLast" placeholder="Soyadın" />
+          </div>
+        </div>
+        <div class="m-group">
+          <label class="m-label">E-posta</label>
+          <input class="m-input" type="email" id="regEmail" placeholder="eposta@adresin.com" />
+        </div>
+        <div class="m-group">
+          <label class="m-label">Şifre</label>
+          <div class="m-pass-wrap">
+            <input class="m-input" type="password" id="regPass" placeholder="En az 8 karakter" oninput="checkPassStrength(this.value)" />
+            <button class="m-pass-toggle" type="button" onclick="togglePass('regPass',this)">Göster</button>
+          </div>
+          <div class="pass-bars" style="margin-top:6px;">
+            <div class="pass-bar" id="pb1"></div>
+            <div class="pass-bar" id="pb2"></div>
+            <div class="pass-bar" id="pb3"></div>
+            <div class="pass-bar" id="pb4"></div>
+          </div>
+        </div>
+        <button class="m-btn" id="regBtn" onclick="doRegister()">Kayıt Ol</button>
+        <div class="m-switch">Zaten hesabın var mı? <a href="#" onclick="switchTab('login');return false;">Giriş Yap</a></div>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     const SUPABASE_URL = 'https://fascsdkzcmnmaaxvldxf.supabase.co'
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZhc2NzZGt6Y21ubWFheHZsZHhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4MTMxMTMsImV4cCI6MjA5MzM4OTExM30.Unlfg8DHP7ce2CtFCcCgRaydstrCB-dwAIEebFRUQm4'
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
 
-    // Oturum kontrolü
+    /* ── MODAL ── */
+    function openModal(tab = 'login') {
+      document.getElementById('authModal').classList.add('open')
+      document.body.style.overflow = 'hidden'
+      switchTab(tab)
+      setTimeout(() => {
+        const id = tab === 'login' ? 'loginEmail' : 'regFirst'
+        document.getElementById(id)?.focus()
+      }, 250)
+    }
+
+    function closeModal() {
+      document.getElementById('authModal').classList.remove('open')
+      document.body.style.overflow = ''
+    }
+
+    function handleOverlayClick(e) {
+      if (e.target === document.getElementById('authModal')) closeModal()
+    }
+
+    function switchTab(tab) {
+      const isLogin = tab === 'login'
+      document.getElementById('tabBtnLogin').classList.toggle('active', isLogin)
+      document.getElementById('tabBtnRegister').classList.toggle('active', !isLogin)
+      document.getElementById('panelLogin').classList.toggle('active', isLogin)
+      document.getElementById('panelRegister').classList.toggle('active', !isLogin)
+    }
+
+    function togglePass(inputId, btn) {
+      const input = document.getElementById(inputId)
+      if (input.type === 'password') { input.type = 'text'; btn.textContent = 'Gizle' }
+      else { input.type = 'password'; btn.textContent = 'Göster' }
+    }
+
+    function checkPassStrength(val) {
+      let s = 0
+      if (val.length >= 8) s++
+      if (/[A-Z]/.test(val)) s++
+      if (/[0-9]/.test(val)) s++
+      if (/[^A-Za-z0-9]/.test(val)) s++
+      for (let i = 1; i <= 4; i++) {
+        const b = document.getElementById('pb' + i)
+        b.classList.remove('weak','ok')
+        if (i <= s) b.classList.add(s >= 3 ? 'ok' : 'weak')
+      }
+    }
+
+    function showErr(id, msg) {
+      const el = document.getElementById(id)
+      el.textContent = msg; el.classList.add('show')
+      document.getElementById(id.replace('Error','Success')).classList.remove('show')
+    }
+    function showOk(id, msg) {
+      const el = document.getElementById(id)
+      el.textContent = msg; el.classList.add('show')
+      document.getElementById(id.replace('Success','Error')).classList.remove('show')
+    }
+    function clearMsgs(prefix) {
+      document.getElementById(prefix + 'Error').classList.remove('show')
+      document.getElementById(prefix + 'Success').classList.remove('show')
+    }
+
+    /* ── GİRİŞ ── */
+    async function doLogin() {
+      const btn = document.getElementById('loginBtn')
+      const email = document.getElementById('loginEmail').value.trim()
+      const pass = document.getElementById('loginPass').value
+      clearMsgs('login')
+      if (!email || !pass) { showErr('loginError', 'E-posta ve şifre gerekli.'); return }
+      btn.textContent = 'Giriş yapılıyor...'; btn.disabled = true
+      const { error } = await sb.auth.signInWithPassword({ email, password: pass })
+      btn.textContent = 'Giriş Yap'; btn.disabled = false
+      if (error) {
+        const msg = error.message.includes('Invalid') ? 'E-posta veya şifre hatalı.' : error.message
+        showErr('loginError', msg)
+      } else {
+        showOk('loginSuccess', '✓ Giriş başarılı! Yönlendiriliyorsunuz...')
+        setTimeout(() => { closeModal(); checkSession() }, 1000)
+      }
+    }
+
+    /* ── KAYIT ── */
+    async function doRegister() {
+      const btn = document.getElementById('regBtn')
+      const first = document.getElementById('regFirst').value.trim()
+      const last = document.getElementById('regLast').value.trim()
+      const email = document.getElementById('regEmail').value.trim()
+      const pass = document.getElementById('regPass').value
+      clearMsgs('reg')
+      if (!first || !last || !email || !pass) { showErr('regError', 'Tüm alanları doldurun.'); return }
+      if (pass.length < 8) { showErr('regError', 'Şifre en az 8 karakter olmalı.'); return }
+      btn.textContent = 'Hesap oluşturuluyor...'; btn.disabled = true
+
+      // 1. Auth kullanıcısı oluştur
+      const { data: authData, error: authErr } = await sb.auth.signUp({ email, password: pass })
+      if (authErr) {
+        const msg = authErr.message.includes('already') ? 'Bu e-posta zaten kayıtlı. Giriş yapmayı deneyin.' : authErr.message
+        showErr('regError', msg)
+        btn.textContent = 'Kayıt Ol'; btn.disabled = false; return
+      }
+
+      const userId = authData.user.id
+
+      // 2. Profil kaydı oluştur
+      await sb.from('profiles').upsert({ id: userId, first_name: first, last_name: last })
+
+      btn.textContent = 'Kayıt Ol'; btn.disabled = false
+      showOk('regSuccess', '✓ Hesabın oluşturuldu! Giriş yapılıyor...')
+      setTimeout(() => { closeModal(); checkSession() }, 1200)
+    }
+
+    // Enter tuşu desteği
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeModal()
+      if (e.key === 'Enter') {
+        if (document.getElementById('panelLogin').classList.contains('active') &&
+            document.getElementById('authModal').classList.contains('open')) doLogin()
+        else if (document.getElementById('panelRegister').classList.contains('active') &&
+            document.getElementById('authModal').classList.contains('open')) doRegister()
+      }
+    })
+
+    /* ── SESSION CHECK & NAV ── */
     async function checkSession() {
       const { data: { session } } = await sb.auth.getSession()
-      if (!session) return
+      const loginBtn = document.getElementById('navLoginBtn')
+      const profileNav = document.getElementById('profileNav')
+
+      if (!session) {
+        loginBtn.style.display = 'block'
+        profileNav.style.display = 'none'
+        return
+      }
+
+      // Kullanıcı giriş yapmış
+      loginBtn.style.display = 'none'
+      profileNav.style.display = 'block'
 
       const user = session.user
       const { data: profile } = await sb.from('profiles').select('first_name, last_name').eq('id', user.id).single()
 
-      const profileNav = document.getElementById('profileNav')
       const profileBtn = document.getElementById('profileBtn')
       const ddName = document.getElementById('ddName')
       const ddEmail = document.getElementById('ddEmail')
@@ -1829,14 +2201,12 @@
         profileBtn.textContent = '👤'
       }
       ddEmail.textContent = user.email
-      profileNav.style.display = 'block'
     }
 
     function toggleDropdown() {
       document.getElementById('profileDropdown').classList.toggle('open')
     }
 
-    // Dışarı tıklayınca kapat
     document.addEventListener('click', (e) => {
       if (!e.target.closest('.profile-nav')) {
         document.getElementById('profileDropdown')?.classList.remove('open')
@@ -1845,77 +2215,55 @@
 
     async function doLogout() {
       await sb.auth.signOut()
-      window.location.reload()
+      document.getElementById('profileNav').style.display = 'none'
+      document.getElementById('navLoginBtn').style.display = 'block'
     }
 
-    // Nav scroll effect
-    const nav = document.getElementById('nav');
-    window.addEventListener('scroll', () => {
-      nav.classList.toggle('scrolled', window.scrollY > 60);
-    });
+    /* ── PAGE INIT ── */
+    // Nav scroll
+    const nav = document.getElementById('nav')
+    window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 60))
 
-    // Fade-up on scroll
-    const fadeEls = document.querySelectorAll('.fade-up');
+    // Fade-up
+    const fadeEls = document.querySelectorAll('.fade-up')
     const obs = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (e.isIntersecting) {
-          e.target.classList.add('visible');
-          obs.unobserve(e.target);
-        }
-      });
-    }, { threshold: 0.1 });
-    fadeEls.forEach(el => obs.observe(el));
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target) } })
+    }, { threshold: 0.1 })
+    fadeEls.forEach(el => obs.observe(el))
+    setTimeout(() => document.querySelectorAll('.hero .fade-up').forEach(el => el.classList.add('visible')), 100)
 
-    // Trigger hero elements immediately
-    setTimeout(() => {
-      document.querySelectorAll('.hero .fade-up').forEach(el => el.classList.add('visible'));
-    }, 100);
-
-    // QR code pixel art generator
-    const qrGrid = document.getElementById('qrGrid');
+    // QR pixel art
+    const qrGrid = document.getElementById('qrGrid')
     if (qrGrid) {
-      const pattern = [
-        1,1,1,0,1,1,1,
-        1,0,1,0,1,0,1,
-        1,1,1,0,1,1,1,
-        0,0,0,1,0,1,0,
-        1,1,1,0,1,0,1,
-        1,0,0,0,1,0,1,
-        1,1,0,1,1,1,1
-      ];
+      const pattern = [1,1,1,0,1,1,1,1,0,1,0,1,0,1,1,1,1,0,1,1,1,0,0,0,1,0,1,0,1,1,1,0,1,0,1,1,0,0,0,1,0,1,1,1,0,1,1,1,1]
       pattern.forEach(v => {
-        const px = document.createElement('div');
-        px.className = 'qr-pixel' + (v === 0 ? ' w' : '');
-        qrGrid.appendChild(px);
-      });
+        const px = document.createElement('div')
+        px.className = 'qr-pixel' + (v === 0 ? ' w' : '')
+        qrGrid.appendChild(px)
+      })
     }
 
-    // FAQ accordion
+    // FAQ
     document.querySelectorAll('.faq-item').forEach(item => {
       item.querySelector('.faq-q').addEventListener('click', () => {
-        const isOpen = item.classList.contains('open');
-        document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
-        if (!isOpen) item.classList.add('open');
-      });
-    });
+        const open = item.classList.contains('open')
+        document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'))
+        if (!open) item.classList.add('open')
+      })
+    })
 
-    // Newsletter form
+    // Newsletter
     document.querySelector('.newsletter-form').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const input = e.target.querySelector('.newsletter-input');
-      const btn = e.target.querySelector('.newsletter-btn');
+      e.preventDefault()
+      const input = e.target.querySelector('.newsletter-input')
+      const btn = e.target.querySelector('.newsletter-btn')
       if (input.value) {
-        btn.textContent = 'Kaydedildi ✓';
-        btn.style.background = '#222';
-        input.value = '';
-        setTimeout(() => {
-          btn.textContent = 'Kayıt Ol';
-          btn.style.background = '';
-        }, 3000);
+        btn.textContent = 'Kaydedildi ✓'; btn.style.background = '#222'; input.value = ''
+        setTimeout(() => { btn.textContent = 'Kayıt Ol'; btn.style.background = '' }, 3000)
       }
-    });
+    })
 
-    checkSession();
+    checkSession()
   </script>
 </body>
 </html>
