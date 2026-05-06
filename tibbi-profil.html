@@ -535,8 +535,13 @@
 
     function generateSlug() {
       const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
-      let s = 'DC-'
-      for (let i = 0; i < 8; i++) s += chars[Math.floor(Math.random() * chars.length)]
+      const bytes = new Uint8Array(12)
+      crypto.getRandomValues(bytes)
+      let s = ''
+      bytes.forEach((b, i) => {
+        if (i === 4 || i === 8) s += '-'
+        s += chars[b % chars.length]
+      })
       return s
     }
 
