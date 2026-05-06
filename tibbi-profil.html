@@ -650,14 +650,14 @@
       currentUser = session.user
 
       // Kit
-      const { data: kit } = await sb.from('kits').select('*').eq('user_id', currentUser.id).single()
+      const { data: kit } = await sb.from('kits').select('*').eq('user_id', currentUser.id).maybeSingle()
       userKit = kit
 
       // Profile
-      const { data: profile } = await sb.from('profiles').select('*').eq('id', currentUser.id).single()
+      const { data: profile } = await sb.from('profiles').select('*').eq('id', currentUser.id).maybeSingle()
 
       // Medical
-      const { data: med } = await sb.from('medical_data').select('*').eq('user_id', currentUser.id).single()
+      const { data: med } = await sb.from('medical_data').select('*').eq('user_id', currentUser.id).maybeSingle()
 
       // Populate UI
       if (profile) {

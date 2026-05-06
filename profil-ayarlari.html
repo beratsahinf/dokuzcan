@@ -324,8 +324,8 @@
       if (!session) { window.location.href = 'giris'; return }
       currentUser = session.user
 
-      // Profile
-      const { data: profile } = await sb.from('profiles').select('*').eq('id', currentUser.id).single()
+      // Profile — maybeSingle hata fırlatmaz, sadece null döner
+      const { data: profile } = await sb.from('profiles').select('*').eq('id', currentUser.id).maybeSingle()
 
       if (profile) {
         const initials = (profile.first_name[0] + profile.last_name[0]).toUpperCase()
@@ -334,16 +334,21 @@
         document.getElementById('firstName').value = profile.first_name
         document.getElementById('lastName').value = profile.last_name
         document.getElementById('phone').value = profile.phone || ''
+      } else {
+        // Profil kaydı yok — e-postadan ilk harfi göster
+        const emailInitial = currentUser.email[0].toUpperCase()
+        document.getElementById('userAvatar').textContent = emailInitial
+        document.getElementById('userName').textContent = currentUser.email
       }
+
       document.getElementById('userEmail').textContent = currentUser.email
       document.getElementById('email').value = currentUser.email
 
-      // Created at
       const created = new Date(currentUser.created_at)
       document.getElementById('userSince').textContent = 'Üye: ' + created.toLocaleDateString('tr-TR', { year:'numeric', month:'long' })
 
-      // Kit
-      const { data: kit } = await sb.from('kits').select('*').eq('user_id', currentUser.id).single()
+      // Kit — maybeSingle kullan
+      const { data: kit } = await sb.from('kits').select('*').eq('user_id', currentUser.id).maybeSingle()
       if (kit) {
         const typeName = kitTypeNames[kit.kit_type] || kit.kit_type?.toUpperCase()
         const levelName = kitLevelNames[kit.kit_type] || 'Seviye 01'
@@ -377,11 +382,12 @@
       const last  = document.getElementById('lastName').value.trim()
       const phone = document.getElementById('phone').value.trim()
 
-      const { error } = await sb.from('profiles').update({
+      const { error } = await sb.from('profiles').upsert({
+        id: currentUser.id,
         first_name: first,
         last_name: last,
         phone: phone
-      }).eq('id', currentUser.id)
+      }, { onConflict: 'id' })
 
       btn.textContent = 'Bilgileri Güncelle'
       btn.disabled = false
