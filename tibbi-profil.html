@@ -533,6 +533,13 @@
     let userKit = null
     let qrIsActive = true
 
+    function generateSlug() {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+      let s = 'DC-'
+      for (let i = 0; i < 8; i++) s += chars[Math.floor(Math.random() * chars.length)]
+      return s
+    }
+
     function getQRUrl() {
       // Vercel'de path /tibbi-profil veya /tibbi-profil.html olabilir
       // qr-profil sayfası her zaman origin + /qr-profil
@@ -665,7 +672,6 @@
         toggleQRStatus(isActive)
         generateQR()
       } else {
-        // Kit yok — QR alanını bilgi mesajıyla göster
         document.getElementById('qrSlug').textContent = 'Henüz kit siparişi yok'
         document.getElementById('previewLink').style.display = 'none'
         document.getElementById('qrActive').disabled = true
