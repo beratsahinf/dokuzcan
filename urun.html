@@ -983,26 +983,13 @@
             </div>
           </div>
           <div class="form-section-title">Ödeme</div>
-          <div class="form-grid">
-            <div class="form-group full">
-              <label>Kart Numarası</label>
-              <div class="card-number-wrap">
-                <input type="text" placeholder="0000  0000  0000  0000" maxlength="19" oninput="formatCard(this)" />
-                <div class="card-icons">
-                  <div class="card-icon">VISA</div>
-                  <div class="card-icon">MC</div>
-                </div>
-              </div>
-            </div>
-            <div class="form-group">
-              <label>Son Kullanma</label>
-              <input type="text" placeholder="AA/YY" maxlength="5" oninput="formatExpiry(this)" />
-            </div>
-            <div class="form-group">
-              <label>CVV</label>
-              <input type="text" placeholder="•••" maxlength="3" />
+          <!-- iyzico Checkout Form buraya yüklenir -->
+          <div id="iyzico-checkout-form" style="min-height:120px;display:flex;align-items:center;justify-content:center;">
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:#555;">
+              Ödeme formu yükleniyor...
             </div>
           </div>
+          <div id="iyzico-error" style="display:none;background:rgba(232,0,29,0.08);border:1px solid rgba(232,0,29,0.3);border-left:2px solid #E8001D;padding:10px 14px;margin-top:12px;font-family:'Barlow Condensed',sans-serif;font-size:12px;color:#E8001D;"></div>
         </div>
 
       </div>
@@ -1031,8 +1018,8 @@
           <div class="total-price" id="sumTotal2">₺2.290</div>
         </div>
 
-        <button class="btn-continue" onclick="placeOrder()">
-          Ödemeyi Tamamla →
+        <button class="btn-continue" id="payBtn" onclick="initIyzicoPayment()">
+          Güvenli Ödemeye Geç →
         </button>
 
         <div class="trust-badges">
@@ -1156,146 +1143,118 @@
       window.scrollTo(0, 0);
     }
 
-    // Benzersiz slug üret
-    function generateSlug() {
-      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-      let slug = 'DC-';
-      for (let i = 0; i < 8; i++) slug += chars[Math.floor(Math.random() * chars.length)];
-      return slug;
-    }
+    // Slug üret — sunucu tarafında (api/iyzico-init.js) üretilecek
+    // Burası sadece kullanıcı/oturum işlemleri için
 
-    // Aktivasyon kodu üret
-    function generateActivationCode() {
-      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-      let part1 = '', part2 = '';
-      for (let i = 0; i < 4; i++) part1 += chars[Math.floor(Math.random() * chars.length)];
-      for (let i = 0; i < 2; i++) part2 += chars[Math.floor(Math.random() * chars.length)];
-      return 'RL-' + part1 + '-' + part2;
-    }
+    // iyzico Checkout Form'u başlat
+    async function initIyzicoPayment() {
+      const btn = document.getElementById('payBtn')
+      const activeTab = document.getElementById('tabNew').classList.contains('active') ? 'new' : 'existing'
 
-    // Sipariş ver — Supabase entegreli
-    async function placeOrder() {
-      const btn = event.target;
-      const activeTab = document.getElementById('tabNew').classList.contains('active') ? 'new' : 'existing';
-
-      const fname = document.getElementById('firstName')?.value.trim() || '';
-      const lname = document.getElementById('lastName')?.value.trim() || '';
-      const email = document.getElementById('email')?.value.trim() || '';
-      const phone = document.getElementById('phone')?.value.trim() || '';
-      const password = document.getElementById('password')?.value || '';
+      const fname    = document.getElementById('firstName')?.value.trim() || ''
+      const lname    = document.getElementById('lastName')?.value.trim() || ''
+      const email    = document.getElementById('email')?.value.trim() || ''
+      const phone    = document.getElementById('phone')?.value.trim() || ''
+      const password = document.getElementById('password')?.value || ''
 
       if (activeTab === 'new' && (!fname || !lname || !email || !password)) {
-        alert('Lütfen ad, soyad, e-posta ve şifre alanlarını doldurun.');
-        return;
+        showUrunError('Lütfen ad, soyad, e-posta ve şifre alanlarını doldurun.'); return
       }
 
-      btn.textContent = 'İşleniyor...';
-      btn.disabled = true;
+      btn.textContent = 'Ödeme hazırlanıyor...'; btn.disabled = true
+      hideUrunError()
 
       try {
-        let userId, userEmail;
+        let userId, userEmail, userFirst, userLast
 
         if (activeTab === 'new') {
-          // 1. Supabase Auth ile yeni hesap oluştur
-          const { data: authData, error: authError } = await sb.auth.signUp({ email, password });
+          // Yeni hesap oluştur
+          const { data: authData, error: authError } = await sb.auth.signUp({ email, password })
           if (authError) {
-            if (authError.message.includes('already registered') || authError.message.includes('already exists')) {
-              alert('Bu e-posta adresi zaten kayıtlı. Lütfen "Zaten Hesabım Var" sekmesini kullanın.');
-            } else {
-              alert('Hesap oluşturulamadı: ' + authError.message);
-            }
-            btn.textContent = 'Ödemeyi Tamamla →';
-            btn.disabled = false;
-            return;
+            const msg = authError.message.includes('already') ? 'Bu e-posta zaten kayıtlı. "Hesabım Var" sekmesini kullan.' : authError.message
+            showUrunError(msg); btn.textContent = 'Güvenli Ödemeye Geç →'; btn.disabled = false; return
           }
-          userId = authData.user.id;
-          userEmail = email;
-
-          // 2. Profil kaydı oluştur
-          const { error: profileError } = await sb.from('profiles').insert({
-            id: userId,
-            first_name: fname,
-            last_name: lname,
-            phone: phone
-          });
-          if (profileError && !profileError.message.includes('duplicate')) {
-            console.error('Profil hatası:', profileError.message);
-          }
-
+          userId = authData.user.id; userEmail = email; userFirst = fname; userLast = lname
+          await sb.from('profiles').upsert({ id: userId, first_name: fname, last_name: lname, phone })
         } else {
-          // Mevcut hesapla giriş yap
-          const existingEmail = document.querySelector('#tabExisting input[type="email"]')?.value.trim();
-          const existingPass = document.querySelector('#tabExisting input[type="password"]')?.value;
-          const { data: loginData, error: loginError } = await sb.auth.signInWithPassword({
-            email: existingEmail,
-            password: existingPass
-          });
+          const exEmail = document.querySelector('#tabExisting input[type="email"]')?.value.trim()
+          const exPass  = document.querySelector('#tabExisting input[type="password"]')?.value
+          const { data: loginData, error: loginError } = await sb.auth.signInWithPassword({ email: exEmail, password: exPass })
           if (loginError) {
-            alert('Giriş yapılamadı: ' + loginError.message);
-            btn.textContent = 'Ödemeyi Tamamla →';
-            btn.disabled = false;
-            return;
+            showUrunError('Giriş yapılamadı: ' + loginError.message)
+            btn.textContent = 'Güvenli Ödemeye Geç →'; btn.disabled = false; return
           }
-          userId = loginData.user.id;
-          userEmail = existingEmail;
-
-          // Mevcut profil bilgilerini al
-          const { data: existingProfile } = await sb.from('profiles').select('*').eq('id', userId).single();
-          if (existingProfile) {
-            fname || (document.getElementById('acName').textContent = existingProfile.first_name + ' ' + existingProfile.last_name);
-          }
+          userId = loginData.user.id; userEmail = exEmail
+          const { data: p } = await sb.from('profiles').select('first_name,last_name').eq('id', userId).maybeSingle()
+          userFirst = p?.first_name || ''; userLast = p?.last_name || ''
         }
 
-        // 3. Benzersiz slug ve aktivasyon kodu üret (çakışma kontrolü ile)
-        let slug, isUnique = false;
-        while (!isUnique) {
-          slug = generateSlug();
-          const { data: existing } = await sb.from('kits').select('id').eq('slug', slug).single();
-          if (!existing) isUnique = true;
+        // iyzico token al
+        const kitPriceMap = { BASIC: '1490.00', ADVANCED: '2290.00', PRO: '3490.00' }
+        const price = kitPriceMap[selectedKit.name] || '2290.00'
+
+        const resp = await fetch('/api/iyzico-init', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId, email: userEmail,
+            firstName: userFirst, lastName: userLast, phone,
+            kitType: selectedKit.name.toLowerCase(),
+            price, currency: 'TRY'
+          })
+        })
+
+        const data = await resp.json()
+
+        if (!resp.ok || data.error) {
+          showUrunError('Ödeme başlatılamadı: ' + (data.error || 'Sunucu hatası'))
+          btn.textContent = 'Güvenli Ödemeye Geç →'; btn.disabled = false; return
         }
-        const activationCode = generateActivationCode();
 
-        // 4. Kit kaydı oluştur
-        const kitTypeMap = { 'BASIC': 'basic', 'ADVANCED': 'advanced', 'PRO': 'pro' };
-        const { data: kitData, error: kitError } = await sb.from('kits').insert({
-          user_id: userId,
-          slug: slug,
-          activation_code: activationCode,
-          kit_type: kitTypeMap[selectedKit.name] || 'advanced',
-          activated_at: new Date().toISOString()
-        }).select().single();
+        // iyzico Checkout Form'u sayfaya enjekte et
+        const formDiv = document.getElementById('iyzico-checkout-form')
+        formDiv.innerHTML = data.checkoutFormContent
 
-        if (kitError) {
-          console.error('Kit hatası:', kitError.message);
-        }
+        // iyzico script'ini çalıştır
+        const scripts = formDiv.querySelectorAll('script')
+        scripts.forEach(oldScript => {
+          const newScript = document.createElement('script')
+          if (oldScript.src) newScript.src = oldScript.src
+          else newScript.textContent = oldScript.textContent
+          document.body.appendChild(newScript)
+        })
 
-        // 5. Başarı ekranını göster
-        document.getElementById('screen2').classList.remove('active');
-        document.getElementById('screen3').classList.add('active');
-        document.getElementById('step2').classList.remove('active');
-        document.getElementById('step2').classList.add('done');
-        document.getElementById('step3').classList.add('active');
-
-        // Bilgileri yaz
-        const displayName = activeTab === 'new' ? (fname + ' ' + lname).trim() : (userEmail || '—');
-        document.getElementById('acName').textContent = displayName || '—';
-        document.getElementById('acEmail').textContent = userEmail || email || '—';
-
-        const ordNo = '#DC-' + Math.floor(100000 + Math.random() * 899999);
-        document.getElementById('acOrder').textContent = ordNo;
-        document.getElementById('acId').textContent = slug;
-
-        // Profil paneli butonunu güncelle
-        const panelBtn = document.querySelector('.btn-go-panel');
-        if (panelBtn) panelBtn.href = 'tibbi-profil';
-
-        window.scrollTo(0, 0);
+        btn.textContent = 'Güvenli Ödemeye Geç →'; btn.disabled = false
+        // Form yüklenince butonu gizle
+        btn.style.display = 'none'
 
       } catch (err) {
-        console.error('Sipariş hatası:', err);
-        alert('Bir hata oluştu, lütfen tekrar deneyin.');
-        btn.textContent = 'Ödemeyi Tamamla →';
-        btn.disabled = false;
+        console.error('Ödeme hatası:', err)
+        showUrunError('Beklenmedik hata: ' + err.message)
+        btn.textContent = 'Güvenli Ödemeye Geç →'; btn.disabled = false
+      }
+    }
+
+    function showUrunError(msg) {
+      const el = document.getElementById('iyzico-error')
+      if (el) { el.textContent = msg; el.style.display = 'block' }
+    }
+    function hideUrunError() {
+      const el = document.getElementById('iyzico-error')
+      if (el) el.style.display = 'none'
+    }
+
+    // Ödeme sonucu URL parametresini kontrol et
+    function checkPaymentResult() {
+      const params = new URLSearchParams(window.location.search)
+      const status = params.get('payment')
+      if (status === 'success') {
+        // tibbi-profil'e yönlendirilmeden önce kısa mesaj
+        window.location.href = 'tibbi-profil'
+      } else if (status === 'failed') {
+        showUrunError('Ödeme başarısız oldu. Kart bilgilerinizi kontrol edip tekrar deneyin.')
+      } else if (status === 'error') {
+        showUrunError('Bir hata oluştu. Lütfen tekrar deneyin.')
       }
     }
 
@@ -1346,7 +1305,8 @@
       }
     }
 
-    updateSummary();
+    updateSummary()
+    checkPaymentResult()
 
     // Profil nav
     async function initNav() {

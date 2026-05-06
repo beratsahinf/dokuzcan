@@ -2136,13 +2136,6 @@
       }
     }
 
-    function generateSlug() {
-      // crypto.randomUUID() — tarayıcı kriptografik UUID üreticisi
-      // SQL'deki gen_random_uuid() ile aynı yaklaşım
-      const uuid = crypto.randomUUID().replace(/-/g, '').toUpperCase()
-      return uuid.slice(0, 4) + '-' + uuid.slice(4, 8) + '-' + uuid.slice(8, 12)
-    }
-
     async function doRegister() {
       const btn = document.getElementById('regBtn')
       const first = document.getElementById('regFirst').value.trim()
@@ -2177,19 +2170,8 @@
 
       const hasSession = !!(authData.session)
 
-      // 1. Profil kaydı
+      // Profil kaydı
       await sb.from('profiles').upsert({ id: userId, first_name: first, last_name: last })
-
-      // 2. QR slug otomatik oluştur (kit satın alınmasa da QR hazır olsun)
-      const slug = generateSlug()
-      await sb.from('kits').insert({
-        user_id: userId,
-        slug: slug,
-        activation_code: 'AUTO-' + slug.slice(3, 7),
-        kit_type: 'advanced',
-        is_active: true,
-        activated_at: new Date().toISOString()
-      })
 
       btn.textContent = 'Kayıt Ol'; btn.disabled = false
 
