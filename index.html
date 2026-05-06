@@ -2137,18 +2137,10 @@
     }
 
     function generateSlug() {
-      // crypto.getRandomValues — kriptografik güçlü rastgelelik
-      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
-      const bytes = new Uint8Array(12)
-      crypto.getRandomValues(bytes)
-      // DC- prefix kaldırıldı — format tahmin edilemesin
-      // Örnek: X7KM-2RNQ-P4WV (3x4 blok, 32^12 ≈ 1.15 quadrilyon kombinasyon)
-      let s = ''
-      bytes.forEach((b, i) => {
-        if (i === 4 || i === 8) s += '-'
-        s += chars[b % chars.length]
-      })
-      return s
+      // crypto.randomUUID() — tarayıcı kriptografik UUID üreticisi
+      // SQL'deki gen_random_uuid() ile aynı yaklaşım
+      const uuid = crypto.randomUUID().replace(/-/g, '').toUpperCase()
+      return uuid.slice(0, 4) + '-' + uuid.slice(4, 8) + '-' + uuid.slice(8, 12)
     }
 
     async function doRegister() {
