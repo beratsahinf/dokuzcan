@@ -10,7 +10,6 @@
     :root {
       --red: #E8001D;
       --dark-red: #9B0013;
-      --deep-red: #5C000B;
       --black: #080808;
       --dark: #111;
       --panel: #161616;
@@ -21,739 +20,177 @@
       --green: #22c55e;
       --yellow: #f59e0b;
     }
-
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
-      background: var(--black);
+      background: #050505;
       color: var(--white);
       font-family: 'Barlow', sans-serif;
       min-height: 100vh;
-    }
-
-    /* ALERT BANNER — daha güçlü */
-    .alert-banner {
-      background: var(--red);
-      padding: 14px 20px;
       display: flex;
-      align-items: center;
       justify-content: center;
-      gap: 10px;
-      position: relative;
-      overflow: hidden;
-      animation: pulse-bg 1.5s ease-in-out infinite;
-    }
-    .alert-banner::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 50%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
-      animation: banner-sweep 3s ease-in-out infinite;
-    }
-    @keyframes banner-sweep {
-      0% { left: -100%; }
-      100% { left: 200%; }
-    }
-    @keyframes pulse-bg {
-      0%, 100% { background: #E8001D; }
-      50% { background: #c5001a; }
-    }
-    .alert-icon {
-      font-size: 20px;
-      animation: blink 1s step-end infinite;
-      position: relative;
-      z-index: 1;
-    }
-    @keyframes blink { 50% { opacity: 0; } }
-    .alert-text {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 18px;
-      letter-spacing: 4px;
-      color: white;
-      position: relative;
-      z-index: 1;
-    }
-
-    /* SCAN TIME STRIP (NEW) */
-    .scan-strip {
-      background: #000;
-      border-bottom: 1px solid var(--border);
-      padding: 8px 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 1px;
-      color: var(--grey);
-    }
-    .scan-live {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      color: var(--green);
-    }
-    .scan-live-dot {
-      width: 6px; height: 6px;
-      background: var(--green);
-      border-radius: 50%;
-      animation: dot-pulse 1.5s infinite;
-    }
-    @keyframes dot-pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.4; transform: scale(1.3); }
-    }
-
-    /* HEADER */
-    .profile-header {
-      background: linear-gradient(135deg, #1a0808 0%, var(--dark) 100%);
-      border-bottom: 2px solid var(--red);
-      padding: 32px 24px 28px;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
-    .profile-header::before {
-      content: '';
-      position: absolute;
-      top: 0; left: -50%;
-      width: 200%; height: 100%;
-      background: radial-gradient(ellipse at center, rgba(232,0,29,0.08) 0%, transparent 60%);
-      pointer-events: none;
-    }
-    .profile-header::after {
-      content: '';
-      position: absolute;
-      bottom: -2px; left: 0; right: 0;
-      height: 2px;
-      background: linear-gradient(90deg, transparent, var(--red), transparent);
-    }
-    .profile-header > * { position: relative; z-index: 1; }
-    .brand-tag {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 5px;
-      text-transform: uppercase;
-      color: rgba(232,0,29,0.7);
-      margin-bottom: 12px;
-    }
-    .profile-avatar-row {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
-      margin-bottom: 12px;
-    }
-    .profile-avatar {
-      width: 60px; height: 60px;
-      background: var(--red);
-      border: 2px solid rgba(255,255,255,0.2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 24px;
-      letter-spacing: 2px;
-      color: white;
-      flex-shrink: 0;
-    }
-    .profile-name {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 42px;
-      letter-spacing: 3px;
-      color: var(--white);
-      line-height: 1;
-      text-align: left;
-    }
-    .profile-id {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      letter-spacing: 2px;
-      color: var(--grey);
-      margin-top: 8px;
-    }
-
-    /* CRITICAL INFO */
-    .critical-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 2px;
-      background: var(--border);
-      margin: 2px 0;
-    }
-    .critical-card {
-      background: var(--panel);
-      padding: 20px 12px;
-      text-align: center;
-      position: relative;
-    }
-    .critical-card.danger-highlight::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 2px;
-      background: var(--red);
-    }
-    .critical-label {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 9px;
-      font-weight: 700;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: var(--grey);
-      margin-bottom: 6px;
-    }
-    .critical-value {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 32px;
-      letter-spacing: 2px;
-      color: var(--white);
-      line-height: 1;
-    }
-    .critical-value.danger { color: var(--red); }
-    .critical-value.ok { color: var(--green); }
-
-    /* DANGER FLAG — parlak şerit ile */
-    .danger-flag {
-      background: rgba(232,0,29,0.08);
-      border: 1px solid rgba(232,0,29,0.3);
-      border-left: 3px solid var(--red);
-      margin: 12px 16px;
-      padding: 14px 16px;
-      display: flex;
       align-items: flex-start;
-      gap: 12px;
-      position: relative;
-      overflow: hidden;
+      padding: 0;
     }
-    .danger-flag::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 60%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent 0%, rgba(232,0,29,0.3) 50%, transparent 100%);
-      animation: emergency-sweep 2.5s ease-in-out infinite;
-      pointer-events: none;
+    .phone-wrapper {
+      width: 100%;
+      max-width: 420px;
+      background: var(--black);
+      min-height: 100vh;
     }
-    @keyframes emergency-sweep {
-      0% { left: -100%; }
-      100% { left: 200%; }
-    }
-    .danger-flag > * { position: relative; z-index: 1; }
-    .danger-flag-icon { font-size: 18px; flex-shrink: 0; }
-    .danger-flag-title {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: var(--red);
-      margin-bottom: 4px;
-    }
-    .danger-flag-val {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--white);
-    }
-
-    /* CALL BUTTON — güçlü */
-    .call-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      background: var(--red);
-      color: white;
-      text-decoration: none;
-      text-align: center;
-      padding: 20px;
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 22px;
-      letter-spacing: 4px;
-      margin: 8px 16px 0;
-      transition: background 0.2s;
-      position: relative;
-      overflow: hidden;
-    }
-    .call-btn::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 60%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-      animation: btn-sweep 2s ease-in-out infinite;
-    }
-    @keyframes btn-sweep {
-      0% { left: -100%; }
-      100% { left: 200%; }
-    }
-    .call-btn:active { background: var(--dark-red); }
-    .call-btn > * { position: relative; z-index: 1; }
-
-    /* LOCATION BAR (NEW) */
-    .location-bar {
-      margin: 12px 16px 0;
-      background: var(--panel);
-      border: 1px solid var(--border);
-      padding: 14px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-    .location-info { flex: 1; }
-    .location-label {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 9px;
-      font-weight: 700;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: var(--grey);
-      margin-bottom: 4px;
-    }
-    .location-val {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--white);
-    }
-    .location-coord {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 10px;
-      color: var(--grey);
-      margin-top: 2px;
-    }
-    .btn-share-location {
-      background: var(--border);
-      border: 1px solid #333;
-      color: var(--white);
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      padding: 8px 14px;
-      cursor: pointer;
-      text-decoration: none;
-      white-space: nowrap;
-    }
-    .btn-share-location:hover { background: #333; }
-
-    /* NEAREST HOSPITAL (NEW) */
-    .hospital-bar {
-      margin: 12px 16px 0;
-      background: rgba(34,197,94,0.04);
-      border: 1px solid rgba(34,197,94,0.2);
-      border-left: 3px solid var(--green);
-      padding: 14px 16px;
-    }
-    .hospital-label {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 9px;
-      font-weight: 700;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: var(--green);
-      margin-bottom: 6px;
-    }
-    .hospital-name {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 18px;
-      letter-spacing: 2px;
-      color: var(--white);
-      line-height: 1.1;
-      margin-bottom: 4px;
-    }
-    .hospital-distance {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 12px;
-      color: var(--light-grey);
-    }
-
-    /* SECTION */
-    .section { margin: 12px 16px; }
-    .section-title {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 4px;
-      text-transform: uppercase;
-      color: var(--grey);
-      padding: 0 0 8px;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 2px;
-    }
-
-    .info-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 13px 0;
-      border-bottom: 1px solid #1a1a1a;
-    }
-    .info-row:last-child { border-bottom: none; }
-    .info-key {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 13px;
-      font-weight: 400;
-      letter-spacing: 1px;
-      color: var(--grey);
-    }
-    .info-val {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--white);
-      text-align: right;
-    }
-    .info-val.danger { color: var(--red); }
-    .info-val.ok { color: var(--green); }
-    .badge {
-      display: inline-block;
-      padding: 2px 10px;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 2px;
-      border-radius: 2px;
-    }
-    .badge-green { background: rgba(34,197,94,0.15); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
-    .badge-red { background: rgba(232,0,29,0.15); color: var(--red); border: 1px solid rgba(232,0,29,0.3); }
-
-    /* EMERGENCY CONTACT — parlak şeritli */
-    .emergency-contact {
-      margin: 12px 16px;
-      background: var(--panel);
-      border: 1px solid var(--red);
-      overflow: hidden;
-      position: relative;
-    }
-    .emergency-contact::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 40%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent 0%, rgba(232,0,29,0.15) 50%, transparent 100%);
-      animation: emergency-sweep 3s ease-in-out infinite;
-      pointer-events: none;
-      z-index: 0;
-    }
-    .emergency-contact > * { position: relative; z-index: 1; }
-    .emergency-header {
-      background: var(--red);
-      padding: 10px 16px;
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 16px;
-      letter-spacing: 3px;
-      color: white;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .contact-item {
-      padding: 16px;
-      border-bottom: 1px solid var(--border);
-      background: var(--panel);
-    }
-    .contact-item:last-child { border-bottom: none; }
-    .contact-relation {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: var(--red);
-      margin-bottom: 4px;
-    }
-    .contact-name {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 22px;
-      letter-spacing: 2px;
-      color: var(--white);
-      margin-bottom: 4px;
-    }
-    .contact-phone {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 20px;
-      font-weight: 600;
-      color: var(--white);
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .contact-phone:active { color: var(--red); }
-
-    /* NOTES */
-    .notes-box {
-      margin: 12px 16px;
-      background: rgba(255,200,0,0.04);
-      border: 1px solid rgba(255,200,0,0.15);
-      border-left: 3px solid var(--yellow);
-      padding: 14px 16px;
-    }
-    .notes-title {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: var(--yellow);
-      margin-bottom: 8px;
-    }
-    .notes-text {
-      font-size: 14px;
-      line-height: 1.7;
-      color: #aaa;
-    }
-
-    /* QUICK ACTIONS (NEW) */
-    .quick-actions {
-      margin: 16px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-    .quick-btn {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      padding: 14px 12px;
-      text-align: center;
-      text-decoration: none;
-      color: var(--white);
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      transition: all 0.2s;
-      cursor: pointer;
-    }
-    .quick-btn:hover, .quick-btn:active { border-color: var(--red); color: var(--red); }
-    .quick-btn-icon {
-      display: block;
-      font-size: 20px;
-      margin-bottom: 6px;
-    }
-
-    /* FOOTER */
-    .qr-footer {
-      margin: 16px;
-      padding: 16px;
-      text-align: center;
-      border-top: 1px solid var(--border);
-    }
-    .qr-footer-brand {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 16px;
-      letter-spacing: 4px;
-      color: #555;
-      margin-bottom: 8px;
-    }
-    .qr-footer-brand span { color: var(--red); }
-    .qr-footer-tag {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 9px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: #333;
-      margin-bottom: 4px;
-    }
-    .qr-footer-time {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 1px;
-      color: #444;
-    }
-    .qr-footer-update {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 1px;
-      color: #333;
-      margin-top: 2px;
-    }
-
-    /* Desktop wrapper */
     @media (min-width: 480px) {
-      body {
-        display: flex;
-        justify-content: center;
-        align-items: flex-start;
-        padding: 40px 20px;
-        background: #050505;
-      }
+      body { padding: 32px 16px; }
       .phone-wrapper {
-        width: 420px;
-        background: var(--black);
-        box-shadow: 0 60px 120px rgba(0,0,0,0.9), 0 0 0 1px #222;
+        min-height: auto;
+        box-shadow: 0 40px 80px rgba(0,0,0,0.8), 0 0 0 1px #222;
         border-radius: 12px;
         overflow: hidden;
       }
     }
+
+    /* ALERT BANNER */
+    .alert-banner {
+      background: var(--red);
+      padding: 14px 20px;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      position: relative; overflow: hidden;
+      animation: pulse-bg 2s ease-in-out infinite;
+    }
+    .alert-banner::before {
+      content: '';
+      position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+      animation: sweep 3s ease-in-out infinite;
+    }
+    @keyframes sweep { 0%{left:-100%} 100%{left:200%} }
+    @keyframes pulse-bg { 0%,100%{background:#E8001D} 50%{background:#c5001a} }
+    .alert-icon { font-size: 18px; animation: blink 1s step-end infinite; position: relative; z-index:1; }
+    @keyframes blink { 50%{opacity:0} }
+    .alert-text { font-family:'Bebas Neue',sans-serif; font-size:18px; letter-spacing:4px; color:white; position:relative; z-index:1; }
+
+    /* SCAN STRIP */
+    .scan-strip {
+      background:#000; border-bottom:1px solid var(--border);
+      padding:8px 16px;
+      display:flex; justify-content:space-between; align-items:center;
+      font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:1px; color:var(--grey);
+    }
+    .scan-live { display:flex; align-items:center; gap:6px; color:var(--green); }
+    .scan-dot { width:6px;height:6px;border-radius:50%;background:var(--green); animation:dpulse 1.5s infinite; }
+    @keyframes dpulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    /* HEADER */
+    .profile-header {
+      background:#0d0404;
+      border-bottom:2px solid var(--red);
+      padding:28px 24px 24px;
+      text-align:center;
+    }
+    .brand-tag { font-family:'Barlow Condensed',sans-serif; font-size:10px; font-weight:700; letter-spacing:5px; text-transform:uppercase; color:rgba(232,0,29,0.6); margin-bottom:14px; }
+    .profile-avatar-row { display:flex; align-items:center; justify-content:center; gap:16px; margin-bottom:10px; }
+    .profile-avatar {
+      width:56px;height:56px;background:var(--red);
+      display:flex;align-items:center;justify-content:center;
+      font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:white;
+      flex-shrink:0;
+    }
+    .profile-name { font-family:'Bebas Neue',sans-serif; font-size:38px; letter-spacing:3px; color:var(--white); line-height:1; text-align:left; }
+    .profile-id { font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:2px; color:var(--grey); margin-top:6px; }
+
+    /* CRITICAL 3'LÜ */
+    .critical-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:2px; background:var(--border); }
+    .critical-card { background:var(--panel); padding:18px 10px; text-align:center; position:relative; }
+    .critical-card.blood::before { content:''; position:absolute; top:0;left:0;right:0; height:2px; background:var(--red); }
+    .critical-label { font-family:'Barlow Condensed',sans-serif; font-size:9px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:var(--grey); margin-bottom:6px; }
+    .critical-value { font-family:'Bebas Neue',sans-serif; font-size:30px; letter-spacing:2px; color:var(--white); line-height:1; }
+    .critical-value.red { color:var(--red); }
+    .critical-unit { font-size:12px; color:#555; }
+
+    /* DANGER FLAG */
+    .danger-flag {
+      background:rgba(232,0,29,0.07); border:1px solid rgba(232,0,29,0.25); border-left:3px solid var(--red);
+      margin:10px 14px; padding:13px 14px;
+      display:flex; align-items:flex-start; gap:10px;
+    }
+    .danger-flag-title { font-family:'Barlow Condensed',sans-serif; font-size:10px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:var(--red); margin-bottom:3px; }
+    .danger-flag-val { font-family:'Barlow Condensed',sans-serif; font-size:15px; font-weight:600; color:var(--white); }
+
+    /* ACİL ARA */
+    .call-btn {
+      display:flex; align-items:center; justify-content:center; gap:10px;
+      background:var(--red); color:white; text-decoration:none;
+      padding:18px; margin:10px 14px 0;
+      font-family:'Bebas Neue',sans-serif; font-size:20px; letter-spacing:4px;
+      position:relative; overflow:hidden; transition:background 0.2s;
+    }
+    .call-btn::before {
+      content:''; position:absolute; top:0;left:-100%;width:60%;height:100%;
+      background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);
+      animation:sweep 2s ease-in-out infinite;
+    }
+    .call-btn > * { position:relative;z-index:1; }
+    .call-btn:active { background:var(--dark-red); }
+
+    /* INFO SECTION */
+    .section { margin:14px 14px 0; }
+    .section-title { font-family:'Barlow Condensed',sans-serif; font-size:10px; font-weight:700; letter-spacing:4px; text-transform:uppercase; color:var(--grey); padding-bottom:8px; border-bottom:1px solid var(--border); margin-bottom:2px; }
+    .info-row { display:flex; justify-content:space-between; align-items:center; padding:11px 0; border-bottom:1px solid #1a1a1a; }
+    .info-row:last-child { border-bottom:none; }
+    .info-key { font-family:'Barlow Condensed',sans-serif; font-size:13px; color:var(--grey); }
+    .info-val { font-family:'Barlow Condensed',sans-serif; font-size:14px; font-weight:600; color:var(--white); text-align:right; max-width:60%; }
+    .info-val.red { color:var(--red); }
+    .info-val.green { color:var(--green); }
+    .badge { display:inline-block; padding:2px 8px; font-size:10px; font-weight:700; letter-spacing:2px; }
+    .badge-green { background:rgba(34,197,94,0.12); color:var(--green); border:1px solid rgba(34,197,94,0.25); }
+    .badge-red { background:rgba(232,0,29,0.12); color:var(--red); border:1px solid rgba(232,0,29,0.25); }
+
+    /* ACİL KİŞİ */
+    .emergency-block { margin:14px 14px 0; background:var(--panel); border:1px solid var(--red); overflow:hidden; }
+    .emergency-head { background:var(--red); padding:9px 14px; font-family:'Bebas Neue',sans-serif; font-size:15px; letter-spacing:3px; color:white; }
+    .contact-item { padding:14px; border-bottom:1px solid var(--border); }
+    .contact-item:last-child { border-bottom:none; }
+    .contact-relation { font-family:'Barlow Condensed',sans-serif; font-size:10px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:var(--red); margin-bottom:3px; }
+    .contact-name { font-family:'Bebas Neue',sans-serif; font-size:20px; letter-spacing:2px; color:var(--white); margin-bottom:3px; }
+    .contact-phone { font-family:'Barlow Condensed',sans-serif; font-size:18px; font-weight:600; color:var(--white); text-decoration:none; display:flex; align-items:center; gap:6px; }
+
+    /* NOTLAR */
+    .notes-box { margin:14px 14px 0; background:rgba(245,158,11,0.04); border:1px solid rgba(245,158,11,0.15); border-left:3px solid var(--yellow); padding:13px 14px; }
+    .notes-title { font-family:'Barlow Condensed',sans-serif; font-size:10px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:var(--yellow); margin-bottom:6px; }
+    .notes-text { font-size:14px; line-height:1.7; color:#aaa; }
+
+    /* ACTIONS */
+    .actions { margin:14px; display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .action-btn {
+      background:var(--panel); border:1px solid var(--border); padding:13px 10px;
+      text-align:center; text-decoration:none; color:var(--white);
+      font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase;
+      transition:all 0.2s; cursor:pointer; display:block;
+    }
+    .action-btn:hover { border-color:var(--red); color:var(--red); }
+    .action-icon { display:block; font-size:18px; margin-bottom:4px; }
+
+    /* FOOTER */
+    .qr-footer { margin:14px; padding-top:16px; text-align:center; border-top:1px solid var(--border); padding-bottom:24px; }
+    .qr-footer-brand { font-family:'Bebas Neue',sans-serif; font-size:15px; letter-spacing:4px; color:#444; margin-bottom:4px; }
+    .qr-footer-brand span { color:var(--red); }
+    .qr-footer-info { font-family:'JetBrains Mono',monospace; font-size:10px; color:#333; margin-top:3px; }
+
+    /* LOADING / ERROR */
+    .state-screen { display:flex; align-items:center; justify-content:center; min-height:100vh; padding:40px 24px; flex-direction:column; text-align:center; gap:16px; }
+    .state-icon { font-size:48px; }
+    .state-title { font-family:'Bebas Neue',sans-serif; font-size:24px; letter-spacing:2px; color:var(--red); }
+    .state-msg { font-family:'Barlow Condensed',sans-serif; font-size:14px; color:var(--grey); line-height:1.6; }
+    .spinner { width:32px;height:32px; border:2px solid var(--border); border-top-color:var(--red); border-radius:50%; animation:spin 0.8s linear infinite; }
+    @keyframes spin { to{transform:rotate(360deg)} }
   </style>
 </head>
 <body>
-  <div class="phone-wrapper">
 
-    <!-- ALERT BANNER -->
-    <div class="alert-banner">
-      <span class="alert-icon">🚨</span>
-      <span class="alert-text">ACİL TIBBİ BİLGİ</span>
-      <span class="alert-icon">🚨</span>
+  <!-- İçerik JS tarafından doldurulacak -->
+  <div class="phone-wrapper" id="app">
+    <div class="state-screen">
+      <div class="spinner"></div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--grey);">Profil yükleniyor...</div>
     </div>
-
-    <!-- SCAN STRIP -->
-    <div class="scan-strip">
-      <span class="scan-live">
-        <span class="scan-live-dot"></span>
-        PROFİL AKTİF
-      </span>
-      <span id="scanTime">QR Okuma: --</span>
-    </div>
-
-    <!-- HEADER -->
-    <div class="profile-header">
-      <div class="brand-tag">Dokuzcan · Tıbbi Profil</div>
-      <div class="profile-avatar-row">
-        <div class="profile-avatar" id="profileAvatar">--</div>
-        <div class="profile-name" id="profileName">YÜKLENİYOR</div>
-      </div>
-      <div class="profile-id" id="profileId">ID: --</div>
-    </div>
-
-    <!-- CRITICAL 3-LI -->
-    <div class="critical-grid">
-      <div class="critical-card danger-highlight">
-        <div class="critical-label">Kan Grubu</div>
-        <div class="critical-value danger" id="bloodTypeVal">--</div>
-      </div>
-      <div class="critical-card">
-        <div class="critical-label">Yaş</div>
-        <div class="critical-value" id="ageVal">--</div>
-      </div>
-      <div class="critical-card">
-        <div class="critical-label">Kilo</div>
-        <div class="critical-value" id="weightVal">--<span style="font-size:14px;color:#666;">KG</span></div>
-      </div>
-    </div>
-
-    <!-- DANGER FLAG (parlak şeritli) -->
-    <div class="danger-flag">
-      <div class="danger-flag-icon">⚠️</div>
-      <div>
-        <div class="danger-flag-title">İlaç Alerjisi — Kritik</div>
-        <div class="danger-flag-val" id="allergyFlag">Yükleniyor...</div>
-      </div>
-    </div>
-
-    <!-- ACİL ARA -->
-    <a href="#" class="call-btn" id="callBtn">
-      <span>📞</span>
-      <span>ACİL KİŞİYİ ARA</span>
-    </a>
-
-    <!-- KONUM -->
-    <div class="location-bar">
-      <div class="location-info">
-        <div class="location-label">📍 Tarama Konumu</div>
-        <div class="location-val" id="locationName">Konum alınıyor...</div>
-        <div class="location-coord" id="locationCoord">--</div>
-      </div>
-      <a href="#" class="btn-share-location" id="shareLoc">Paylaş</a>
-    </div>
-
-    <!-- EN YAKIN HASTANE -->
-    <div class="hospital-bar">
-      <div class="hospital-label">🏥 En Yakın Acil Servis</div>
-      <div class="hospital-name" id="hospitalName">Konum alınıyor...</div>
-      <div class="hospital-distance" id="hospitalDistance">En yakın acil servis hesaplanıyor</div>
-    </div>
-
-    <!-- TIBBİ BİLGİLER -->
-    <div class="section" style="margin-top:20px;">
-      <div class="section-title">Tıbbi Bilgiler</div>
-      <div class="info-row">
-        <span class="info-key">Kronik Hastalık</span>
-        <span class="info-val" id="chronicVal">—</span>
-      </div>
-      <div class="info-row">
-        <span class="info-key">Sürekli İlaç</span>
-        <span class="info-val" id="medsVal">—</span>
-      </div>
-      <div class="info-row">
-        <span class="info-key">Besin Alerjisi</span>
-        <span class="info-val ok">Yok</span>
-      </div>
-      <div class="info-row">
-        <span class="info-key">Kan Sulandırıcı</span>
-        <span class="info-val ok">Kullanmıyor</span>
-      </div>
-      <div class="info-row">
-        <span class="info-key">Geçirilmiş Ameliyat</span>
-        <span class="info-val" id="surgeriesVal">—</span>
-      </div>
-      <div class="info-row">
-        <span class="info-key">Organ Bağışı</span>
-        <span class="info-val"><span class="badge badge-green">EVET</span></span>
-      </div>
-      <div class="info-row">
-        <span class="info-key">Kan Bağışı Onayı</span>
-        <span class="info-val"><span class="badge badge-green">EVET</span></span>
-      </div>
-      <div class="info-row">
-        <span class="info-key">Sigorta</span>
-        <span class="info-val" id="insuranceVal">—</span>
-      </div>
-      <div class="info-row">
-        <span class="info-key">Poliçe No</span>
-        <span class="info-val" id="insurancePolicyVal" style="font-family:'JetBrains Mono',monospace;font-size:13px;">—</span>
-      </div>
-    </div>
-
-    <!-- ACİL KİŞİLER -->
-    <div class="emergency-contact">
-      <div class="emergency-header">📞 Acil İletişim Kişileri</div>
-      <div id="contactList"><div style="padding:12px;color:#666;font-size:13px;">Yükleniyor...</div></div>
-    </div>
-
-    <!-- NOTLAR -->
-    <div class="notes-box">
-      <div class="notes-title">⚠ Ek Tıbbi Notlar</div>
-      <div class="notes-text">
-        <span id="notesVal">—</span>
-      </div>
-    </div>
-
-    <!-- HIZLI AKSIYONLAR -->
-    <div class="quick-actions">
-      <a href="tel:112" class="quick-btn">
-        <span class="quick-btn-icon">🚑</span>
-        112 Ara
-      </a>
-      <a href="#" class="quick-btn" id="copyBtn">
-        <span class="quick-btn-icon">📋</span>
-        Bilgileri Kopyala
-      </a>
-    </div>
-
-    <!-- FOOTER -->
-    <div class="qr-footer">
-      <div class="qr-footer-brand">DOKU<span>ZCAN</span> MOTO</div>
-      <div class="qr-footer-tag">Motorcuya yakın · Ambulansa kadar</div>
-      <div class="qr-footer-time" id="scanTimeFooter"></div>
-      <div class="qr-footer-update" id="updateDate">Profil güncellenme: —</div>
-    </div>
-
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -762,189 +199,251 @@
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZhc2NzZGt6Y21ubWFheHZsZHhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4MTMxMTMsImV4cCI6MjA5MzM4OTExM30.Unlfg8DHP7ce2CtFCcCgRaydstrCB-dwAIEebFRUQm4'
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
 
-    // Scan time
-    const now = new Date();
-    const timeStr = now.toLocaleString('tr-TR', {
-      day: '2-digit', month: '2-digit', year: 'numeric',
-      hour: '2-digit', minute: '2-digit'
-    });
-    document.getElementById('scanTime').textContent = 'QR: ' + timeStr;
-    document.getElementById('scanTimeFooter').textContent = 'Tarama zamanı: ' + timeStr;
-
-    // Geolocation
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          const lat = pos.coords.latitude.toFixed(6);
-          const lng = pos.coords.longitude.toFixed(6);
-          document.getElementById('locationName').textContent = 'Konum tespit edildi';
-          document.getElementById('locationCoord').textContent = lat + ', ' + lng;
-          document.getElementById('shareLoc').href = 
-            'https://maps.google.com/?q=' + lat + ',' + lng;
-          // En yakın hastane arama linki
-          const hospitalName = document.getElementById('hospitalName')
-          const hospitalDist = document.getElementById('hospitalDistance')
-          if (hospitalName) {
-            hospitalName.innerHTML = '<a href="https://maps.google.com/?q=acil+servis+hastane&near=' + lat + ',' + lng + '" target="_blank" style="color:#22c55e;text-decoration:none;">Haritada Göster →</a>'
-            hospitalDist.textContent = 'Konumunuza en yakın acil servis'
-          }
-        },
-        () => {
-          document.getElementById('locationName').textContent = 'Konum erişimi reddedildi';
-          document.getElementById('locationCoord').textContent = 'Manuel olarak paylaşın';
-        },
-        { timeout: 5000 }
-      );
-    } else {
-      document.getElementById('locationName').textContent = 'Konum desteklenmiyor';
+    function showError(title, msg) {
+      document.getElementById('app').innerHTML = `
+        <div class="state-screen">
+          <div class="state-icon">⚠️</div>
+          <div class="state-title">${title}</div>
+          <div class="state-msg">${msg}</div>
+        </div>`
     }
 
-    // URL'den slug al ve veriyi yükle
+    function fmt(v, fallback = '—') { return v && v.trim() ? v.trim() : fallback }
+    function calcAge(dateStr) {
+      if (!dateStr) return '—'
+      return Math.floor((Date.now() - new Date(dateStr)) / (365.25 * 864e5)) + ''
+    }
+
     async function loadProfile() {
       const params = new URLSearchParams(window.location.search)
       const slug = params.get('slug')
 
-      if (!slug) {
-        showError('Geçersiz QR kodu. Slug bulunamadı.')
+      if (!slug || slug === 'unknown') {
+        showError('GEÇERSİZ QR', 'Bu QR koda ait profil bulunamadı.')
         return
       }
 
-      // Kiti slug ile bul
-      const { data: kit, error: kitError } = await sb
+      // 1. Slug ile kit bul
+      const { data: kit, error: kitErr } = await sb
         .from('kits')
-        .select('user_id, slug, kit_type')
+        .select('user_id, slug, kit_type, is_active')
         .eq('slug', slug)
-        .single()
+        .maybeSingle()
 
-      if (kitError || !kit || !kit.user_id) {
-        showError('Bu QR koda ait profil bulunamadı.')
+      if (kitErr) {
+        showError('VERİTABANI HATASI', kitErr.message + ' — RLS policy eksik olabilir.')
+        return
+      }
+      if (!kit) {
+        showError('PROFİL BULUNAMADI', 'Slug: ' + slug + ' — Bu QR koda kayıtlı profil yok.')
+        return
+      }
+      if (kit.is_active === false) {
+        showError('PROFİL PASİF', 'Profil sahibi bu QR kodu geçici olarak devre dışı bırakmış.')
         return
       }
 
-      // Profil bilgilerini çek
-      const { data: profile } = await sb
+      // 2. Profil bilgileri
+      const { data: profile, error: profErr } = await sb
         .from('profiles')
-        .select('*')
+        .select('first_name, last_name')
         .eq('id', kit.user_id)
-        .single()
+        .maybeSingle()
 
-      // Tıbbi verileri çek
-      const { data: med } = await sb
+      if (profErr) {
+        showError('PROFİL HATASI', 'profiles tablosu anonim okuma izni yok. SQL güncellenmeli.')
+        return
+      }
+
+      // 3. Tıbbi veri
+      const { data: med, error: medErr } = await sb
         .from('medical_data')
         .select('*')
         .eq('user_id', kit.user_id)
-        .single()
+        .maybeSingle()
 
-      // DOM'u doldur
-      if (profile) {
-        const firstName = profile.first_name.toUpperCase()
-        const lastName = profile.last_name.toUpperCase()
-        const initials = profile.first_name[0] + profile.last_name[0]
-        document.getElementById('profileAvatar').textContent = initials.toUpperCase()
-        document.getElementById('profileName').innerHTML = firstName + '<br>' + lastName
-        document.getElementById('profileId').textContent = 'ID: ' + slug
+      if (medErr) {
+        // Tıbbi veri yok ama profil var — yine de göster
+        console.warn('medical_data hatası:', medErr.message)
       }
 
-      if (med) {
-        // Kan grubu
-        const bt = med.blood_type || '—'
-        document.getElementById('bloodTypeVal').textContent = bt
-        document.querySelector('.stat-card-val') && (document.querySelector('.stat-card-val').textContent = bt)
-
-        // Yaş (doğum tarihi varsa hesapla)
-        if (med.birth_date) {
-          const age = Math.floor((new Date() - new Date(med.birth_date)) / (365.25*24*3600*1000))
-          document.getElementById('ageVal').textContent = age
-        } else {
-          document.getElementById('ageVal').textContent = '—'
-        }
-
-        // Kilo
-        document.getElementById('weightVal').innerHTML = (med.weight || '—') + '<span style="font-size:14px;color:#666;">KG</span>'
-
-        // Alerji flag
-        const allergies = med.allergies ? med.allergies.split(',').filter(Boolean) : []
-        if (allergies.length > 0) {
-          document.getElementById('allergyFlag').textContent = allergies.join(', ')
-          document.querySelector('.danger-flag').style.display = 'flex'
-        } else {
-          document.querySelector('.danger-flag').style.display = 'none'
-        }
-
-        // Kronik / ilaç
-        document.getElementById('chronicVal').textContent = med.chronic_conditions || 'Yok'
-        document.getElementById('medsVal').textContent = med.medications || 'Yok'
-
-        // Notlar
-        document.getElementById('notesVal').textContent = med.notes || '—'
-        // Ameliyat
-        if (document.getElementById('surgeriesVal'))
-          document.getElementById('surgeriesVal').textContent = med.surgeries || 'Yok'
-        // Sigorta
-        if (document.getElementById('insuranceVal'))
-          document.getElementById('insuranceVal').textContent = med.insurance_company || '—'
-        if (document.getElementById('insurancePolicyVal'))
-          document.getElementById('insurancePolicyVal').textContent = med.insurance_policy || '—'
-        // Besin alerjileri - kronik satırına ekle
-        if (document.getElementById('chronicVal'))
-          document.getElementById('chronicVal').textContent = med.chronic_conditions || 'Yok'
-
-        // Acil kişi
-        const contactList = document.getElementById('contactList')
-        if (med.emergency_contact_name) {
-          contactList.innerHTML = `
-            <div class="contact-item">
-              <div class="contact-relation">Acil Kişi</div>
-              <div class="contact-name">${med.emergency_contact_name}</div>
-              <a href="tel:${med.emergency_contact_phone || ''}" class="contact-phone">📱 ${med.emergency_contact_phone || '—'}</a>
-            </div>`
-          // Acil ara butonunu güncelle
-          const callBtn = document.getElementById('callBtn')
-          if (callBtn && med.emergency_contact_phone) {
-            callBtn.href = 'tel:' + med.emergency_contact_phone
-          }
-        } else {
-          contactList.innerHTML = '<div style="padding:12px;color:#666;font-size:13px;">Acil kişi eklenmemiş</div>'
-        }
-
-        // Güncelleme tarihi
-        if (med.updated_at) {
-          const d = new Date(med.updated_at)
-          document.getElementById('updateDate').textContent = 'Profil güncellenme: ' + d.toLocaleDateString('tr-TR')
-        }
-
-        // Kopyalama butonu
-        document.getElementById('copyBtn').addEventListener('click', (e) => {
-          e.preventDefault()
-          const text = [
-            'ACİL TIBBİ BİLGİ — DOKUZCAN',
-            'Ad: ' + (profile ? profile.first_name + ' ' + profile.last_name : '—'),
-            'Kan Grubu: ' + bt,
-            'Alerji: ' + (allergies.join(', ') || 'Yok'),
-            'Kronik: ' + (med.chronic_conditions || 'Yok'),
-            'İlaç: ' + (med.medications || 'Yok'),
-            'Acil Kişi: ' + (med.emergency_contact_name || '—') + ' ' + (med.emergency_contact_phone || ''),
-            'Not: ' + (med.notes || '—'),
-          ].join('\n')
-          navigator.clipboard.writeText(text).then(() => {
-            const btn = e.currentTarget
-            const original = btn.innerHTML
-            btn.innerHTML = '<span class="quick-btn-icon">✓</span>Kopyalandı'
-            btn.style.borderColor = '#22c55e'
-            btn.style.color = '#22c55e'
-            setTimeout(() => { btn.innerHTML = original; btn.style.borderColor = ''; btn.style.color = '' }, 2000)
-          })
-        })
-      }
+      // 4. DOM'u doldur
+      renderProfile(slug, profile, med)
     }
 
-    function showError(msg) {
-      document.querySelector('.phone-wrapper').innerHTML = `
-        <div style="padding:40px 24px;text-align:center;">
-          <div style="font-size:48px;margin-bottom:16px;">⚠️</div>
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;color:#E8001D;margin-bottom:8px;">PROFİL BULUNAMADI</div>
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:14px;color:#888;">${msg}</div>
-        </div>`
+    function renderProfile(slug, profile, med) {
+      const firstName = profile ? profile.first_name.toUpperCase() : 'BİLİNMEYEN'
+      const lastName = profile ? profile.last_name.toUpperCase() : 'KİŞİ'
+      const initials = profile ? (profile.first_name[0] + profile.last_name[0]).toUpperCase() : '??'
+
+      const bloodType = med?.blood_type || '—'
+      const age = calcAge(med?.birth_date)
+      const weight = med?.weight ? med.weight + '<span class="critical-unit">KG</span>' : '—'
+      const allergies = med?.allergies ? med.allergies.split(',').filter(Boolean) : []
+      const foodAllergies = med?.food_allergies ? med.food_allergies.split(',').filter(Boolean) : []
+      const medications = med?.medications ? med.medications.split(',').filter(Boolean) : []
+      const bloodThinner = med?.blood_thinner === 'yes'
+      const scanTime = new Date().toLocaleString('tr-TR', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' })
+      const updateDate = med?.updated_at ? new Date(med.updated_at).toLocaleDateString('tr-TR') : '—'
+
+      document.getElementById('app').innerHTML = `
+        <!-- ALERT -->
+        <div class="alert-banner">
+          <span class="alert-icon">🚨</span>
+          <span class="alert-text">ACİL TIBBİ BİLGİ</span>
+          <span class="alert-icon">🚨</span>
+        </div>
+
+        <!-- SCAN STRIP -->
+        <div class="scan-strip">
+          <span class="scan-live"><span class="scan-dot"></span>PROFİL AKTİF</span>
+          <span>QR: ${scanTime}</span>
+        </div>
+
+        <!-- HEADER -->
+        <div class="profile-header">
+          <div class="brand-tag">Dokuzcan · Acil Tıbbi Profil</div>
+          <div class="profile-avatar-row">
+            <div class="profile-avatar">${initials}</div>
+            <div class="profile-name">${firstName}<br>${lastName}</div>
+          </div>
+          <div class="profile-id">ID: ${slug}</div>
+        </div>
+
+        <!-- KRİTİK 3'LÜ -->
+        <div class="critical-grid">
+          <div class="critical-card blood">
+            <div class="critical-label">Kan Grubu</div>
+            <div class="critical-value red">${bloodType}</div>
+          </div>
+          <div class="critical-card">
+            <div class="critical-label">Yaş</div>
+            <div class="critical-value">${age}</div>
+          </div>
+          <div class="critical-card">
+            <div class="critical-label">Kilo</div>
+            <div class="critical-value">${weight}</div>
+          </div>
+        </div>
+
+        <!-- ALERJİ FLAG -->
+        ${allergies.length > 0 ? `
+        <div class="danger-flag">
+          <div>
+            <div class="danger-flag-title">⚠ İlaç Alerjisi — KRİTİK</div>
+            <div class="danger-flag-val">${allergies.join(', ')}</div>
+          </div>
+        </div>` : ''}
+
+        ${bloodThinner ? `
+        <div class="danger-flag">
+          <div>
+            <div class="danger-flag-title">⚠ Kan Sulandırıcı Kullanıyor</div>
+            <div class="danger-flag-val">Kanama riski artmış — dikkatli müdahale</div>
+          </div>
+        </div>` : ''}
+
+        <!-- ACİL ARA -->
+        ${med?.emergency_contact_phone ? `
+        <a href="tel:${med.emergency_contact_phone}" class="call-btn">
+          <span>📞</span><span>ACİL KİŞİYİ ARA — ${med.emergency_contact_name || 'Acil Kişi'}</span>
+        </a>` : ''}
+
+        <!-- TIBBİ BİLGİLER -->
+        <div class="section" style="margin-top:18px;">
+          <div class="section-title">Tıbbi Bilgiler</div>
+          <div class="info-row">
+            <span class="info-key">Kronik Hastalık</span>
+            <span class="info-val">${fmt(med?.chronic_conditions, 'Yok')}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-key">Sürekli İlaç</span>
+            <span class="info-val">${medications.length ? medications.join(', ') : 'Yok'}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-key">Besin Alerjisi</span>
+            <span class="info-val ${foodAllergies.length ? 'red' : 'green'}">${foodAllergies.length ? foodAllergies.join(', ') : 'Yok'}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-key">Kan Sulandırıcı</span>
+            <span class="info-val ${bloodThinner ? 'red' : 'green'}">${bloodThinner ? 'KULLANIYOR' : 'Hayır'}</span>
+          </div>
+          ${med?.insurance_company ? `
+          <div class="info-row">
+            <span class="info-key">Sigorta</span>
+            <span class="info-val">${med.insurance_company}</span>
+          </div>` : ''}
+          ${med?.insurance_policy ? `
+          <div class="info-row">
+            <span class="info-key">Poliçe No</span>
+            <span class="info-val" style="font-family:'JetBrains Mono',monospace;font-size:12px;">${med.insurance_policy}</span>
+          </div>` : ''}
+        </div>
+
+        <!-- ACİL KİŞİ -->
+        ${med?.emergency_contact_name ? `
+        <div class="emergency-block">
+          <div class="emergency-head">📞 Acil İletişim</div>
+          <div class="contact-item">
+            <div class="contact-relation">${fmt(med.emergency_contact_relation, 'Yakın')}</div>
+            <div class="contact-name">${med.emergency_contact_name}</div>
+            <a href="tel:${med.emergency_contact_phone || ''}" class="contact-phone">📱 ${fmt(med.emergency_contact_phone)}</a>
+          </div>
+        </div>` : ''}
+
+        <!-- NOTLAR -->
+        ${med?.notes ? `
+        <div class="notes-box">
+          <div class="notes-title">⚠ Ek Tıbbi Notlar</div>
+          <div class="notes-text">${med.notes}</div>
+        </div>` : ''}
+
+        <!-- AKSIYONLAR -->
+        <div class="actions">
+          <a href="tel:112" class="action-btn">
+            <span class="action-icon">🚑</span>112 Ara
+          </a>
+          <button class="action-btn" onclick="copyInfo()">
+            <span class="action-icon">📋</span>Bilgileri Kopyala
+          </button>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="qr-footer">
+          <div class="qr-footer-brand">DOKU<span>ZCAN</span></div>
+          <div class="qr-footer-info">Profil güncelleme: ${updateDate}</div>
+        </div>
+      `
+
+      // Kopyalama fonksiyonu için global değişkenleri kaydet
+      window._qrProfile = { profile, med, slug }
+    }
+
+    function copyInfo() {
+      const { profile, med, slug } = window._qrProfile || {}
+      const name = profile ? profile.first_name + ' ' + profile.last_name : '—'
+      const lines = [
+        'ACİL TIBBİ BİLGİ — DOKUZCAN',
+        'Ad Soyad: ' + name,
+        'Kan Grubu: ' + (med?.blood_type || '—'),
+        'Yaş: ' + calcAge(med?.birth_date),
+        'Kilo: ' + (med?.weight ? med.weight + 'kg' : '—'),
+        'Alerji (İlaç): ' + (med?.allergies || 'Yok'),
+        'Alerji (Besin): ' + (med?.food_allergies || 'Yok'),
+        'Kronik: ' + (med?.chronic_conditions || 'Yok'),
+        'İlaçlar: ' + (med?.medications || 'Yok'),
+        'Kan Sulandırıcı: ' + (med?.blood_thinner === 'yes' ? 'EVET' : 'Hayır'),
+        'Acil Kişi: ' + (med?.emergency_contact_name || '—') + ' ' + (med?.emergency_contact_phone || ''),
+        'Not: ' + (med?.notes || '—'),
+        'Profil ID: ' + slug,
+      ]
+      navigator.clipboard.writeText(lines.join('\n')).then(() => {
+        const btn = event.currentTarget
+        const orig = btn.innerHTML
+        btn.innerHTML = '<span class="action-icon">✓</span>Kopyalandı'
+        btn.style.borderColor = 'var(--green)'; btn.style.color = 'var(--green)'
+        setTimeout(() => { btn.innerHTML = orig; btn.style.borderColor = ''; btn.style.color = '' }, 2500)
+      })
     }
 
     loadProfile()

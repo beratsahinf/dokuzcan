@@ -2118,18 +2118,31 @@
       clearMsgs('login')
       if (!email || !pass) { showErr('loginError', 'E-posta ve şifre gerekli.'); return }
       btn.textContent = 'Giriş yapılıyor...'; btn.disabled = true
-      const { error } = await sb.auth.signInWithPassword({ email, password: pass })
+
+      const { data, error } = await sb.auth.signInWithPassword({ email, password: pass })
       btn.textContent = 'Giriş Yap'; btn.disabled = false
+
       if (error) {
-        const msg = error.message.includes('Invalid') ? 'E-posta veya şifre hatalı.' : error.message
-        showErr('loginError', msg)
+        if (error.message.includes('Invalid login') || error.message.includes('invalid_credentials')) {
+          showErr('loginError', 'E-posta veya şifre hatalı.')
+        } else if (error.message.includes('Email not confirmed')) {
+          showErr('loginError', 'E-posta adresi doğrulanmamış. Supabase Dashboard\'dan "Confirm email" seçeneğini kapat.')
+        } else {
+          showErr('loginError', error.message)
+        }
       } else {
-        showOk('loginSuccess', '✓ Giriş başarılı! Yönlendiriliyorsunuz...')
-        setTimeout(() => { closeModal(); checkSession() }, 1000)
+        showOk('loginSuccess', '✓ Giriş başarılı!')
+        setTimeout(() => { closeModal(); checkSession() }, 800)
       }
     }
 
-    /* ── KAYIT ── */
+    function generateSlug() {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+      let s = 'DC-'
+      for (let i = 0; i < 8; i++) s += chars[Math.floor(Math.random() * chars.length)]
+      return s
+    }
+
     async function doRegister() {
       const btn = document.getElementById('regBtn')
       const first = document.getElementById('regFirst').value.trim()
@@ -2137,26 +2150,56 @@
       const email = document.getElementById('regEmail').value.trim()
       const pass = document.getElementById('regPass').value
       clearMsgs('reg')
-      if (!first || !last || !email || !pass) { showErr('regError', 'Tüm alanları doldurun.'); return }
+      if (!first || !last) { showErr('regError', 'Ad ve soyad gerekli.'); return }
+      if (!email) { showErr('regError', 'E-posta gerekli.'); return }
       if (pass.length < 8) { showErr('regError', 'Şifre en az 8 karakter olmalı.'); return }
       btn.textContent = 'Hesap oluşturuluyor...'; btn.disabled = true
 
-      // 1. Auth kullanıcısı oluştur
       const { data: authData, error: authErr } = await sb.auth.signUp({ email, password: pass })
+
       if (authErr) {
-        const msg = authErr.message.includes('already') ? 'Bu e-posta zaten kayıtlı. Giriş yapmayı deneyin.' : authErr.message
-        showErr('regError', msg)
-        btn.textContent = 'Kayıt Ol'; btn.disabled = false; return
+        btn.textContent = 'Kayıt Ol'; btn.disabled = false
+        if (authErr.message.includes('already registered') || authErr.message.includes('already exists') || authErr.message.includes('User already')) {
+          showErr('regError', 'Bu e-posta zaten kayıtlı.')
+          setTimeout(() => switchTab('login'), 1500)
+        } else {
+          showErr('regError', authErr.message)
+        }
+        return
       }
 
-      const userId = authData.user.id
+      const userId = authData.user?.id
+      if (!userId) {
+        btn.textContent = 'Kayıt Ol'; btn.disabled = false
+        showErr('regError', 'Kullanıcı oluşturulamadı.')
+        return
+      }
 
-      // 2. Profil kaydı oluştur
+      const hasSession = !!(authData.session)
+
+      // 1. Profil kaydı
       await sb.from('profiles').upsert({ id: userId, first_name: first, last_name: last })
 
+      // 2. QR slug otomatik oluştur (kit satın alınmasa da QR hazır olsun)
+      const slug = generateSlug()
+      await sb.from('kits').insert({
+        user_id: userId,
+        slug: slug,
+        activation_code: 'AUTO-' + slug.slice(3, 7),
+        kit_type: 'advanced',
+        is_active: true,
+        activated_at: new Date().toISOString()
+      })
+
       btn.textContent = 'Kayıt Ol'; btn.disabled = false
-      showOk('regSuccess', '✓ Hesabın oluşturuldu! Giriş yapılıyor...')
-      setTimeout(() => { closeModal(); checkSession() }, 1200)
+
+      if (!hasSession) {
+        showOk('regSuccess', '✓ Hesap oluşturuldu! E-posta kutunu kontrol et ve bağlantıya tıkla, sonra giriş yap.')
+        return
+      }
+
+      showOk('regSuccess', '✓ Hesabın hazır! Yönlendiriliyorsunuz...')
+      setTimeout(() => { closeModal(); checkSession() }, 900)
     }
 
     // Enter tuşu desteği

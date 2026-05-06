@@ -534,17 +534,37 @@
     let qrIsActive = true
 
     function getQRUrl() {
-      const base = window.location.origin
-      const path = window.location.pathname.replace('tibbi-profil', 'qr-profil').replace('tibbi-profil.html', 'qr-profil.html')
-      return base + path + '?slug=' + (userKit?.slug || 'unknown')
+      // Vercel'de path /tibbi-profil veya /tibbi-profil.html olabilir
+      // qr-profil sayfası her zaman origin + /qr-profil
+      const origin = window.location.origin
+      // .html extension varsa koru, yoksa düz path kullan
+      const hasHtml = window.location.pathname.includes('.html')
+      const qrPath = hasHtml ? '/qr-profil.html' : '/qr-profil'
+      return origin + qrPath + '?slug=' + (userKit?.slug || 'unknown')
+    }
+
+    function waitForQRLib(cb, attempts = 0) {
+      if (typeof QRCode !== 'undefined') { cb(); return }
+      if (attempts > 20) { console.error('QRCode kütüphanesi yüklenemedi'); return }
+      setTimeout(() => waitForQRLib(cb, attempts + 1), 150)
     }
 
     function generateQR() {
-      const canvas = document.getElementById('qrCanvas')
-      if (!canvas || !userKit) return
-      QRCode.toCanvas(canvas, getQRUrl(), {
-        width: 108, margin: 1,
-        color: { dark: '#000000', light: '#ffffff' }
+      if (!userKit) return
+      waitForQRLib(() => {
+        const canvas = document.getElementById('qrCanvas')
+        if (!canvas) return
+        // Canvas'ı gerçek piksel boyutuna ayarla
+        canvas.width = 180
+        canvas.height = 180
+        canvas.style.width = '108px'
+        canvas.style.height = '108px'
+        QRCode.toCanvas(canvas, getQRUrl(), {
+          width: 180, margin: 1,
+          color: { dark: '#000000', light: '#ffffff' }
+        }, (err) => {
+          if (err) console.error('QR üretme hatası:', err)
+        })
       })
     }
 
@@ -636,13 +656,24 @@
       if (profile) {
         document.getElementById('qrUserName').textContent = profile.first_name + ' ' + profile.last_name
       }
+
       if (kit) {
         document.getElementById('qrSlug').textContent = kit.slug
         document.getElementById('previewLink').href = getQRUrl()
-        const isActive = kit.is_active !== false // default true
+        const isActive = kit.is_active !== false
         document.getElementById('qrActive').checked = isActive
         toggleQRStatus(isActive)
         generateQR()
+      } else {
+        // Kit yok — QR alanını bilgi mesajıyla göster
+        document.getElementById('qrSlug').textContent = 'Henüz kit siparişi yok'
+        document.getElementById('previewLink').style.display = 'none'
+        document.getElementById('qrActive').disabled = true
+        const canvasBox = document.querySelector('.qr-canvas-box')
+        if (canvasBox) {
+          canvasBox.innerHTML = '<div style="width:108px;height:108px;display:flex;align-items:center;justify-content:center;background:#111;font-family:\'Barlow Condensed\',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#555;text-align:center;padding:8px;">KIT<br>GEREKLİ</div>'
+        }
+        document.getElementById('toggleLabel').textContent = 'Kit satın aldıktan sonra QR aktif olur'
       }
       if (med) {
         if (med.blood_type) document.getElementById('bloodType').value = med.blood_type
