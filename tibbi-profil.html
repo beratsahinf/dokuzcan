@@ -575,10 +575,13 @@
       })
     }
 
-    function toggleQRStatus(active) {
+    async function toggleQRStatus(active) {
       qrIsActive = active
-      const dot = document.getElementById('statusDot')
+      const dot   = document.getElementById('statusDot')
       const label = document.getElementById('toggleLabel')
+      const toggle = document.getElementById('qrActive')
+
+      // Anlık UI güncelle
       if (active) {
         dot.classList.add('active')
         label.textContent = 'Profil Aktif — QR taranabilir'
@@ -586,9 +589,32 @@
         dot.classList.remove('active')
         label.textContent = 'Profil Pasif — QR erişimi kapalı'
       }
-      // Supabase'de durum güncelle
-      if (userKit) {
-        sb.from('kits').update({ is_active: active }).eq('id', userKit.id)
+
+      if (!userKit) {
+        label.textContent = 'Kit bulunamadı, kaydedilemedi'
+        return
+      }
+
+      label.textContent = 'Kaydediliyor...'
+      toggle.disabled = true
+
+      const { error } = await sb
+        .from('kits')
+        .update({ is_active: active })
+        .eq('id', userKit.id)
+
+      toggle.disabled = false
+
+      if (error) {
+        // Geri al
+        toggle.checked = !active
+        qrIsActive = !active
+        dot.classList.toggle('active', !active)
+        label.textContent = 'Hata: ' + error.message
+      } else {
+        label.textContent = active
+          ? 'Profil Aktif — QR taranabilir'
+          : 'Profil Pasif — QR erişimi kapalı'
       }
     }
 
@@ -669,7 +695,12 @@
         document.getElementById('previewLink').href = getQRUrl()
         const isActive = kit.is_active !== false
         document.getElementById('qrActive').checked = isActive
-        toggleQRStatus(isActive)
+        // Sadece UI güncelle, Supabase'e yazma
+        const dot   = document.getElementById('statusDot')
+        const label = document.getElementById('toggleLabel')
+        qrIsActive = isActive
+        dot.classList.toggle('active', isActive)
+        label.textContent = isActive ? 'Profil Aktif — QR taranabilir' : 'Profil Pasif — QR erişimi kapalı'
         generateQR()
       } else {
         document.getElementById('qrSlug').textContent = 'Henüz kit siparişi yok'
