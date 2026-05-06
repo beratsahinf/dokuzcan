@@ -1068,9 +1068,29 @@
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZhc2NzZGt6Y21ubWFheHZsZHhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4MTMxMTMsImV4cCI6MjA5MzM4OTExM30.Unlfg8DHP7ce2CtFCcCgRaydstrCB-dwAIEebFRUQm4'
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
 
-    // State
-    let selectedKit = { name: 'ADVANCED', price: 2290 };
-    let shippingCost = 0;
+    // Global state
+    let selectedKit = { name: 'ADVANCED', price: 2290 }
+    let shippingCost = 0
+    let currentSession = null   // sayfa yüklenince doldurulur
+    let currentProfile = null
+
+    // Sayfa açılınca oturumu kontrol et
+    async function initPage() {
+      const { data: { session } } = await sb.auth.getSession()
+      currentSession = session
+      if (session) {
+        currentProfile = (await sb.from('profiles').select('first_name,last_name,phone').eq('id', session.user.id).maybeSingle()).data
+        // Nav'da profil avatarı göster
+        const navEl = document.getElementById('profileNav')
+        const btnEl = document.getElementById('profileBtn')
+        if (navEl && btnEl) {
+          navEl.style.display = 'block'
+          if (currentProfile) btnEl.textContent = (currentProfile.first_name[0] + currentProfile.last_name[0]).toUpperCase()
+          else btnEl.textContent = session.user.email[0].toUpperCase()
+        }
+      }
+    }
+    initPage()
 
     // Kit seç
     function selectKit(el, name, price) {
@@ -1119,7 +1139,7 @@
     }
 
     // Adım 2'ye geç
-    async function goToStep2() {
+    function goToStep2() {
       document.getElementById('screen1').classList.remove('active')
       document.getElementById('screen2').classList.add('active')
       document.getElementById('step1').classList.remove('active')
@@ -1128,22 +1148,19 @@
       document.getElementById('sumKit2').textContent = selectedKit.name + ' Kit'
       window.scrollTo(0, 0)
 
-      // Oturum kontrolü — açıksa hesap formunu gizle
-      const { data: { session } } = await sb.auth.getSession()
-      if (session) {
+      // currentSession sayfa yüklenirken zaten alındı — async bekleme yok
+      if (currentSession) {
         document.getElementById('guestForm').style.display = 'none'
         document.getElementById('loggedInForm').style.display = 'block'
-        // Kullanıcı bilgilerini doldur
-        const { data: profile } = await sb.from('profiles').select('first_name,last_name').eq('id', session.user.id).maybeSingle()
-        if (profile) {
-          const initials = (profile.first_name[0] + profile.last_name[0]).toUpperCase()
-          document.getElementById('sessionAvatar').textContent = initials
-          document.getElementById('sessionName').textContent = profile.first_name + ' ' + profile.last_name
-        } else {
-          document.getElementById('sessionAvatar').textContent = session.user.email[0].toUpperCase()
-          document.getElementById('sessionName').textContent = session.user.email
-        }
-        document.getElementById('sessionEmail').textContent = session.user.email
+        const name = currentProfile
+          ? currentProfile.first_name + ' ' + currentProfile.last_name
+          : currentSession.user.email
+        const initial = currentProfile
+          ? (currentProfile.first_name[0] + currentProfile.last_name[0]).toUpperCase()
+          : currentSession.user.email[0].toUpperCase()
+        document.getElementById('sessionAvatar').textContent = initial
+        document.getElementById('sessionName').textContent = name
+        document.getElementById('sessionEmail').textContent = currentSession.user.email
       } else {
         document.getElementById('guestForm').style.display = 'block'
         document.getElementById('loggedInForm').style.display = 'none'
@@ -1161,15 +1178,15 @@
       try {
         let userId, userEmail, userFirst, userLast, userPhone
 
-        const { data: { session } } = await sb.auth.getSession()
-
-        if (session) {
-          // Oturum açık — direkt kullan
-          userId = session.user.id; userEmail = session.user.email
-          const { data: p } = await sb.from('profiles').select('*').eq('id', userId).maybeSingle()
-          userFirst = p?.first_name || ''; userLast = p?.last_name || ''; userPhone = p?.phone || ''
+        if (currentSession) {
+          // Oturum açık — global değişkenden al
+          userId    = currentSession.user.id
+          userEmail = currentSession.user.email
+          userFirst = currentProfile?.first_name || ''
+          userLast  = currentProfile?.last_name  || ''
+          userPhone = currentProfile?.phone       || ''
         } else {
-          // Oturum yok — form verilerini al
+          // Oturum yok — formdaki bilgileri oku ve hesap oluştur/giriş yap
           const isNew = document.getElementById('tabNew').classList.contains('active')
           if (isNew) {
             const fname = document.getElementById('firstName').value.trim()
@@ -1210,9 +1227,9 @@
           }
         }
 
-        // iyzico API'ye istek at
-        const kitPriceMap = { BASIC: '1490.00', ADVANCED: '2290.00', PRO: '3490.00' }
-        const price = kitPriceMap[selectedKit.name] || '2290.00'
+        // iyzico API
+        const prices = { BASIC: '1490.00', ADVANCED: '2290.00', PRO: '3490.00' }
+        const price  = prices[selectedKit.name] || '2290.00'
 
         const resp = await fetch('/api/iyzico-init', {
           method: 'POST',
@@ -1220,39 +1237,37 @@
           body: JSON.stringify({
             userId, email: userEmail,
             firstName: userFirst || 'Kullanıcı',
-            lastName: userLast || 'Dokuzcan',
-            phone: userPhone || '+905000000000',
-            kitType: selectedKit.name.toLowerCase(),
-            price, currency: 'TRY'
+            lastName:  userLast  || 'Dokuzcan',
+            phone:     userPhone || '+905000000000',
+            kitType:   selectedKit.name.toLowerCase(),
+            price,     currency: 'TRY'
           })
         })
 
         if (!resp.ok) {
           const err = await resp.json().catch(() => ({}))
-          errEl.textContent = 'Ödeme başlatılamadı: ' + (err.error || 'Sunucu hatası')
+          errEl.textContent = 'Ödeme başlatılamadı: ' + (err.error || resp.status + ' Sunucu hatası')
           errEl.style.display = 'block'; btn.textContent = 'Güvenli Ödemeye Geç →'; btn.disabled = false; return
         }
 
         const data = await resp.json()
 
-        // iyzico form HTML'ini sayfaya enjekte et
-        const formContainer = document.createElement('div')
-        formContainer.innerHTML = data.checkoutFormContent
-        document.getElementById('checkoutError').before(formContainer)
-
-        // Script'leri manuel çalıştır
-        formContainer.querySelectorAll('script').forEach(s => {
+        // iyzico checkout formunu enjekte et
+        const wrap = document.createElement('div')
+        wrap.innerHTML = data.checkoutFormContent
+        errEl.before(wrap)
+        wrap.querySelectorAll('script').forEach(s => {
           const ns = document.createElement('script')
           if (s.src) ns.src = s.src; else ns.textContent = s.textContent
           document.body.appendChild(ns)
         })
-
         btn.style.display = 'none'
 
       } catch (err) {
         console.error(err)
-        errEl.textContent = 'Beklenmedik hata: ' + err.message
-        errEl.style.display = 'block'; btn.textContent = 'Güvenli Ödemeye Geç →'; btn.disabled = false
+        errEl.textContent = 'Hata: ' + err.message
+        errEl.style.display = 'block'
+        btn.textContent = 'Güvenli Ödemeye Geç →'; btn.disabled = false
       }
     }
 
