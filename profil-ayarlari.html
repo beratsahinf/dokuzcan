@@ -268,7 +268,7 @@
           <label>E-posta</label>
           <input type="email" id="email" disabled />
         </div>
-        <button class="btn-primary" onclick="saveProfile()">Bilgileri Güncelle</button>
+        <button class="btn-primary" onclick="saveProfile(this)">Bilgileri Güncelle</button>
         <div class="info-msg" id="profileMsg">✓ Bilgiler güncellendi</div>
       </div>
     </div>
@@ -285,7 +285,7 @@
           <label>Yeni Şifre (Tekrar)</label>
           <input type="password" id="newPass2" placeholder="Şifreyi tekrar girin" />
         </div>
-        <button class="btn-primary" onclick="changePassword()">Şifreyi Güncelle</button>
+        <button class="btn-primary" onclick="changePassword(this)">Şifreyi Güncelle</button>
         <div class="info-msg" id="passMsg">✓ Şifre güncellendi</div>
       </div>
     </div>
@@ -369,15 +369,18 @@
       document.getElementById('mainPage').style.display = 'block'
     }
 
-    async function saveProfile() {
-      const btn = event.target
+    async function saveProfile(btn) {
       btn.textContent = 'Güncelleniyor...'
       btn.disabled = true
 
+      const first = document.getElementById('firstName').value.trim()
+      const last  = document.getElementById('lastName').value.trim()
+      const phone = document.getElementById('phone').value.trim()
+
       const { error } = await sb.from('profiles').update({
-        first_name: document.getElementById('firstName').value.trim(),
-        last_name: document.getElementById('lastName').value.trim(),
-        phone: document.getElementById('phone').value.trim()
+        first_name: first,
+        last_name: last,
+        phone: phone
       }).eq('id', currentUser.id)
 
       btn.textContent = 'Bilgileri Güncelle'
@@ -388,9 +391,9 @@
         msg.classList.add('show')
         msg.classList.remove('err-msg')
         msg.textContent = '✓ Bilgiler güncellendi'
-        // Nav'daki ismi de güncelle
-        document.getElementById('userName').textContent =
-          document.getElementById('firstName').value + ' ' + document.getElementById('lastName').value
+        document.getElementById('userName').textContent = first + ' ' + last
+        const av = document.getElementById('userAvatar')
+        if (av && first && last) av.textContent = (first[0] + last[0]).toUpperCase()
         setTimeout(() => msg.classList.remove('show'), 3000)
       } else {
         msg.classList.add('show', 'err-msg')
@@ -398,11 +401,11 @@
       }
     }
 
-    async function changePassword() {
-      const btn = event.target
-      const p1 = document.getElementById('newPass').value
-      const p2 = document.getElementById('newPass2').value
+    async function changePassword(btn) {
+      const p1  = document.getElementById('newPass').value
+      const p2  = document.getElementById('newPass2').value
       const msg = document.getElementById('passMsg')
+      msg.classList.remove('show', 'err-msg')
 
       if (p1.length < 8) {
         msg.classList.add('show', 'err-msg')

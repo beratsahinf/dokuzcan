@@ -272,9 +272,12 @@
     }
 
     function renderProfile(slug, profile, med) {
-      const firstName = profile ? profile.first_name.toUpperCase() : 'BİLİNMEYEN'
-      const lastName = profile ? profile.last_name.toUpperCase() : 'KİŞİ'
-      const initials = profile ? (profile.first_name[0] + profile.last_name[0]).toUpperCase() : '??'
+      const firstName = profile?.first_name?.toUpperCase() || ''
+      const lastName  = profile?.last_name?.toUpperCase() || ''
+      const displayName = (firstName + ' ' + lastName).trim() || 'PROFİL'
+      const initials = firstName && lastName
+        ? (profile.first_name[0] + profile.last_name[0]).toUpperCase()
+        : slug.slice(3, 5)
 
       const bloodType = med?.blood_type || '—'
       const age = calcAge(med?.birth_date)
@@ -305,7 +308,7 @@
           <div class="brand-tag">Dokuzcan · Acil Tıbbi Profil</div>
           <div class="profile-avatar-row">
             <div class="profile-avatar">${initials}</div>
-            <div class="profile-name">${firstName}<br>${lastName}</div>
+            <div class="profile-name">${displayName}</div>
           </div>
           <div class="profile-id">ID: ${slug}</div>
         </div>
@@ -346,7 +349,7 @@
         <!-- ACİL ARA -->
         ${med?.emergency_contact_phone ? `
         <a href="tel:${med.emergency_contact_phone}" class="call-btn">
-          <span>📞</span><span>ACİL KİŞİYİ ARA — ${med.emergency_contact_name || 'Acil Kişi'}</span>
+          <span>📞</span><span>ACİL KİŞİYİ ARA${med.emergency_contact_name ? ' — ' + med.emergency_contact_name : ''}</span>
         </a>` : ''}
 
         <!-- TIBBİ BİLGİLER -->
