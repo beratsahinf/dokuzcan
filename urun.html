@@ -828,200 +828,187 @@
       <div class="checkout-col">
         <h2>BİLGİLER &amp;<br>ÖDEME</h2>
 
-        <!-- Hesap seçimi -->
-        <div class="account-tabs">
-          <button class="acc-tab active" onclick="switchTab('new')">Yeni Hesap Oluştur</button>
-          <button class="acc-tab" onclick="switchTab('existing')">Zaten Hesabım Var</button>
-        </div>
-
-        <!-- YENİ HESAP -->
-        <div class="tab-content active" id="tabNew">
-
-          <div class="form-section-title">Kişisel Bilgiler</div>
-          <div class="form-grid">
-            <div class="form-group">
-              <label>Ad <span class="req">*</span></label>
-              <input type="text" id="firstName" placeholder="Adın" />
+        <!-- OTURUM AÇIK — sadece bu gösterilir -->
+        <div id="loggedInForm" style="display:none;">
+          <div class="form-section-title">Hesap Bilgileri</div>
+          <div style="background:var(--panel);border:1px solid var(--border);padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:14px;">
+            <div style="width:40px;height:40px;background:var(--red);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:16px;color:#000;flex-shrink:0;" id="sessionAvatar">—</div>
+            <div>
+              <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;" id="sessionName">—</div>
+              <div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;color:var(--grey);" id="sessionEmail">—</div>
             </div>
-            <div class="form-group">
-              <label>Soyad <span class="req">*</span></label>
-              <input type="text" id="lastName" placeholder="Soyadın" />
-            </div>
-            <div class="form-group full">
-              <label>E-posta <span class="req">*</span></label>
-              <input type="email" id="email" placeholder="E-posta adresin" />
-            </div>
-            <div class="form-group full">
-              <label>Telefon <span class="req">*</span></label>
-              <input type="tel" id="phone" placeholder="+90 5XX XXX XX XX" />
-            </div>
-            <div class="form-group full">
-              <label>Şifre <span class="req">*</span></label>
-              <input type="password" id="password" placeholder="En az 8 karakter" oninput="checkPass(this.value)" />
-              <div class="pass-bars">
-                <div class="pass-bar" id="pb1"></div>
-                <div class="pass-bar" id="pb2"></div>
-                <div class="pass-bar" id="pb3"></div>
-                <div class="pass-bar" id="pb4"></div>
-              </div>
-            </div>
+            <a href="#" onclick="doLogout();return false;" style="margin-left:auto;font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;color:var(--grey);text-decoration:none;">Değiştir →</a>
           </div>
 
-          <div class="form-section-title" style="margin-top:8px;">Teslimat Adresi</div>
+          <div class="form-section-title">Teslimat Adresi</div>
           <div class="form-grid">
             <div class="form-group full">
               <label>Adres <span class="req">*</span></label>
-              <input type="text" placeholder="Sokak, bina no, daire" />
+              <input type="text" id="li_address" placeholder="Sokak, bina no, daire" />
             </div>
             <div class="form-group">
               <label>İl <span class="req">*</span></label>
-              <select>
+              <select id="li_city">
                 <option value="">Seçin</option>
                 <option>İstanbul</option><option>Ankara</option><option>İzmir</option>
                 <option>Bursa</option><option>Antalya</option><option>Diğer</option>
               </select>
             </div>
             <div class="form-group">
-              <label>İlçe <span class="req">*</span></label>
-              <input type="text" placeholder="İlçe" />
+              <label>İlçe</label>
+              <input type="text" id="li_district" placeholder="İlçe" />
             </div>
           </div>
 
-          <div class="form-section-title" style="margin-top:8px;">Kargo Seçeneği</div>
+          <div class="form-section-title" style="margin-top:8px;">Kargo</div>
           <div class="shipping-options">
             <div class="shipping-opt selected" onclick="selectShipping(this, 0)">
               <div class="ship-radio"><div class="ship-dot"></div></div>
-              <div class="ship-info">
-                <div class="ship-name">Standart Kargo</div>
-                <div class="ship-time">1–3 iş günü</div>
-              </div>
+              <div class="ship-info"><div class="ship-name">Standart Kargo</div><div class="ship-time">1–3 iş günü</div></div>
               <div class="ship-price" style="color:var(--green)">ÜCRETSİZ</div>
             </div>
             <div class="shipping-opt" onclick="selectShipping(this, 49)">
               <div class="ship-radio"><div class="ship-dot"></div></div>
-              <div class="ship-info">
-                <div class="ship-name">Hızlı Kargo</div>
-                <div class="ship-time">Aynı gün / ertesi gün</div>
-              </div>
+              <div class="ship-info"><div class="ship-name">Hızlı Kargo</div><div class="ship-time">Aynı gün / ertesi gün</div></div>
               <div class="ship-price">₺49</div>
             </div>
           </div>
+        </div>
 
-          <div class="form-section-title" style="margin-top:8px;">Ödeme Bilgileri</div>
-          <div class="form-grid">
-            <div class="form-group full">
-              <label>Kart Üzerindeki İsim <span class="req">*</span></label>
-              <input type="text" placeholder="AD SOYAD" style="text-transform:uppercase;" />
-            </div>
-            <div class="form-group full">
-              <label>Kart Numarası <span class="req">*</span></label>
-              <div class="card-number-wrap">
-                <input type="text" id="cardNum" placeholder="0000  0000  0000  0000" maxlength="19" oninput="formatCard(this)" />
-                <div class="card-icons">
-                  <div class="card-icon">VISA</div>
-                  <div class="card-icon">MC</div>
+        <!-- OTURUM KAPALI — giriş / kayıt tabları -->
+        <div id="guestForm">
+          <div class="account-tabs">
+            <button class="acc-tab active" onclick="switchTab('new')">Yeni Hesap Oluştur</button>
+            <button class="acc-tab" onclick="switchTab('existing')">Zaten Hesabım Var</button>
+          </div>
+
+          <!-- YENİ HESAP -->
+          <div class="tab-content active" id="tabNew">
+            <div class="form-section-title">Kişisel Bilgiler</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Ad <span class="req">*</span></label>
+                <input type="text" id="firstName" placeholder="Adın" />
+              </div>
+              <div class="form-group">
+                <label>Soyad <span class="req">*</span></label>
+                <input type="text" id="lastName" placeholder="Soyadın" />
+              </div>
+              <div class="form-group full">
+                <label>E-posta <span class="req">*</span></label>
+                <input type="email" id="email" placeholder="E-posta adresin" />
+              </div>
+              <div class="form-group full">
+                <label>Telefon</label>
+                <input type="tel" id="phone" placeholder="+90 5XX XXX XX XX" />
+              </div>
+              <div class="form-group full">
+                <label>Şifre <span class="req">*</span></label>
+                <input type="password" id="password" placeholder="En az 8 karakter" oninput="checkPass(this.value)" />
+                <div class="pass-bars">
+                  <div class="pass-bar" id="pb1"></div><div class="pass-bar" id="pb2"></div>
+                  <div class="pass-bar" id="pb3"></div><div class="pass-bar" id="pb4"></div>
                 </div>
               </div>
             </div>
-            <div class="form-group">
-              <label>Son Kullanma Tarihi <span class="req">*</span></label>
-              <input type="text" placeholder="AA/YY" maxlength="5" oninput="formatExpiry(this)" />
+            <div class="form-section-title" style="margin-top:8px;">Teslimat Adresi</div>
+            <div class="form-grid">
+              <div class="form-group full">
+                <label>Adres <span class="req">*</span></label>
+                <input type="text" id="address" placeholder="Sokak, bina no, daire" />
+              </div>
+              <div class="form-group">
+                <label>İl <span class="req">*</span></label>
+                <select id="city">
+                  <option value="">Seçin</option>
+                  <option>İstanbul</option><option>Ankara</option><option>İzmir</option>
+                  <option>Bursa</option><option>Antalya</option><option>Diğer</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>İlçe</label>
+                <input type="text" id="district" placeholder="İlçe" />
+              </div>
             </div>
-            <div class="form-group">
-              <label>CVV <span class="req">*</span></label>
-              <input type="text" placeholder="•••" maxlength="3" />
+            <div class="form-section-title" style="margin-top:8px;">Kargo</div>
+            <div class="shipping-options">
+              <div class="shipping-opt selected" onclick="selectShipping(this, 0)">
+                <div class="ship-radio"><div class="ship-dot"></div></div>
+                <div class="ship-info"><div class="ship-name">Standart Kargo</div><div class="ship-time">1–3 iş günü</div></div>
+                <div class="ship-price" style="color:var(--green)">ÜCRETSİZ</div>
+              </div>
+              <div class="shipping-opt" onclick="selectShipping(this, 49)">
+                <div class="ship-radio"><div class="ship-dot"></div></div>
+                <div class="ship-info"><div class="ship-name">Hızlı Kargo</div><div class="ship-time">Aynı gün / ertesi gün</div></div>
+                <div class="ship-price">₺49</div>
+              </div>
             </div>
           </div>
 
-          <!-- KVKK -->
-          <div class="consent-box">
-            <div class="consent-title">⚠ KVKK & Açık Rıza</div>
-            <div class="consent-text">
-              Sağlık verileriniz yalnızca acil müdahale amaçlı işlenmekte, üçüncü taraflarla paylaşılmamaktadır. Tüm veriler Avrupa sunucularında şifreli saklanır.
+          <!-- MEVCUT HESAP -->
+          <div class="tab-content" id="tabExisting">
+            <div class="form-section-title">Hesabına Giriş Yap</div>
+            <div class="form-grid cols1">
+              <div class="form-group">
+                <label>E-posta</label>
+                <input type="email" id="exEmail" placeholder="E-posta adresin" />
+              </div>
+              <div class="form-group">
+                <label>Şifre</label>
+                <input type="password" id="exPass" placeholder="••••••••" />
+              </div>
             </div>
-            <div class="check-row" onclick="toggleCheck('c1')">
-              <div class="check-box checked" id="c1">✓</div>
-              <div class="check-label"><a href="#">Kullanım Koşulları</a> ve <a href="#">Gizlilik Politikası</a>'nı kabul ediyorum.</div>
-            </div>
-            <div class="check-row" onclick="toggleCheck('c2')">
-              <div class="check-box checked" id="c2">✓</div>
-              <div class="check-label">Sağlık verilerimin acil durum amaçlı işlenmesine <a href="#">açık rıza</a> veriyorum.</div>
+            <div class="form-section-title" style="margin-top:16px;">Teslimat Adresi</div>
+            <div class="form-grid">
+              <div class="form-group full">
+                <label>Adres <span class="req">*</span></label>
+                <input type="text" id="ex_address" placeholder="Sokak, bina no, daire" />
+              </div>
+              <div class="form-group">
+                <label>İl</label>
+                <select id="ex_city"><option>İstanbul</option><option>Ankara</option><option>İzmir</option></select>
+              </div>
+              <div class="form-group">
+                <label>İlçe</label>
+                <input type="text" id="ex_district" placeholder="İlçe" />
+              </div>
             </div>
           </div>
-
         </div>
 
-        <!-- MEVCUT HESAP -->
-        <div class="tab-content" id="tabExisting">
-          <div class="form-section-title">Hesabına Giriş Yap</div>
-          <div class="form-grid cols1">
-            <div class="form-group">
-              <label>E-posta</label>
-              <input type="email" placeholder="E-posta adresin" />
-            </div>
-            <div class="form-group">
-              <label>Şifre</label>
-              <input type="password" placeholder="••••••••" />
-            </div>
+        <!-- KVKK — her zaman göster -->
+        <div class="consent-box" style="margin-top:20px;">
+          <div class="consent-title">⚠ KVKK & Açık Rıza</div>
+          <div class="consent-text">Sağlık verileriniz yalnızca acil müdahale amaçlı işlenmekte, üçüncü taraflarla paylaşılmamaktadır.</div>
+          <div class="check-row" onclick="toggleCheck('c1')">
+            <div class="check-box checked" id="c1">✓</div>
+            <div class="check-label"><a href="#">Kullanım Koşulları</a>'nı kabul ediyorum.</div>
           </div>
-          <div style="margin-bottom:24px;">
-            <a href="#" style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;color:var(--grey);text-decoration:none;">Şifremi unuttum →</a>
+          <div class="check-row" onclick="toggleCheck('c2')">
+            <div class="check-box checked" id="c2">✓</div>
+            <div class="check-label">Sağlık verilerimin acil durum amaçlı işlenmesine rıza veriyorum.</div>
           </div>
-          <div class="form-section-title" style="margin-top:16px;">Teslimat Adresi</div>
-          <div class="form-grid">
-            <div class="form-group full">
-              <label>Adres <span class="req">*</span></label>
-              <input type="text" placeholder="Sokak, bina no, daire" />
-            </div>
-            <div class="form-group">
-              <label>İl</label>
-              <select><option>İstanbul</option><option>Ankara</option></select>
-            </div>
-            <div class="form-group">
-              <label>İlçe</label>
-              <input type="text" placeholder="İlçe" />
-            </div>
-          </div>
-          <div class="form-section-title">Ödeme</div>
-          <!-- iyzico Checkout Form buraya yüklenir -->
-          <div id="iyzico-checkout-form" style="min-height:120px;display:flex;align-items:center;justify-content:center;">
-            <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:#555;">
-              Ödeme formu yükleniyor...
-            </div>
-          </div>
-          <div id="iyzico-error" style="display:none;background:rgba(232,0,29,0.08);border:1px solid rgba(232,0,29,0.3);border-left:2px solid #E8001D;padding:10px 14px;margin-top:12px;font-family:'Barlow Condensed',sans-serif;font-size:12px;color:#E8001D;"></div>
         </div>
+
+        <!-- Hata mesajı -->
+        <div id="checkoutError" style="display:none;background:rgba(232,0,29,0.08);border:1px solid rgba(232,0,29,0.3);border-left:2px solid var(--red);padding:10px 14px;margin-top:16px;font-family:'Barlow Condensed',sans-serif;font-size:13px;color:var(--red);"></div>
 
       </div>
 
       <!-- RIGHT: Özet -->
       <div class="summary-col">
         <div class="summary-title">Sipariş Özeti</div>
-        <div class="summary-row">
-          <span class="s-label">Kit</span>
-          <span class="s-val" id="sumKit2">ADVANCED Kit</span>
-        </div>
-        <div class="summary-row">
-          <span class="s-label">QR Profil</span>
-          <span class="s-val green">Ücretsiz</span>
-        </div>
-        <div class="summary-row">
-          <span class="s-label">Kargo</span>
-          <span class="s-val green" id="sumKargo2">Ücretsiz</span>
-        </div>
-        <div class="summary-row">
-          <span class="s-label">KDV</span>
-          <span class="s-val" id="sumKdv2">₺381,67</span>
-        </div>
+        <div class="summary-row"><span class="s-label">Kit</span><span class="s-val" id="sumKit2">ADVANCED Kit</span></div>
+        <div class="summary-row"><span class="s-label">QR Profil</span><span class="s-val green">Ücretsiz</span></div>
+        <div class="summary-row"><span class="s-label">Kargo</span><span class="s-val green" id="sumKargo2">Ücretsiz</span></div>
+        <div class="summary-row"><span class="s-label">KDV</span><span class="s-val" id="sumKdv2">₺381,67</span></div>
         <div class="summary-total">
           <div class="total-label">Toplam</div>
           <div class="total-price" id="sumTotal2">₺2.290</div>
         </div>
-
-        <button class="btn-continue" id="payBtn" onclick="initIyzicoPayment()">
+        <button class="btn-continue" id="payBtn" onclick="initIyzicoPayment(this)">
           Güvenli Ödemeye Geç →
         </button>
-
         <div class="trust-badges">
           <div class="trust-item"><span class="trust-item-icon">🔒</span> iyzico ile güvenli ödeme</div>
           <div class="trust-item"><span class="trust-item-icon">🏦</span> Taksit seçeneği mevcut</div>
@@ -1132,64 +1119,98 @@
     }
 
     // Adım 2'ye geç
-    function goToStep2() {
-      document.getElementById('screen1').classList.remove('active');
-      document.getElementById('screen2').classList.add('active');
-      document.getElementById('step1').classList.remove('active');
-      document.getElementById('step1').classList.add('done');
-      document.getElementById('step2').classList.add('active');
-      // sumKit2 güncelle
-      document.getElementById('sumKit2').textContent = selectedKit.name + ' Kit';
-      window.scrollTo(0, 0);
+    async function goToStep2() {
+      document.getElementById('screen1').classList.remove('active')
+      document.getElementById('screen2').classList.add('active')
+      document.getElementById('step1').classList.remove('active')
+      document.getElementById('step1').classList.add('done')
+      document.getElementById('step2').classList.add('active')
+      document.getElementById('sumKit2').textContent = selectedKit.name + ' Kit'
+      window.scrollTo(0, 0)
+
+      // Oturum kontrolü — açıksa hesap formunu gizle
+      const { data: { session } } = await sb.auth.getSession()
+      if (session) {
+        document.getElementById('guestForm').style.display = 'none'
+        document.getElementById('loggedInForm').style.display = 'block'
+        // Kullanıcı bilgilerini doldur
+        const { data: profile } = await sb.from('profiles').select('first_name,last_name').eq('id', session.user.id).maybeSingle()
+        if (profile) {
+          const initials = (profile.first_name[0] + profile.last_name[0]).toUpperCase()
+          document.getElementById('sessionAvatar').textContent = initials
+          document.getElementById('sessionName').textContent = profile.first_name + ' ' + profile.last_name
+        } else {
+          document.getElementById('sessionAvatar').textContent = session.user.email[0].toUpperCase()
+          document.getElementById('sessionName').textContent = session.user.email
+        }
+        document.getElementById('sessionEmail').textContent = session.user.email
+      } else {
+        document.getElementById('guestForm').style.display = 'block'
+        document.getElementById('loggedInForm').style.display = 'none'
+      }
     }
 
     // Slug üret — sunucu tarafında (api/iyzico-init.js) üretilecek
     // Burası sadece kullanıcı/oturum işlemleri için
 
-    // iyzico Checkout Form'u başlat
-    async function initIyzicoPayment() {
-      const btn = document.getElementById('payBtn')
-      const activeTab = document.getElementById('tabNew').classList.contains('active') ? 'new' : 'existing'
-
-      const fname    = document.getElementById('firstName')?.value.trim() || ''
-      const lname    = document.getElementById('lastName')?.value.trim() || ''
-      const email    = document.getElementById('email')?.value.trim() || ''
-      const phone    = document.getElementById('phone')?.value.trim() || ''
-      const password = document.getElementById('password')?.value || ''
-
-      if (activeTab === 'new' && (!fname || !lname || !email || !password)) {
-        showUrunError('Lütfen ad, soyad, e-posta ve şifre alanlarını doldurun.'); return
-      }
-
-      btn.textContent = 'Ödeme hazırlanıyor...'; btn.disabled = true
-      hideUrunError()
+    async function initIyzicoPayment(btn) {
+      const errEl = document.getElementById('checkoutError')
+      errEl.style.display = 'none'
+      btn.textContent = 'İşleniyor...'; btn.disabled = true
 
       try {
-        let userId, userEmail, userFirst, userLast
+        let userId, userEmail, userFirst, userLast, userPhone
 
-        if (activeTab === 'new') {
-          // Yeni hesap oluştur
-          const { data: authData, error: authError } = await sb.auth.signUp({ email, password })
-          if (authError) {
-            const msg = authError.message.includes('already') ? 'Bu e-posta zaten kayıtlı. "Hesabım Var" sekmesini kullan.' : authError.message
-            showUrunError(msg); btn.textContent = 'Güvenli Ödemeye Geç →'; btn.disabled = false; return
-          }
-          userId = authData.user.id; userEmail = email; userFirst = fname; userLast = lname
-          await sb.from('profiles').upsert({ id: userId, first_name: fname, last_name: lname, phone })
+        const { data: { session } } = await sb.auth.getSession()
+
+        if (session) {
+          // Oturum açık — direkt kullan
+          userId = session.user.id; userEmail = session.user.email
+          const { data: p } = await sb.from('profiles').select('*').eq('id', userId).maybeSingle()
+          userFirst = p?.first_name || ''; userLast = p?.last_name || ''; userPhone = p?.phone || ''
         } else {
-          const exEmail = document.querySelector('#tabExisting input[type="email"]')?.value.trim()
-          const exPass  = document.querySelector('#tabExisting input[type="password"]')?.value
-          const { data: loginData, error: loginError } = await sb.auth.signInWithPassword({ email: exEmail, password: exPass })
-          if (loginError) {
-            showUrunError('Giriş yapılamadı: ' + loginError.message)
-            btn.textContent = 'Güvenli Ödemeye Geç →'; btn.disabled = false; return
+          // Oturum yok — form verilerini al
+          const isNew = document.getElementById('tabNew').classList.contains('active')
+          if (isNew) {
+            const fname = document.getElementById('firstName').value.trim()
+            const lname = document.getElementById('lastName').value.trim()
+            const email = document.getElementById('email').value.trim()
+            const pass  = document.getElementById('password').value
+            const phone = document.getElementById('phone').value.trim()
+            if (!fname || !lname || !email || !pass) {
+              errEl.textContent = 'Ad, soyad, e-posta ve şifre zorunlu.'; errEl.style.display = 'block'
+              btn.textContent = 'Güvenli Ödemeye Geç →'; btn.disabled = false; return
+            }
+            if (pass.length < 8) {
+              errEl.textContent = 'Şifre en az 8 karakter olmalı.'; errEl.style.display = 'block'
+              btn.textContent = 'Güvenli Ödemeye Geç →'; btn.disabled = false; return
+            }
+            const { data: authData, error: authErr } = await sb.auth.signUp({ email, password: pass })
+            if (authErr) {
+              errEl.textContent = authErr.message.includes('already') ? 'Bu e-posta zaten kayıtlı. "Zaten Hesabım Var" sekmesini kullan.' : authErr.message
+              errEl.style.display = 'block'; btn.textContent = 'Güvenli Ödemeye Geç →'; btn.disabled = false; return
+            }
+            userId = authData.user.id; userEmail = email; userFirst = fname; userLast = lname; userPhone = phone
+            await sb.from('profiles').upsert({ id: userId, first_name: fname, last_name: lname, phone })
+          } else {
+            const email = document.getElementById('exEmail').value.trim()
+            const pass  = document.getElementById('exPass').value
+            if (!email || !pass) {
+              errEl.textContent = 'E-posta ve şifre girin.'; errEl.style.display = 'block'
+              btn.textContent = 'Güvenli Ödemeye Geç →'; btn.disabled = false; return
+            }
+            const { data: loginData, error: loginErr } = await sb.auth.signInWithPassword({ email, password: pass })
+            if (loginErr) {
+              errEl.textContent = 'Giriş başarısız: ' + loginErr.message; errEl.style.display = 'block'
+              btn.textContent = 'Güvenli Ödemeye Geç →'; btn.disabled = false; return
+            }
+            userId = loginData.user.id; userEmail = email
+            const { data: p } = await sb.from('profiles').select('*').eq('id', userId).maybeSingle()
+            userFirst = p?.first_name || ''; userLast = p?.last_name || ''; userPhone = p?.phone || ''
           }
-          userId = loginData.user.id; userEmail = exEmail
-          const { data: p } = await sb.from('profiles').select('first_name,last_name').eq('id', userId).maybeSingle()
-          userFirst = p?.first_name || ''; userLast = p?.last_name || ''
         }
 
-        // iyzico token al
+        // iyzico API'ye istek at
         const kitPriceMap = { BASIC: '1490.00', ADVANCED: '2290.00', PRO: '3490.00' }
         const price = kitPriceMap[selectedKit.name] || '2290.00'
 
@@ -1198,65 +1219,44 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             userId, email: userEmail,
-            firstName: userFirst, lastName: userLast, phone,
+            firstName: userFirst || 'Kullanıcı',
+            lastName: userLast || 'Dokuzcan',
+            phone: userPhone || '+905000000000',
             kitType: selectedKit.name.toLowerCase(),
             price, currency: 'TRY'
           })
         })
 
-        const data = await resp.json()
-
-        if (!resp.ok || data.error) {
-          showUrunError('Ödeme başlatılamadı: ' + (data.error || 'Sunucu hatası'))
-          btn.textContent = 'Güvenli Ödemeye Geç →'; btn.disabled = false; return
+        if (!resp.ok) {
+          const err = await resp.json().catch(() => ({}))
+          errEl.textContent = 'Ödeme başlatılamadı: ' + (err.error || 'Sunucu hatası')
+          errEl.style.display = 'block'; btn.textContent = 'Güvenli Ödemeye Geç →'; btn.disabled = false; return
         }
 
-        // iyzico Checkout Form'u sayfaya enjekte et
-        const formDiv = document.getElementById('iyzico-checkout-form')
-        formDiv.innerHTML = data.checkoutFormContent
+        const data = await resp.json()
 
-        // iyzico script'ini çalıştır
-        const scripts = formDiv.querySelectorAll('script')
-        scripts.forEach(oldScript => {
-          const newScript = document.createElement('script')
-          if (oldScript.src) newScript.src = oldScript.src
-          else newScript.textContent = oldScript.textContent
-          document.body.appendChild(newScript)
+        // iyzico form HTML'ini sayfaya enjekte et
+        const formContainer = document.createElement('div')
+        formContainer.innerHTML = data.checkoutFormContent
+        document.getElementById('checkoutError').before(formContainer)
+
+        // Script'leri manuel çalıştır
+        formContainer.querySelectorAll('script').forEach(s => {
+          const ns = document.createElement('script')
+          if (s.src) ns.src = s.src; else ns.textContent = s.textContent
+          document.body.appendChild(ns)
         })
 
-        btn.textContent = 'Güvenli Ödemeye Geç →'; btn.disabled = false
-        // Form yüklenince butonu gizle
         btn.style.display = 'none'
 
       } catch (err) {
-        console.error('Ödeme hatası:', err)
-        showUrunError('Beklenmedik hata: ' + err.message)
-        btn.textContent = 'Güvenli Ödemeye Geç →'; btn.disabled = false
+        console.error(err)
+        errEl.textContent = 'Beklenmedik hata: ' + err.message
+        errEl.style.display = 'block'; btn.textContent = 'Güvenli Ödemeye Geç →'; btn.disabled = false
       }
     }
 
-    function showUrunError(msg) {
-      const el = document.getElementById('iyzico-error')
-      if (el) { el.textContent = msg; el.style.display = 'block' }
-    }
-    function hideUrunError() {
-      const el = document.getElementById('iyzico-error')
-      if (el) el.style.display = 'none'
-    }
-
-    // Ödeme sonucu URL parametresini kontrol et
-    function checkPaymentResult() {
-      const params = new URLSearchParams(window.location.search)
-      const status = params.get('payment')
-      if (status === 'success') {
-        // tibbi-profil'e yönlendirilmeden önce kısa mesaj
-        window.location.href = 'tibbi-profil'
-      } else if (status === 'failed') {
-        showUrunError('Ödeme başarısız oldu. Kart bilgilerinizi kontrol edip tekrar deneyin.')
-      } else if (status === 'error') {
-        showUrunError('Bir hata oluştu. Lütfen tekrar deneyin.')
-      }
-    }
+    async function doLogout() { await sb.auth.signOut(); window.location.reload() }
 
     // Tab geçiş
     function switchTab(tab) {
@@ -1306,7 +1306,11 @@
     }
 
     updateSummary()
-    checkPaymentResult()
+
+    // Ödeme sonucu kontrolü
+    const _payStatus = new URLSearchParams(window.location.search).get('payment')
+    if (_payStatus === 'success') window.location.href = 'tibbi-profil'
+    else if (_payStatus === 'failed') { const e = document.getElementById('checkoutError'); if(e){e.textContent='Ödeme başarısız. Tekrar deneyin.';e.style.display='block'} }
 
     // Profil nav
     async function initNav() {
