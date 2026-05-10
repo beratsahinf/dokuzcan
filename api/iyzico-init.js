@@ -9,19 +9,22 @@ module.exports = async (req, res) => {
   if (req.method === 'OPTIONS') { res.status(200).end(); return }
   if (req.method !== 'POST') { res.status(405).json({ error: 'Method not allowed' }); return }
 
-  const { userId, email, firstName, lastName, phone, kitType, price } = req.body
+  const {
+    userId, email, firstName, lastName, phone, kitType, price,
+    tcKimlik, address, city, district, postal
+  } = req.body
+
   if (!userId || !email || !price || !kitType) {
     return res.status(400).json({ error: 'Eksik parametre' })
   }
 
-  const priceStr     = parseFloat(price).toFixed(2)
-  const callbackUrl  = process.env.IYZICO_CALLBACK_URL || 'https://dokuzcan.com/api/iyzico-callback'
-  const slug         = crypto.randomBytes(6).toString('hex').toUpperCase().slice(0,4) + '-' +
-                       crypto.randomBytes(6).toString('hex').toUpperCase().slice(0,4) + '-' +
-                       crypto.randomBytes(6).toString('hex').toUpperCase().slice(0,4)
+  const priceStr = parseFloat(price).toFixed(2)
+  const callbackUrl = process.env.IYZICO_CALLBACK_URL || 'https://dokuzcan.com/api/iyzico-callback'
+  const slug = crypto.randomBytes(6).toString('hex').toUpperCase().slice(0,4) + '-' +
+               crypto.randomBytes(6).toString('hex').toUpperCase().slice(0,4) + '-' +
+               crypto.randomBytes(6).toString('hex').toUpperCase().slice(0,4)
 
-  // userId'yi conversationId'ye göm (dashes kaldırılmış UUID)
-  const userIdClean  = userId.replace(/-/g, '')
+  const userIdClean = userId.replace(/-/g, '')
   const conversationId = 'U' + userIdClean + 'T' + Date.now()
 
   const iyzipay = new Iyzipay({
@@ -31,6 +34,11 @@ module.exports = async (req, res) => {
   })
 
   const kitNames = { basic: 'CITY Kit', advanced: 'TOUR Kit', pro: 'OFF-ROAD Kit' }
+
+  // Türkçe karakter temizliği (iyzico ASCII tercih ediyor)
+  const clean = s => (s || '').replace(/[^\w\s,.\-/]/gi, '').trim() || 'Belirsiz'
+  const fullName = clean(firstName) + ' ' + clean(lastName)
+  const fullAddress = clean(address) + (district ? ', ' + clean(district) : '')
 
   const request = {
     locale             : Iyzipay.LOCALE.TR,
@@ -44,50 +52,65 @@ module.exports = async (req, res) => {
     enabledInstallments: [1, 2, 3, 6],
     buyer: {
       id                 : userId,
-      name               : (firstName || 'Kullanici').replace(/[^\w\s]/gi, ''),
-      surname            : (lastName  || 'Dokuzcan').replace(/[^\w\s]/gi, ''),
+      name               : clean(firstName) || 'Kullanici',
+      surname            : clean(lastName)  || 'Dokuzcan',
       email,
-      identityNumber     : '11111111111',
-      registrationAddress: 'Turkiye',
-      city               : 'Istanbul',
+      identityNumber     : tcKimlik || '11111111111',
+      registrationAddress: fullAddress || 'Turkiye',
+      city               : clean(city)  || 'Istanbul',
       country            : 'Turkey',
+      zipCode            : postal || '34000',
       gsmNumber          : (phone || '+905000000000').replace(/[^0-9+]/g, '')
     },
     shippingAddress: {
-      contactName: ((firstName||'K')+' '+(lastName||'D')).replace(/[^\w\s]/gi,''),
-      city:'Istanbul', country:'Turkey', address:'Turkiye'
+      contactName : fullName,
+      city        : clean(city)  || 'Istanbul',
+      country     : 'Turkey',
+      address     : fullAddress  || 'Turkiye',
+      zipCode     : postal || '34000'
     },
     billingAddress: {
-      contactName: ((firstName||'K')+' '+(lastName||'D')).replace(/[^\w\s]/gi,''),
-      city:'Istanbul', country:'Turkey', address:'Turkiye'
+      contactName : fullName,
+      city        : clean(city)  || 'Istanbul',
+      country     : 'Turkey',
+      address     : fullAddress  || 'Turkiye',
+      zipCode     : postal || '34000'
     },
     basketItems: [{
-      id      : kitType + '-kit',
-      name    : kitNames[kitType] || 'DOKUZCAN Kit',
-      category1:'Guvenlik',
-      itemType: Iyzipay.BASKET_ITEM_TYPE.PHYSICAL,
-      price   : priceStr
+      id       : kitType + '-kit',
+      name     : kitNames[kitType] || 'DOKUZCAN Kit',
+      category1: 'Guvenlik',
+      itemType : Iyzipay.BASKET_ITEM_TYPE.PHYSICAL,
+      price    : priceStr
     }]
   }
 
   iyzipay.checkoutFormInitialize.create(request, async (err, result) => {
-    if (err) return res.status(500).json({ error: 'SDK hatası: ' + (err.message||err) })
+    if (err) return res.status(500).json({ error: 'SDK hatası: ' + (err.message || err) })
     if (result.status !== 'success') {
       return res.status(400).json({ error: result.errorMessage, code: result.errorCode })
     }
 
-    // pending_payments'a kaydet (hata olsa da devam et)
+    // pending_payments — tüm sipariş bilgilerini kaydet
     try {
       const sb = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY)
       await sb.from('pending_payments').upsert({
-        token   : result.token,
-        user_id : userId,
+        token  : result.token,
+        user_id: userId,
         slug,
-        kit_type: kitType
+        kit_type: kitType,
+        order_data: JSON.stringify({
+          tc_kimlik: tcKimlik,
+          full_name: fullName,
+          phone,
+          shipping_address: address,
+          shipping_city: city,
+          shipping_district: district,
+          shipping_postal: postal
+        })
       }, { onConflict: 'token' })
-      console.log('Pending kaydedildi. userId:', userId, 'slug:', slug)
     } catch (e) {
-      console.error('Pending kayıt hatası (tablo yok olabilir):', e.message)
+      console.error('Pending hata:', e.message)
     }
 
     return res.status(200).json({
