@@ -1,6 +1,7 @@
 {
   "rewrites": [
     { "source": "/urun", "destination": "/urun.html" },
+    { "source": "/odeme", "destination": "/odeme.html" },
     { "source": "/tibbi-profil", "destination": "/tibbi-profil.html" },
     { "source": "/profil-ayarlari", "destination": "/profil-ayarlari.html" },
     { "source": "/qr-profil", "destination": "/qr-profil.html" },
