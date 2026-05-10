@@ -1178,13 +1178,23 @@
       try {
         let userId, userEmail, userFirst, userLast, userPhone
 
+        // currentSession null olabilir — tekrar kontrol et
+        if (!currentSession) {
+          const { data: { session } } = await sb.auth.getSession()
+          if (session) {
+            currentSession = session
+            const { data: p } = await sb.from('profiles').select('*').eq('id', session.user.id).maybeSingle()
+            currentProfile = p
+          }
+        }
+
         if (currentSession) {
-          // Oturum açık — global değişkenden al
           userId    = currentSession.user.id
           userEmail = currentSession.user.email
           userFirst = currentProfile?.first_name || ''
           userLast  = currentProfile?.last_name  || ''
           userPhone = currentProfile?.phone       || ''
+          console.log('Oturum açık, userId:', userId)
         } else {
           // Oturum yok — formdaki bilgileri oku ve hesap oluştur/giriş yap
           const isNew = document.getElementById('tabNew').classList.contains('active')
