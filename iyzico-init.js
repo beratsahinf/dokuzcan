@@ -7,19 +7,22 @@ module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
   if (req.method === 'OPTIONS') { res.status(200).end(); return }
-  if (req.method !== 'POST')    { res.status(405).json({ error: 'Method not allowed' }); return }
+  if (req.method !== 'POST') { res.status(405).json({ error: 'Method not allowed' }); return }
 
   const { userId, email, firstName, lastName, phone, kitType, price } = req.body
   if (!userId || !email || !price || !kitType) {
     return res.status(400).json({ error: 'Eksik parametre' })
   }
 
-  const priceStr = parseFloat(price).toFixed(2)
-  const callbackUrl = process.env.IYZICO_CALLBACK_URL || 'https://dokuzcan.com/api/iyzico-callback'
-  const slug = crypto.randomBytes(6).toString('hex').toUpperCase().slice(0,4) + '-' +
-               crypto.randomBytes(6).toString('hex').toUpperCase().slice(0,4) + '-' +
-               crypto.randomBytes(6).toString('hex').toUpperCase().slice(0,4)
-  const conversationId = 'DC' + Date.now()
+  const priceStr     = parseFloat(price).toFixed(2)
+  const callbackUrl  = process.env.IYZICO_CALLBACK_URL || 'https://dokuzcan.com/api/iyzico-callback'
+  const slug         = crypto.randomBytes(6).toString('hex').toUpperCase().slice(0,4) + '-' +
+                       crypto.randomBytes(6).toString('hex').toUpperCase().slice(0,4) + '-' +
+                       crypto.randomBytes(6).toString('hex').toUpperCase().slice(0,4)
+
+  // userId'yi conversationId'ye göm (dashes kaldırılmış UUID)
+  const userIdClean  = userId.replace(/-/g, '')
+  const conversationId = 'U' + userIdClean + 'T' + Date.now()
 
   const iyzipay = new Iyzipay({
     apiKey   : process.env.IYZICO_API_KEY,
@@ -51,46 +54,45 @@ module.exports = async (req, res) => {
       gsmNumber          : (phone || '+905000000000').replace(/[^0-9+]/g, '')
     },
     shippingAddress: {
-      contactName: ((firstName || 'K') + ' ' + (lastName || 'D')).replace(/[^\w\s]/gi, ''),
-      city: 'Istanbul', country: 'Turkey', address: 'Turkiye'
+      contactName: ((firstName||'K')+' '+(lastName||'D')).replace(/[^\w\s]/gi,''),
+      city:'Istanbul', country:'Turkey', address:'Turkiye'
     },
     billingAddress: {
-      contactName: ((firstName || 'K') + ' ' + (lastName || 'D')).replace(/[^\w\s]/gi, ''),
-      city: 'Istanbul', country: 'Turkey', address: 'Turkiye'
+      contactName: ((firstName||'K')+' '+(lastName||'D')).replace(/[^\w\s]/gi,''),
+      city:'Istanbul', country:'Turkey', address:'Turkiye'
     },
     basketItems: [{
-      id       : kitType + '-kit',
-      name     : kitNames[kitType] || 'DOKUZCAN Kit',
-      category1: 'Guvenlik',
-      itemType : Iyzipay.BASKET_ITEM_TYPE.PHYSICAL,
-      price    : priceStr
+      id      : kitType + '-kit',
+      name    : kitNames[kitType] || 'DOKUZCAN Kit',
+      category1:'Guvenlik',
+      itemType: Iyzipay.BASKET_ITEM_TYPE.PHYSICAL,
+      price   : priceStr
     }]
   }
 
   iyzipay.checkoutFormInitialize.create(request, async (err, result) => {
-    if (err) {
-      return res.status(500).json({ error: 'SDK hatası: ' + (err.message || JSON.stringify(err)) })
-    }
+    if (err) return res.status(500).json({ error: 'SDK hatası: ' + (err.message||err) })
     if (result.status !== 'success') {
       return res.status(400).json({ error: result.errorMessage, code: result.errorCode })
     }
 
-    // Token → userId eşleşmesini Supabase'e kaydet
+    // pending_payments'a kaydet (hata olsa da devam et)
     try {
       const sb = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY)
-      await sb.from('pending_payments').insert({
-        token  : result.token,
-        user_id: userId,
+      await sb.from('pending_payments').upsert({
+        token   : result.token,
+        user_id : userId,
         slug,
         kit_type: kitType
-      })
+      }, { onConflict: 'token' })
+      console.log('Pending kaydedildi. userId:', userId, 'slug:', slug)
     } catch (e) {
-      console.error('Pending payment kayıt hatası:', e.message)
+      console.error('Pending kayıt hatası (tablo yok olabilir):', e.message)
     }
 
     return res.status(200).json({
       checkoutFormContent: result.checkoutFormContent,
-      token              : result.token,
+      token: result.token,
       slug,
       conversationId
     })
