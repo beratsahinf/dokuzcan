@@ -1246,32 +1246,26 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             userId, email: userEmail,
-            firstName: userFirst || 'Kullanıcı',
-            lastName:  userLast  || 'Dokuzcan',
-            phone:     userPhone || '+905000000000',
-            kitType:   selectedKit.name.toLowerCase(),
-            price,     currency: 'TRY'
+            firstName: userFirst || 'Kullanici',
+            lastName : userLast  || 'Dokuzcan',
+            phone    : userPhone || '+905000000000',
+            kitType  : selectedKit.name.toLowerCase(),
+            price, currency: 'TRY'
           })
         })
 
         if (!resp.ok) {
           const err = await resp.json().catch(() => ({}))
-          errEl.textContent = 'Ödeme başlatılamadı: ' + (err.error || resp.status + ' Sunucu hatası')
+          errEl.textContent = 'Ödeme başlatılamadı: ' + (err.error || resp.status)
           errEl.style.display = 'block'; btn.textContent = 'Güvenli Ödemeye Geç →'; btn.disabled = false; return
         }
 
         const data = await resp.json()
 
-        // iyzico checkout formunu enjekte et
-        const wrap = document.createElement('div')
-        wrap.innerHTML = data.checkoutFormContent
-        errEl.before(wrap)
-        wrap.querySelectorAll('script').forEach(s => {
-          const ns = document.createElement('script')
-          if (s.src) ns.src = s.src; else ns.textContent = s.textContent
-          document.body.appendChild(ns)
-        })
-        btn.style.display = 'none'
+        // Form içeriğini sessionStorage'a kaydet, ödeme sayfasına yönlendir
+        sessionStorage.setItem('iyziFormContent', data.checkoutFormContent)
+        sessionStorage.setItem('iyziToken', data.token)
+        window.location.href = '/odeme'
 
       } catch (err) {
         console.error(err)
