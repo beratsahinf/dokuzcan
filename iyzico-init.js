@@ -1,4 +1,3 @@
-// api/iyzico-init.js
 const Iyzipay = require('iyzipay')
 const crypto  = require('crypto')
 
@@ -12,8 +11,13 @@ module.exports = async (req, res) => {
   const { userId, email, firstName, lastName, phone, kitType, price } = req.body
 
   if (!userId || !email || !price || !kitType) {
-    return res.status(400).json({ error: 'Eksik parametre: userId, email, price, kitType gerekli' })
+    return res.status(400).json({ error: 'Eksik parametre' })
   }
+
+  // Fiyatı her zaman 2 ondalıklı string yap
+  const priceStr = parseFloat(price).toFixed(2)
+
+  const callbackUrl = process.env.IYZICO_CALLBACK_URL || 'https://dokuzcan.com/api/iyzico-callback'
 
   const iyzipay = new Iyzipay({
     apiKey   : process.env.IYZICO_API_KEY,
@@ -21,66 +25,66 @@ module.exports = async (req, res) => {
     uri      : process.env.IYZICO_BASE_URL || 'https://sandbox-api.iyzipay.com'
   })
 
-  // Benzersiz QR slug — ödeme başarılıysa kit tablosuna yazılacak
-  function makeSlug() {
-    const raw = crypto.randomBytes(9).toString('hex').toUpperCase()
-    return raw.slice(0,4) + '-' + raw.slice(4,8) + '-' + raw.slice(8,12)
-  }
-  const slug           = makeSlug()
-  const conversationId = 'DC-' + Date.now()
+  const slug           = crypto.randomBytes(6).toString('hex').toUpperCase().slice(0,4) + '-' +
+                         crypto.randomBytes(6).toString('hex').toUpperCase().slice(0,4) + '-' +
+                         crypto.randomBytes(6).toString('hex').toUpperCase().slice(0,4)
+  const conversationId = 'DC-' + userId + '-' + Date.now()
+
+  const kitNames = { basic: 'CITY Kit', advanced: 'TOUR Kit', pro: 'OFF-ROAD Kit' }
 
   const request = {
-    locale          : Iyzipay.LOCALE.TR,
+    locale             : Iyzipay.LOCALE.TR,
     conversationId,
-    price,
-    paidPrice       : price,
-    currency        : Iyzipay.CURRENCY.TRY,
-    basketId        : slug,
-    paymentGroup    : Iyzipay.PAYMENT_GROUP.PRODUCT,
-    callbackUrl     : process.env.IYZICO_CALLBACK_URL,
+    price              : priceStr,
+    paidPrice          : priceStr,
+    currency           : Iyzipay.CURRENCY.TRY,
+    basketId           : slug,
+    paymentGroup       : Iyzipay.PAYMENT_GROUP.PRODUCT,
+    callbackUrl,
     enabledInstallments: [1, 2, 3, 6],
     buyer: {
       id                 : userId,
-      name               : firstName || 'Kullanici',
-      surname            : lastName  || 'Dokuzcan',
+      name               : (firstName || 'Kullanici').replace(/[^a-zA-Z\s]/g, ''),
+      surname            : (lastName  || 'Dokuzcan').replace(/[^a-zA-Z\s]/g, ''),
       email,
       identityNumber     : '11111111111',
       registrationAddress: 'Turkiye',
       city               : 'Istanbul',
       country            : 'Turkey',
-      gsmNumber          : phone || '+905000000000'
+      gsmNumber          : (phone || '+905000000000').replace(/[^0-9+]/g, '')
     },
     shippingAddress: {
-      contactName: (firstName || 'Kullanici') + ' ' + (lastName || ''),
-      city       : 'Istanbul',
-      country    : 'Turkey',
-      address    : 'Turkiye'
+      contactName: ((firstName || 'K') + ' ' + (lastName || 'D')).replace(/[^a-zA-Z\s]/g, ''),
+      city   : 'Istanbul',
+      country: 'Turkey',
+      address: 'Turkiye'
     },
     billingAddress: {
-      contactName: (firstName || 'Kullanici') + ' ' + (lastName || ''),
-      city       : 'Istanbul',
-      country    : 'Turkey',
-      address    : 'Turkiye'
+      contactName: ((firstName || 'K') + ' ' + (lastName || 'D')).replace(/[^a-zA-Z\s]/g, ''),
+      city   : 'Istanbul',
+      country: 'Turkey',
+      address: 'Turkiye'
     },
     basketItems: [{
-      id      : kitType + '-kit',
-      name    : 'DOKUZCAN ' + kitType.toUpperCase() + ' Travma Kiti',
+      id       : kitType + '-kit',
+      name     : kitNames[kitType] || 'DOKUZCAN Kit',
       category1: 'Guvenlik',
       itemType : Iyzipay.BASKET_ITEM_TYPE.PHYSICAL,
-      price
+      price    : priceStr
     }]
   }
 
   iyzipay.checkoutFormInitialize.create(request, (err, result) => {
     if (err) {
-      console.error('iyzipay hata:', err)
-      return res.status(500).json({ error: 'iyzipay bağlantı hatası: ' + (err.message || err) })
+      return res.status(500).json({ error: 'SDK hatası: ' + (err.message || JSON.stringify(err)) })
     }
     if (result.status !== 'success') {
-      console.error('iyzipay result:', JSON.stringify(result))
+      // Tam iyzico hatasını döndür — debug için
       return res.status(400).json({
-        error: result.errorMessage || 'Ödeme başlatılamadı',
-        code : result.errorCode
+        error        : result.errorMessage,
+        errorCode    : result.errorCode,
+        errorGroup   : result.errorGroup,
+        conversationId: result.conversationId
       })
     }
     return res.status(200).json({
