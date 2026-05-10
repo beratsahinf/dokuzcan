@@ -1,34 +1,30 @@
 const Iyzipay = require('iyzipay')
 const { createClient } = require('@supabase/supabase-js')
 
-// Form-urlencoded body parser
-function parseFormBody(body) {
-  if (!body) return {}
-  try {
-    // JSON ise direkt parse et
-    return JSON.parse(body)
-  } catch {
-    // form-urlencoded ise parse et
-    return Object.fromEntries(new URLSearchParams(body))
-  }
-}
-
 module.exports = async (req, res) => {
   if (req.method === 'GET') return res.redirect(302, '/')
 
-  // Body'yi oku — Vercel bazen string bazen object döner
-  let body = req.body
-  if (typeof body === 'string') body = parseFormBody(body)
+  // Body'yi güvenli şekilde al
+  let body = req.body || {}
+  if (typeof body === 'string') {
+    try { body = JSON.parse(body) }
+    catch { body = Object.fromEntries(new URLSearchParams(body)) }
+  }
 
-  const token = body?.token
+  // Token'ı URL-decode et ve temizle
+  let token = body.token || ''
+  try { token = decodeURIComponent(token) } catch {}
+  token = token.trim()
 
-  // Debug log
-  console.log('Callback alındı. Token:', token ? token.slice(0,10) + '...' : 'YOK')
-  console.log('Body keys:', Object.keys(body || {}))
+  console.log('=== CALLBACK ===')
+  console.log('Token var mı:', !!token)
+  console.log('Token uzunluk:', token.length)
+  console.log('Body keys:', Object.keys(body))
+  console.log('Status (body):', body.status)
 
   if (!token) {
-    console.error('Token yok, body:', JSON.stringify(body))
-    return res.redirect(302, '/urun?payment=error&reason=no_token')
+    console.error('Token yok!')
+    return res.redirect(302, '/urun?payment=error')
   }
 
   const iyzipay = new Iyzipay({
@@ -38,40 +34,35 @@ module.exports = async (req, res) => {
   })
 
   iyzipay.checkoutForm.retrieve(
-    { locale: 'tr', conversationId: 'DC' + Date.now(), token },
+    { locale: 'tr', conversationId: body.conversationId || ('DC' + Date.now()), token },
     async (err, result) => {
-      console.log('iyzipay result status:', result?.status)
-      console.log('iyzipay paymentStatus:', result?.paymentStatus)
+      console.log('Retrieve err:', err ? JSON.stringify(err) : null)
+      console.log('Retrieve result:', JSON.stringify(result))
 
       if (err) {
-        console.error('iyzipay retrieve hatası:', err)
-        return res.redirect(302, '/urun?payment=error&reason=retrieve_error')
+        console.error('iyzipay retrieve SDK hatası:', err)
+        return res.redirect(302, '/urun?payment=error')
       }
 
       if (result.status !== 'success') {
-        console.error('Ödeme status başarısız:', result.errorMessage)
-        return res.redirect(302, '/urun?payment=failed&reason=' + encodeURIComponent(result.errorMessage || ''))
+        console.error('Retrieve başarısız:', result.errorCode, result.errorMessage)
+        return res.redirect(302, '/urun?payment=failed')
       }
 
       if (result.paymentStatus !== 'SUCCESS') {
-        console.error('paymentStatus başarısız:', result.paymentStatus)
-        return res.redirect(302, '/urun?payment=failed&reason=' + encodeURIComponent(result.paymentStatus || ''))
+        console.error('paymentStatus:', result.paymentStatus)
+        return res.redirect(302, '/urun?payment=failed')
       }
 
-      // Ödeme başarılı — kit oluştur
+      // Ödeme başarılı
       try {
         const sb = createClient(
           process.env.SUPABASE_URL,
           process.env.SUPABASE_SERVICE_KEY
         )
-
         const slug   = result.basketId
         const userId = result.buyer?.id
-
-        if (!userId || !slug) {
-          console.error('userId veya slug yok:', { userId, slug })
-          return res.redirect(302, '/tibbi-profil?payment=success&warn=no_kit')
-        }
+        console.log('Kit oluşturuluyor:', slug, userId)
 
         const { error: kitErr } = await sb.from('kits').insert({
           user_id        : userId,
@@ -84,18 +75,13 @@ module.exports = async (req, res) => {
           payment_amount : parseFloat(result.paidPrice || 0)
         })
 
-        if (kitErr) {
-          console.error('Kit insert hatası:', kitErr.message)
-          // Ödeme tamam ama kit kaydı olmadı — yine de yönlendir
-          return res.redirect(302, '/tibbi-profil?payment=success&warn=kit_error')
-        }
+        if (kitErr) console.error('Kit insert hatası:', kitErr.message)
+        else console.log('Kit başarıyla oluşturuldu!')
 
-        console.log('Kit başarıyla oluşturuldu:', slug)
         return res.redirect(302, '/tibbi-profil?payment=success')
-
       } catch (e) {
         console.error('Supabase hatası:', e.message)
-        return res.redirect(302, '/tibbi-profil?payment=success&warn=db_error')
+        return res.redirect(302, '/tibbi-profil?payment=success&warn=db')
       }
     }
   )
