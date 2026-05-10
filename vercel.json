@@ -6,6 +6,7 @@
     { "source": "/profil-ayarlari", "destination": "/profil-ayarlari.html" },
     { "source": "/qr-profil", "destination": "/qr-profil.html" },
     { "source": "/giris", "destination": "/giris.html" },
-    { "source": "/kayit", "destination": "/kayit.html" }
+    { "source": "/kayit", "destination": "/kayit.html" },
+    { "source": "/admin", "destination": "/admin.html" }
   ]
 }
