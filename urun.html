@@ -1262,10 +1262,15 @@
 
         const data = await resp.json()
 
-        // Form içeriğini sessionStorage'a kaydet, ödeme sayfasına yönlendir
-        sessionStorage.setItem('iyziFormContent', data.checkoutFormContent)
-        sessionStorage.setItem('iyziToken', data.token)
-        window.location.href = '/odeme'
+        // iyzico'nun hosted sayfasına yönlendir — masaüstü ve mobil uyumlu
+        if (data.payWithIyzicoPageUrl) {
+          window.location.href = data.payWithIyzicoPageUrl
+        } else {
+          // Fallback: sessionStorage + odeme sayfası
+          sessionStorage.setItem('iyziFormContent', data.checkoutFormContent)
+          sessionStorage.setItem('iyziToken', data.token)
+          window.location.href = '/odeme'
+        }
 
       } catch (err) {
         console.error(err)
