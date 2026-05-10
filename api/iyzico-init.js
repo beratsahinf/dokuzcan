@@ -1,129 +1,97 @@
-// api/iyzico-init.js
-// Vercel Serverless Function — iyzico ödeme formu token'ı üretir
-// Bu dosya /api/ klasörüne gitmeli (Vercel otomatik tanır)
-
-const crypto = require('crypto')
-
-const IYZICO_BASE_URL = process.env.IYZICO_BASE_URL || 'https://sandbox-api.iyzipay.com'
-const API_KEY         = process.env.IYZICO_API_KEY    // Vercel env variable
-const SECRET_KEY      = process.env.IYZICO_SECRET_KEY // Vercel env variable
-
-// iyzico HMAC-SHA256 imza üretici
-function generateAuthString(apiKey, secretKey, randomStr, requestBody) {
-  const hash = crypto
-    .createHmac('sha256', secretKey)
-    .update(apiKey + randomStr + JSON.stringify(requestBody))
-    .digest('base64')
-  return `IYZWS apiKey:${apiKey}, randomKey:${randomStr}, signature:${hash}`
-}
-
-// Benzersiz slug üret
-function generateSlug() {
-  const uuid = crypto.randomUUID().replace(/-/g, '').toUpperCase()
-  return uuid.slice(0, 4) + '-' + uuid.slice(4, 8) + '-' + uuid.slice(8, 12)
-}
+const Iyzipay = require('iyzipay')
+const crypto  = require('crypto')
 
 module.exports = async (req, res) => {
-  // CORS
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
   if (req.method === 'OPTIONS') { res.status(200).end(); return }
-  if (req.method !== 'POST') { res.status(405).json({ error: 'Method not allowed' }); return }
+  if (req.method !== 'POST')    { res.status(405).json({ error: 'Method not allowed' }); return }
 
-  try {
-    const {
-      userId,       // Supabase user id
-      kitType,      // 'basic' | 'advanced' | 'pro'
+  const { userId, email, firstName, lastName, phone, kitType, price } = req.body
+
+  if (!userId || !email || !price || !kitType) {
+    return res.status(400).json({ error: 'Eksik parametre' })
+  }
+
+  // Fiyatı her zaman 2 ondalıklı string yap
+  const priceStr = parseFloat(price).toFixed(2)
+
+  const callbackUrl = process.env.IYZICO_CALLBACK_URL || 'https://dokuzcan.com/api/iyzico-callback'
+
+  const iyzipay = new Iyzipay({
+    apiKey   : process.env.IYZICO_API_KEY,
+    secretKey: process.env.IYZICO_SECRET_KEY,
+    uri      : process.env.IYZICO_BASE_URL || 'https://sandbox-api.iyzipay.com'
+  })
+
+  const slug           = crypto.randomBytes(6).toString('hex').toUpperCase().slice(0,4) + '-' +
+                         crypto.randomBytes(6).toString('hex').toUpperCase().slice(0,4) + '-' +
+                         crypto.randomBytes(6).toString('hex').toUpperCase().slice(0,4)
+  const conversationId = 'DC' + Date.now()
+
+  const kitNames = { basic: 'CITY Kit', advanced: 'TOUR Kit', pro: 'OFF-ROAD Kit' }
+
+  const request = {
+    locale             : Iyzipay.LOCALE.TR,
+    conversationId,
+    price              : priceStr,
+    paidPrice          : priceStr,
+    currency           : Iyzipay.CURRENCY.TRY,
+    basketId           : slug,
+    paymentGroup       : Iyzipay.PAYMENT_GROUP.PRODUCT,
+    callbackUrl,
+    enabledInstallments: [1, 2, 3, 6],
+    buyer: {
+      id                 : userId,
+      name               : (firstName || 'Kullanici').replace(/[^a-zA-Z\s]/g, ''),
+      surname            : (lastName  || 'Dokuzcan').replace(/[^a-zA-Z\s]/g, ''),
       email,
-      firstName,
-      lastName,
-      phone,
-      price,        // Fiyat (string, örn: "2290.00")
-      currency = 'TRY'
-    } = req.body
+      identityNumber     : '11111111111',
+      registrationAddress: 'Turkiye',
+      city               : 'Istanbul',
+      country            : 'Turkey',
+      gsmNumber          : (phone || '+905000000000').replace(/[^0-9+]/g, '')
+    },
+    shippingAddress: {
+      contactName: ((firstName || 'K') + ' ' + (lastName || 'D')).replace(/[^a-zA-Z\s]/g, ''),
+      city   : 'Istanbul',
+      country: 'Turkey',
+      address: 'Turkiye'
+    },
+    billingAddress: {
+      contactName: ((firstName || 'K') + ' ' + (lastName || 'D')).replace(/[^a-zA-Z\s]/g, ''),
+      city   : 'Istanbul',
+      country: 'Turkey',
+      address: 'Turkiye'
+    },
+    basketItems: [{
+      id       : kitType + '-kit',
+      name     : kitNames[kitType] || 'DOKUZCAN Kit',
+      category1: 'Guvenlik',
+      itemType : Iyzipay.BASKET_ITEM_TYPE.PHYSICAL,
+      price    : priceStr
+    }]
+  }
 
-    if (!userId || !email || !price || !kitType) {
-      return res.status(400).json({ error: 'Eksik parametre: userId, email, price, kitType gerekli' })
+  iyzipay.checkoutFormInitialize.create(request, (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: 'SDK hatası: ' + (err.message || JSON.stringify(err)) })
     }
-
-    const randomStr   = Math.random().toString(36).substring(2) + Date.now()
-    const conversationId = 'DC-' + Date.now() + '-' + userId.slice(0, 8)
-    const slug        = generateSlug()
-
-    // iyzico CheckoutForm başlatma isteği
-    const requestBody = {
-      locale: 'tr',
-      conversationId,
-      price: price,
-      paidPrice: price,
-      currency,
-      basketId: slug,                     // Siparişi slug ile ilişkilendir
-      paymentGroup: 'PRODUCT',
-      callbackUrl: process.env.IYZICO_CALLBACK_URL, // örn: https://dokuzcan.com/api/iyzico-callback
-      enabledInstallments: [1, 2, 3],
-      buyer: {
-        id: userId,
-        name: firstName || 'Misafir',
-        surname: lastName || 'Kullanıcı',
-        email: email,
-        identityNumber: '11111111111',    // Test: TC kimlik no
-        registrationAddress: 'Türkiye',
-        city: 'İstanbul',
-        country: 'Turkey',
-        gsmNumber: phone || '+905000000000'
-      },
-      shippingAddress: {
-        contactName: (firstName || 'Misafir') + ' ' + (lastName || ''),
-        city: 'İstanbul',
-        country: 'Turkey',
-        address: 'Türkiye',
-      },
-      billingAddress: {
-        contactName: (firstName || 'Misafir') + ' ' + (lastName || ''),
-        city: 'İstanbul',
-        country: 'Turkey',
-        address: 'Türkiye',
-      },
-      basketItems: [{
-        id: kitType + '-kit',
-        name: 'DOKUZCAN ' + kitType.toUpperCase() + ' Motosiklet Travma Kiti',
-        category1: 'Güvenlik',
-        category2: 'Motosiklet Ekipmanı',
-        itemType: 'PHYSICAL',
-        price: price,
-      }]
+    if (result.status !== 'success') {
+      // Tam iyzico hatasını döndür — debug için
+      return res.status(400).json({
+        error        : result.errorMessage,
+        errorCode    : result.errorCode,
+        errorGroup   : result.errorGroup,
+        conversationId: result.conversationId
+      })
     }
-
-    const authStr = generateAuthString(API_KEY, SECRET_KEY, randomStr, requestBody)
-
-    const response = await fetch(`${IYZICO_BASE_URL}/payment/iyzipos/checkoutform/initialize/auth/ecom`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': authStr,
-        'x-iyzi-rnd': randomStr,
-        'x-iyzi-client-version': 'iyzipay-node-2.0.52'
-      },
-      body: JSON.stringify(requestBody)
-    })
-
-    const data = await response.json()
-
-    if (data.status !== 'success') {
-      return res.status(400).json({ error: data.errorMessage || 'iyzico hatası', raw: data })
-    }
-
-    // Token ve slug'ı döndür — slug Supabase'e kaydedilecek ödeme tamamlandıktan sonra
     return res.status(200).json({
-      checkoutFormContent: data.checkoutFormContent,
-      token: data.token,
+      checkoutFormContent: result.checkoutFormContent,
+      token              : result.token,
       slug,
       conversationId
     })
-
-  } catch (err) {
-    console.error('iyzico-init hatası:', err)
-    return res.status(500).json({ error: err.message })
-  }
+  })
 }
