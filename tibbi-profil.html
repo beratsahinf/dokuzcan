@@ -780,6 +780,17 @@
       }
     }
 
+    // Ödeme sonrası yönlendirme kontrolü
+    const _params = new URLSearchParams(window.location.search)
+    if (_params.get('payment') === 'success') {
+      const toast = document.getElementById('toast')
+      if (toast) {
+        toast.textContent = '✓ ÖDEME BAŞARILI — KİT AKTİF'
+        toast.classList.add('show')
+        setTimeout(() => toast.classList.remove('show'), 5000)
+      }
+    }
+
     init()
   </script>
 </body>
