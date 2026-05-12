@@ -44,6 +44,7 @@ module.exports = async (req, res) => {
       case 'create-kit': {
         const { user_id, kit_type, status, shipping_address, shipping_city, shipping_district, shipping_postal, phone, tc_kimlik, full_name, payment_amount, admin_notes } = data
         if (!user_id || !kit_type) return res.status(400).json({ error: 'user_id ve kit_type gerekli' })
+        console.log('Kit oluşturuluyor — user_id:', user_id, 'kit_type:', kit_type)
         let slug
         for (let i = 0; i < 10; i++) {
           slug = makeSlug()
