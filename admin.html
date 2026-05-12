@@ -186,6 +186,7 @@
           <div class="nav-item" data-sec="orders" onclick="showSection('orders')"><span class="nav-icon">📦</span> Siparişler <span class="nav-badge" id="ordersBadge">0</span></div>
           <div class="nav-item" data-sec="users" onclick="showSection('users')"><span class="nav-icon">👥</span> Üyeler <span class="nav-badge" id="usersBadge">0</span></div>
           <div class="nav-item" data-sec="kits" onclick="showSection('kits')"><span class="nav-icon">🎯</span> Kitler</div>
+          <div class="nav-item" data-sec="media" onclick="showSection('media')"><span class="nav-icon">🖼️</span> Medya</div>
           <div class="nav-item" data-sec="medical" onclick="showSection('medical')"><span class="nav-icon">🩺</span> Tıbbi Profil</div>
           <div class="nav-item" data-sec="pending" onclick="showSection('pending')"><span class="nav-icon">⏳</span> Bekleyen <span class="nav-badge" id="pendingBadge">0</span></div>
         </nav>
@@ -280,6 +281,67 @@
           </div>
         </div>
 
+        <!-- MEDYA -->
+        <div class="section" id="sec-media">
+          <div class="page-head">
+            <div class="page-title">Medya Yönetimi</div>
+          </div>
+
+          <!-- LOGO -->
+          <div style="background:var(--panel);border:1px solid var(--border);padding:20px;margin-bottom:20px;position:relative">
+            <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--red)"></div>
+            <div class="section-label" style="margin-bottom:12px">Logo</div>
+            <div style="display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:center">
+              <div id="logoPreview" style="width:120px;height:60px;background:var(--dark);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;color:var(--grey)">LOGO YOK</div>
+              <div>
+                <div style="font-size:13px;color:var(--light);margin-bottom:8px">PNG veya SVG önerilir. Beyaz/şeffaf arka plan.</div>
+                <label style="display:inline-block;background:var(--red);color:#000;padding:8px 16px;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;cursor:pointer">
+                  Yükle
+                  <input type="file" accept="image/*" style="display:none" onchange="uploadImage(this,'logo','logo.png')" />
+                </label>
+                <span id="logoUrl" style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--grey);margin-left:10px;word-break:break-all"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ÜRÜN GÖRSELLERİ -->
+          <div style="background:var(--panel);border:1px solid var(--border);padding:20px;margin-bottom:20px;position:relative">
+            <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--red)"></div>
+            <div class="section-label" style="margin-bottom:4px">Ürün Görselleri</div>
+            <div style="font-size:12px;color:var(--grey);margin-bottom:16px">Her kit için görseller yükle. İlk görsel hero olarak kullanılır.</div>
+
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+              ${['basic','advanced','pro'].map(type => {
+                const names = {basic:'CITY Kit',advanced:'TOUR Kit',pro:'OFF-ROAD Kit'}
+                return `
+                <div>
+                  <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--red);margin-bottom:8px">${names[type]}</div>
+                  <div id="grid-${type}" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px"></div>
+                  <label style="display:block;background:var(--dark);border:1px dashed var(--border2);padding:10px;text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;color:var(--grey);cursor:pointer">
+                    + Görsel Ekle
+                    <input type="file" accept="image/*" style="display:none" onchange="uploadImage(this,'kit-${type}')" multiple />
+                  </label>
+                </div>`
+              }).join('')}
+            </div>
+          </div>
+
+          <!-- TÜM DOSYALAR -->
+          <div style="background:var(--panel);border:1px solid var(--border);padding:20px;position:relative">
+            <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--red)"></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+              <div class="section-label">Tüm Dosyalar</div>
+              <label style="background:var(--red);color:#000;padding:8px 16px;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;cursor:pointer">
+                + Yükle
+                <input type="file" accept="image/*" style="display:none" onchange="uploadImage(this,'genel')" multiple />
+              </label>
+            </div>
+            <div id="allFilesGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px">
+              <div class="empty">Yükleniyor...</div>
+            </div>
+          </div>
+        </div>
+
         <!-- MEDICAL -->
         <div class="section" id="sec-medical">
           <div class="page-head"><div class="page-title">Tıbbi Profiller</div></div>
@@ -349,6 +411,142 @@
 <script>
 const KIT_NAMES = { basic:'CITY', advanced:'TOUR', pro:'OFF-ROAD' }
 const STATUS_LABEL = { pending:'Onay Bekliyor', paid:'Ödendi', processing:'Hazırlanıyor', shipped:'Kargoda', delivered:'Teslim', returned:'İade', cancelled:'İptal' }
+
+const SB_URL = 'https://fascsdkzcmnmaaxvldxf.supabase.co'
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZhc2NzZGt6Y21ubWFheHZsZHhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4MTMxMTMsImV4cCI6MjA5MzM4OTExM30.Unlfg8DHP7ce2CtFCcCgRaydstrCB-dwAIEebFRUQm4'
+const BUCKET = 'dokuzcan-images'
+
+async function sbUpload(path, file) {
+  const formData = new FormData()
+  formData.append('', file)
+  const r = await fetch(`${SB_URL}/storage/v1/object/${BUCKET}/${path}`, {
+    method: 'POST',
+    headers: { 'Authorization': 'Bearer ' + SB_KEY, 'x-upsert': 'true' },
+    body: file
+  })
+  if (!r.ok) {
+    const e = await r.json().catch(()=>({}))
+    throw new Error(e.message || r.status)
+  }
+  return `${SB_URL}/storage/v1/object/public/${BUCKET}/${path}`
+}
+
+async function sbListFiles(prefix) {
+  const r = await fetch(`${SB_URL}/storage/v1/object/list/${BUCKET}`, {
+    method: 'POST',
+    headers: { 'Authorization':'Bearer '+SB_KEY, 'Content-Type':'application/json' },
+    body: JSON.stringify({ prefix, limit: 200, sortBy: { column:'created_at', order:'desc' } })
+  })
+  if (!r.ok) return []
+  const data = await r.json()
+  return (data || []).filter(f => f.name)
+}
+
+async function sbDelete(path) {
+  await fetch(`${SB_URL}/storage/v1/object/${BUCKET}/${path}`, {
+    method: 'DELETE',
+    headers: { 'Authorization': 'Bearer ' + SB_KEY }
+  })
+}
+
+function pubUrl(path) {
+  return `${SB_URL}/storage/v1/object/public/${BUCKET}/${path}`
+}
+
+async function uploadImage(input, folder, forceName) {
+  const files = Array.from(input.files)
+  if (!files.length) return
+  for (const file of files) {
+    const ext = file.name.split('.').pop().toLowerCase()
+    const name = forceName || (Date.now() + '-' + file.name.replace(/[^a-zA-Z0-9._-]/g,'_'))
+    const path = folder + '/' + name
+    try {
+      const url = await sbUpload(path, file)
+      // Logo preview
+      if (forceName === 'logo.png') {
+        document.getElementById('logoPreview').innerHTML = `<img src="${url}" style="max-width:110px;max-height:50px;object-fit:contain">`
+        document.getElementById('logoUrl').textContent = url
+      }
+      // Refresh
+      await loadMediaSection()
+    } catch(e) {
+      alert('Yükleme hatası: ' + e.message)
+    }
+  }
+  input.value = ''
+}
+
+async function loadMediaSection() {
+  // Logo
+  const logoFiles = await sbListFiles('logo')
+  const logoFile = logoFiles.find(f => f.name === 'logo.png' || f.name.startsWith('logo'))
+  if (logoFile) {
+    const url = pubUrl('logo/' + logoFile.name)
+    document.getElementById('logoPreview').innerHTML = `<img src="${url}?t=${Date.now()}" style="max-width:110px;max-height:50px;object-fit:contain">`
+    document.getElementById('logoUrl').textContent = url
+  }
+
+  // Kit grids
+  for (const type of ['basic','advanced','pro']) {
+    const files = await sbListFiles('kit-' + type)
+    const grid = document.getElementById('grid-' + type)
+    if (!grid) continue
+    grid.innerHTML = files.length === 0 ? '<div style="font-size:11px;color:var(--grey);grid-column:1/-1">Henüz görsel yok</div>' :
+      files.map(f => {
+        const url = pubUrl('kit-' + type + '/' + f.name)
+        return `<div style="position:relative;group">
+          <img src="${url}" style="width:100%;aspect-ratio:1;object-fit:cover;display:block;border:1px solid var(--border)"/>
+          <button onclick="deleteFile('kit-${type}/${f.name}')" style="position:absolute;top:3px;right:3px;background:rgba(0,0,0,0.8);border:none;color:var(--red);font-size:12px;cursor:pointer;padding:2px 5px;line-height:1">✕</button>
+          <button onclick="copyUrl('${url}')" style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.75);border:none;color:var(--white);font-size:9px;letter-spacing:1px;cursor:pointer;padding:4px;font-family:'Barlow Condensed',sans-serif">URL Kopyala</button>
+        </div>`
+      }).join('')
+  }
+
+  // All files
+  const allFiles = await sbListFiles('')
+  const grid = document.getElementById('allFilesGrid')
+  if (!grid) return
+  if (!allFiles.length) { grid.innerHTML = '<div class="empty">Dosya yok</div>'; return }
+  grid.innerHTML = allFiles.filter(f=>f.metadata).map(f => {
+    const path = f.name
+    const url = pubUrl(path)
+    const isImg = /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(path)
+    return `<div style="position:relative;background:var(--dark);border:1px solid var(--border);overflow:hidden">
+      ${isImg
+        ? `<img src="${url}" style="width:100%;aspect-ratio:1;object-fit:cover;display:block"/>`
+        : `<div style="width:100%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--grey)">${path.split('.').pop().toUpperCase()}</div>`}
+      <div style="padding:6px 8px">
+        <div style="font-size:10px;color:var(--grey);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${path.split('/').pop()}</div>
+        <div style="display:flex;gap:4px;margin-top:5px">
+          <button onclick="copyUrl('${url}')" style="flex:1;background:var(--panel2);border:1px solid var(--border);color:var(--white);font-size:9px;padding:4px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px">Kopyala</button>
+          <button onclick="deleteFile('${path}')" style="background:transparent;border:1px solid rgba(232,0,29,0.3);color:var(--red);font-size:9px;padding:4px 6px;cursor:pointer">✕</button>
+        </div>
+      </div>
+    </div>`
+  }).join('')
+}
+
+async function deleteFile(path) {
+  if (!confirm(`"${path}" silinsin mi?`)) return
+  await sbDelete(path)
+  await loadMediaSection()
+}
+
+function copyUrl(url) {
+  navigator.clipboard.writeText(url).then(() => {
+    const btn = event.target
+    const orig = btn.textContent
+    btn.textContent = '✓'
+    setTimeout(() => btn.textContent = orig, 1500)
+  })
+}
+
+// Media section açıldığında yükle
+const _origShowSection = showSection
+function showSection(sec) {
+  _origShowSection(sec)
+  if (sec === 'media') loadMediaSection()
+}
 
 let adminPw = sessionStorage.getItem('adminPw') || ''
 let DATA = { orders:[], users:[], pending:[], medical:[] }
