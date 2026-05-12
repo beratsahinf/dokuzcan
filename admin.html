@@ -186,7 +186,7 @@
           <div class="nav-item" data-sec="orders" onclick="showSection('orders')"><span class="nav-icon">📦</span> Siparişler <span class="nav-badge" id="ordersBadge">0</span></div>
           <div class="nav-item" data-sec="users" onclick="showSection('users')"><span class="nav-icon">👥</span> Üyeler <span class="nav-badge" id="usersBadge">0</span></div>
           <div class="nav-item" data-sec="kits" onclick="showSection('kits')"><span class="nav-icon">🎯</span> Kitler</div>
-          <div class="nav-item" data-sec="media" onclick="showSection('media')"><span class="nav-icon">🖼️</span> Medya</div>
+          <div class="nav-item" data-sec="media" onclick="showSection('media');loadMediaSection()"><span class="nav-icon">🖼️</span> Medya</div>
           <div class="nav-item" data-sec="medical" onclick="showSection('medical')"><span class="nav-icon">🩺</span> Tıbbi Profil</div>
           <div class="nav-item" data-sec="pending" onclick="showSection('pending')"><span class="nav-icon">⏳</span> Bekleyen <span class="nav-badge" id="pendingBadge">0</span></div>
         </nav>
@@ -293,7 +293,7 @@
             <div class="section-label" style="margin-bottom:12px">Logo</div>
             <div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap">
               <div id="logoPreview" style="width:120px;height:60px;background:var(--dark);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;color:var(--grey);flex-shrink:0">LOGO YOK</div>
-              <div>
+              <div style="flex:1">
                 <div style="font-size:13px;color:var(--light);margin-bottom:10px">PNG veya SVG önerilir. Beyaz/şeffaf arka plan.</div>
                 <label class="btn-primary" style="display:inline-block;cursor:pointer">
                   Yükle
@@ -301,6 +301,7 @@
                 </label>
                 <div id="logoUrl" style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--grey);margin-top:6px;word-break:break-all"></div>
               </div>
+              <div id="logoGrid" style="min-width:120px"></div>
             </div>
           </div>
 
@@ -435,136 +436,164 @@ const SB_URL = 'https://fascsdkzcmnmaaxvldxf.supabase.co'
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZhc2NzZGt6Y21ubWFheHZsZHhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4MTMxMTMsImV4cCI6MjA5MzM4OTExM30.Unlfg8DHP7ce2CtFCcCgRaydstrCB-dwAIEebFRUQm4'
 const BUCKET = 'dokuzcan-images'
 
-async function sbUpload(path, file) {
-  const formData = new FormData()
-  formData.append('', file)
+function pubUrl(folder, name) {
+  return `${SB_URL}/storage/v1/object/public/${BUCKET}/${folder}/${name}`
+}
+
+async function sbList(folder) {
+  try {
+    const r = await fetch(`${SB_URL}/storage/v1/object/list/${BUCKET}`, {
+      method : 'POST',
+      headers: { 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' },
+      body   : JSON.stringify({ prefix: folder + '/', limit: 100, offset: 0, sortBy: { column:'created_at', order:'desc' } })
+    })
+    if (!r.ok) { console.error('sbList hata', r.status); return [] }
+    const data = await r.json()
+    return Array.isArray(data) ? data.filter(f => f.name && f.name !== '.emptyFolderPlaceholder') : []
+  } catch(e) { console.error('sbList exception', e); return [] }
+}
+
+async function sbUploadFile(folder, fileName, file) {
+  const path = folder + '/' + fileName
   const r = await fetch(`${SB_URL}/storage/v1/object/${BUCKET}/${path}`, {
-    method: 'POST',
-    headers: { 'Authorization': 'Bearer ' + SB_KEY, 'x-upsert': 'true' },
-    body: file
+    method : 'POST',
+    headers: { 'Authorization': 'Bearer ' + SB_KEY, 'x-upsert': 'true', 'Content-Type': file.type || 'application/octet-stream' },
+    body   : file
   })
   if (!r.ok) {
     const e = await r.json().catch(()=>({}))
-    throw new Error(e.message || r.status)
+    throw new Error(e.error || e.message || 'HTTP ' + r.status)
   }
-  return `${SB_URL}/storage/v1/object/public/${BUCKET}/${path}`
+  return pubUrl(folder, fileName)
 }
 
-async function sbListFiles(prefix) {
-  const r = await fetch(`${SB_URL}/storage/v1/object/list/${BUCKET}`, {
-    method: 'POST',
-    headers: { 'Authorization':'Bearer '+SB_KEY, 'Content-Type':'application/json' },
-    body: JSON.stringify({ prefix, limit: 200, sortBy: { column:'created_at', order:'desc' } })
+async function sbDeleteFile(folder, name) {
+  const r = await fetch(`${SB_URL}/storage/v1/object/${BUCKET}`, {
+    method : 'DELETE',
+    headers: { 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' },
+    body   : JSON.stringify({ prefixes: [folder + '/' + name] })
   })
-  if (!r.ok) return []
-  const data = await r.json()
-  return (data || []).filter(f => f.name)
+  return r.ok
 }
 
-async function sbDelete(path) {
-  await fetch(`${SB_URL}/storage/v1/object/${BUCKET}/${path}`, {
-    method: 'DELETE',
-    headers: { 'Authorization': 'Bearer ' + SB_KEY }
-  })
-}
-
-function pubUrl(path) {
-  return `${SB_URL}/storage/v1/object/public/${BUCKET}/${path}`
-}
-
+// ── UPLOAD ──
 async function uploadImage(input, folder, forceName) {
   const files = Array.from(input.files)
   if (!files.length) return
+  input.value = ''
+
   for (const file of files) {
-    const ext = file.name.split('.').pop().toLowerCase()
-    const name = forceName || (Date.now() + '-' + file.name.replace(/[^a-zA-Z0-9._-]/g,'_'))
-    const path = folder + '/' + name
+    const fileName = forceName || (Date.now() + '_' + file.name.replace(/[^a-zA-Z0-9._-]/g, '_'))
+    const label = input.closest('label')
+    if (label) label.style.opacity = '0.5'
     try {
-      const url = await sbUpload(path, file)
-      // Logo preview
-      if (forceName === 'logo.png') {
-        document.getElementById('logoPreview').innerHTML = `<img src="${url}" style="max-width:110px;max-height:50px;object-fit:contain">`
-        document.getElementById('logoUrl').textContent = url
-      }
-      // Refresh
-      await loadMediaSection()
+      const url = await sbUploadFile(folder, fileName, file)
+      console.log('Yüklendi:', url)
     } catch(e) {
       alert('Yükleme hatası: ' + e.message)
+    } finally {
+      if (label) label.style.opacity = '1'
     }
   }
-  input.value = ''
-}
-
-async function loadMediaSection() {
-  // Logo
-  const logoFiles = await sbListFiles('logo')
-  const logoFile = logoFiles.find(f => f.name === 'logo.png' || f.name.startsWith('logo'))
-  if (logoFile) {
-    const url = pubUrl('logo/' + logoFile.name)
-    document.getElementById('logoPreview').innerHTML = `<img src="${url}?t=${Date.now()}" style="max-width:110px;max-height:50px;object-fit:contain">`
-    document.getElementById('logoUrl').textContent = url
-  }
-
-  // Kit grids
-  for (const type of ['basic','advanced','pro']) {
-    const files = await sbListFiles('kit-' + type)
-    const grid = document.getElementById('grid-' + type)
-    if (!grid) continue
-    grid.innerHTML = files.length === 0 ? '<div style="font-size:11px;color:var(--grey);grid-column:1/-1">Henüz görsel yok</div>' :
-      files.map(f => {
-        const url = pubUrl('kit-' + type + '/' + f.name)
-        return `<div style="position:relative;group">
-          <img src="${url}" style="width:100%;aspect-ratio:1;object-fit:cover;display:block;border:1px solid var(--border)"/>
-          <button onclick="deleteFile('kit-${type}/${f.name}')" style="position:absolute;top:3px;right:3px;background:rgba(0,0,0,0.8);border:none;color:var(--red);font-size:12px;cursor:pointer;padding:2px 5px;line-height:1">✕</button>
-          <button onclick="copyUrl('${url}')" style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.75);border:none;color:var(--white);font-size:9px;letter-spacing:1px;cursor:pointer;padding:4px;font-family:'Barlow Condensed',sans-serif">URL Kopyala</button>
-        </div>`
-      }).join('')
-  }
-
-  // All files
-  const allFiles = await sbListFiles('')
-  const grid = document.getElementById('allFilesGrid')
-  if (!grid) return
-  if (!allFiles.length) { grid.innerHTML = '<div class="empty">Dosya yok</div>'; return }
-  grid.innerHTML = allFiles.filter(f=>f.metadata).map(f => {
-    const path = f.name
-    const url = pubUrl(path)
-    const isImg = /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(path)
-    return `<div style="position:relative;background:var(--dark);border:1px solid var(--border);overflow:hidden">
-      ${isImg
-        ? `<img src="${url}" style="width:100%;aspect-ratio:1;object-fit:cover;display:block"/>`
-        : `<div style="width:100%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--grey)">${path.split('.').pop().toUpperCase()}</div>`}
-      <div style="padding:6px 8px">
-        <div style="font-size:10px;color:var(--grey);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${path.split('/').pop()}</div>
-        <div style="display:flex;gap:4px;margin-top:5px">
-          <button onclick="copyUrl('${url}')" style="flex:1;background:var(--panel2);border:1px solid var(--border);color:var(--white);font-size:9px;padding:4px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px">Kopyala</button>
-          <button onclick="deleteFile('${path}')" style="background:transparent;border:1px solid rgba(232,0,29,0.3);color:var(--red);font-size:9px;padding:4px 6px;cursor:pointer">✕</button>
-        </div>
-      </div>
-    </div>`
-  }).join('')
-}
-
-async function deleteFile(path) {
-  if (!confirm(`"${path}" silinsin mi?`)) return
-  await sbDelete(path)
   await loadMediaSection()
 }
 
-function copyUrl(url) {
+// ── DELETE ──
+async function deleteMedia(folder, name) {
+  if (!confirm(`"${name}" silinsin mi?`)) return
+  const ok = await sbDeleteFile(folder, name)
+  if (!ok) { alert('Silme başarısız'); return }
+  await loadMediaSection()
+}
+
+// ── COPY URL ──
+function copyMediaUrl(url, btn) {
   navigator.clipboard.writeText(url).then(() => {
-    const btn = event.target
     const orig = btn.textContent
-    btn.textContent = '✓'
-    setTimeout(() => btn.textContent = orig, 1500)
+    btn.textContent = '✓ Kopyalandı'; btn.style.color = 'var(--green)'
+    setTimeout(() => { btn.textContent = orig; btn.style.color = '' }, 2000)
   })
 }
 
-// Media section açıldığında yükle
-const _origShowSection = showSection
-function showSection(sec) {
-  _origShowSection(sec)
-  if (sec === 'media') loadMediaSection()
+// ── RENDER FILE CARD ──
+function fileCard(folder, f) {
+  const url = pubUrl(folder, f.name) + '?t=' + Date.now()
+  const cleanUrl = pubUrl(folder, f.name)
+  const isImg = /\.(jpg|jpeg|png|gif|webp|svg|avif)$/i.test(f.name)
+  const size = f.metadata?.size ? (f.metadata.size / 1024).toFixed(0) + ' KB' : ''
+  return `
+  <div style="background:var(--dark);border:1px solid var(--border);overflow:hidden;position:relative">
+    ${isImg
+      ? `<div style="aspect-ratio:1;overflow:hidden;background:#111"><img src="${url}" style="width:100%;height:100%;object-fit:cover;display:block" loading="lazy" onerror="this.style.display='none'" /></div>`
+      : `<div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:24px;background:#111">📄</div>`}
+    <div style="padding:8px 10px">
+      <div style="font-size:11px;color:var(--light);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px" title="${f.name}">${f.name}</div>
+      ${size ? `<div style="font-size:10px;color:var(--grey)">${size}</div>` : ''}
+      <div style="display:flex;gap:4px;margin-top:6px">
+        <button onclick="copyMediaUrl('${cleanUrl}', this)" style="flex:1;background:var(--panel2);border:1px solid var(--border2);color:var(--white);font-size:10px;padding:5px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px">URL Kopyala</button>
+        <button onclick="deleteMedia('${folder}','${f.name}')" style="background:transparent;border:1px solid rgba(232,0,29,0.3);color:var(--red);font-size:10px;padding:5px 8px;cursor:pointer">✕</button>
+      </div>
+    </div>
+  </div>`
+}
+
+// ── LOAD MEDIA SECTION ──
+async function loadMediaSection() {
+  const sec = document.getElementById('sec-media')
+  if (!sec) return
+
+  // LOGO
+  const logoFiles = await sbList('logo')
+  const logoEl = document.getElementById('logoPreview')
+  const logoUrlEl = document.getElementById('logoUrl')
+  const logoGridEl = document.getElementById('logoGrid')
+
+  if (logoFiles.length > 0) {
+    const lf = logoFiles[0]
+    const url = pubUrl('logo', lf.name)
+    if (logoEl) logoEl.innerHTML = `<img src="${url}?t=${Date.now()}" style="max-width:110px;max-height:50px;object-fit:contain" />`
+    if (logoUrlEl) logoUrlEl.textContent = url
+    if (logoGridEl) logoGridEl.innerHTML = fileCard('logo', lf)
+  } else {
+    if (logoEl) logoEl.innerHTML = '<span style="font-size:10px;letter-spacing:2px;color:var(--grey)">LOGO YOK</span>'
+    if (logoGridEl) logoGridEl.innerHTML = '<div style="font-size:11px;color:var(--grey)">Henüz logo yüklenmedi</div>'
+  }
+
+  // KIT GRİDLERİ
+  for (const type of ['basic','advanced','pro']) {
+    const grid = document.getElementById('grid-' + type)
+    if (!grid) continue
+    grid.innerHTML = '<div style="font-size:10px;color:var(--grey)">Yükleniyor...</div>'
+    const files = await sbList('kit-' + type)
+    if (files.length === 0) {
+      grid.innerHTML = '<div style="font-size:11px;color:var(--grey);padding:8px 0">Henüz görsel yok</div>'
+    } else {
+      grid.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px">${files.map(f => fileCard('kit-'+type, f)).join('')}</div>`
+    }
+  }
+
+  // TÜM DOSYALAR
+  const allGrid = document.getElementById('allFilesGrid')
+  if (!allGrid) return
+  allGrid.innerHTML = '<div style="font-size:10px;color:var(--grey)">Yükleniyor...</div>'
+
+  const folders = ['logo','kit-basic','kit-advanced','kit-pro','genel']
+  let allCards = []
+  for (const folder of folders) {
+    const files = await sbList(folder)
+    for (const f of files) {
+      allCards.push({ folder, file: f })
+    }
+  }
+  allCards.sort((a,b) => new Date(b.file.created_at||0) - new Date(a.file.created_at||0))
+
+  if (allCards.length === 0) {
+    allGrid.innerHTML = '<div class="empty">Henüz dosya yok</div>'
+  } else {
+    allGrid.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px">` +
+      allCards.map(({folder, file}) => fileCard(folder, file)).join('') +
+      '</div>'
+  }
 }
 
 let adminPw = sessionStorage.getItem('adminPw') || ''
