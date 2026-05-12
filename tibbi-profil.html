@@ -346,8 +346,8 @@
     <!-- QR CARD -->
     <div class="qr-card">
       <div class="qr-img-wrap">
-        <div class="qr-canvas-box">
-          <canvas id="qrCanvas"></canvas>
+        <div class="qr-canvas-box" id="qrBox">
+          <div style="width:108px;height:108px;display:flex;align-items:center;justify-content:center;background:#f0f0f0;font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:1px;color:#aaa;text-transform:uppercase">Yükleniyor...</div>
         </div>
       </div>
       <div class="qr-info">
@@ -539,36 +539,37 @@
     }
 
     function getQRUrl() {
-      // Vercel'de path /tibbi-profil veya /tibbi-profil.html olabilir
-      // qr-profil sayfası her zaman origin + /qr-profil
-      const origin = window.location.origin
-      // .html extension varsa koru, yoksa düz path kullan
-      const hasHtml = window.location.pathname.includes('.html')
-      const qrPath = hasHtml ? '/qr-profil.html' : '/qr-profil'
-      return origin + qrPath + '?slug=' + (userKit?.slug || 'unknown')
+      return 'https://dokuzcan.com/qr-profil?slug=' + (userKit?.slug || 'unknown')
     }
 
-    function waitForQRLib(cb, attempts = 0) {
+    function waitForQRLib(cb, n = 0) {
       if (typeof QRCode !== 'undefined') { cb(); return }
-      if (attempts > 20) { console.error('QRCode kütüphanesi yüklenemedi'); return }
-      setTimeout(() => waitForQRLib(cb, attempts + 1), 150)
+      if (n > 30) { console.error('QRCode lib yüklenemedi'); return }
+      setTimeout(() => waitForQRLib(cb, n + 1), 200)
     }
 
     function generateQR() {
       if (!userKit) return
+      const url = getQRUrl()
+
       waitForQRLib(() => {
-        const canvas = document.getElementById('qrCanvas')
-        if (!canvas) return
-        // Canvas'ı gerçek piksel boyutuna ayarla
-        canvas.width = 180
-        canvas.height = 180
-        canvas.style.width = '108px'
-        canvas.style.height = '108px'
-        QRCode.toCanvas(canvas, getQRUrl(), {
-          width: 180, margin: 1,
-          color: { dark: '#000000', light: '#ffffff' }
-        }, (err) => {
-          if (err) console.error('QR üretme hatası:', err)
+        // SVG formatı — canvas sorunları yok
+        QRCode.toString(url, {
+          type  : 'svg',
+          margin: 1,
+          width : 160,
+          color : { dark: '#000000', light: '#ffffff' }
+        }, (err, svgStr) => {
+          if (err) { console.error('QR SVG hatası:', err); return }
+          const box = document.querySelector('.qr-canvas-box')
+          if (!box) return
+          box.innerHTML = svgStr
+          const svg = box.querySelector('svg')
+          if (svg) {
+            svg.style.width  = '108px'
+            svg.style.height = '108px'
+            svg.style.display = 'block'
+          }
         })
       })
     }
@@ -617,12 +618,22 @@
     }
 
     function downloadQR() {
-      const canvas = document.getElementById('qrCanvas')
-      if (!canvas) return
-      const link = document.createElement('a')
-      link.download = 'dokuzcan-qr-' + (userKit?.slug || 'profil') + '.png'
-      link.href = canvas.toDataURL('image/png')
-      link.click()
+      const url = getQRUrl()
+      if (!url || !userKit) return
+      waitForQRLib(() => {
+        QRCode.toDataURL(url, {
+          type  : 'image/png',
+          width : 512,
+          margin: 2,
+          color : { dark: '#000000', light: '#ffffff' }
+        }, (err, dataUrl) => {
+          if (err) { console.error(err); return }
+          const a = document.createElement('a')
+          a.download = 'dokuzcan-qr-' + (userKit?.slug || 'profil') + '.png'
+          a.href = dataUrl
+          a.click()
+        })
+      })
     }
 
     /* ── TAG HELPERS ── */
