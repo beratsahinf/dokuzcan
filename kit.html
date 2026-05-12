@@ -622,17 +622,58 @@
     el.parentElement.classList.toggle('open')
   }
 
-  // Kit tab click — URL güncelle
-  document.querySelectorAll('.kit-tab').forEach(tab => {
+  function loadKitImages(type) {
+    const SB_URL = 'https://fascsdkzcmnmaaxvldxf.supabase.co'
+    const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZhc2NzZGt6Y21ubWFheHZsZHhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4MTMxMTMsImV4cCI6MjA5MzM4OTExM30.Unlfg8DHP7ce2CtFCcCgRaydstrCB-dwAIEebFRUQm4'
+    const BUCKET = 'dokuzcan-images'
+
+    fetch(`${SB_URL}/storage/v1/object/list/${BUCKET}`, {
+      method: 'POST',
+      headers: { 'Authorization':'Bearer '+SB_KEY, 'Content-Type':'application/json' },
+      body: JSON.stringify({ prefix: 'kit-' + type, limit: 10, sortBy: { column:'created_at', order:'asc' } })
+    })
+    .then(r => r.json())
+    .then(files => {
+      if (!files || !files.length) return
+      const imgs = files.filter(f => f.name && /\.(jpg|jpeg|png|gif|webp)$/i.test(f.name))
+      if (!imgs.length) return
+
+      const heroImgArea = document.querySelector('.hero-img-placeholder')
+      if (!heroImgArea) return
+
+      // İlk görsel hero
+      const firstUrl = `${SB_URL}/storage/v1/object/public/${BUCKET}/kit-${type}/${imgs[0].name}`
+      document.querySelector('.hero-img').style.background = 'var(--black)'
+      heroImgArea.innerHTML = `<img src="${firstUrl}" style="width:100%;height:100%;object-fit:cover;display:block" alt="${type} kit" />`
+
+      // Thumbnail'ler
+      const thumbsEl = document.querySelector('.hero-img-thumbs')
+      thumbsEl.innerHTML = imgs.map((f, i) => {
+        const url = `${SB_URL}/storage/v1/object/public/${BUCKET}/kit-${type}/${f.name}`
+        return `<div class="thumb ${i===0?'active':''}" onclick="setHeroImg('${url}',this)">
+          <img src="${url}" style="width:100%;height:100%;object-fit:cover" />
+        </div>`
+      }).join('')
+    })
+    .catch(() => {}) // Görsel yoksa placeholder kalır
+  }
+
+  function setHeroImg(url, thumbEl) {
+    document.querySelector('.hero-img-placeholder').innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;display:block" />`
+    document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'))
+    thumbEl.classList.add('active')
+  }
     tab.addEventListener('click', e => {
       e.preventDefault()
       const type = tab.dataset.type
       history.pushState({}, '', '/kit?type=' + type)
       loadKit(type)
+      loadKitImages(type)
     })
   })
 
   loadKit(activeType)
+  loadKitImages(activeType)
 </script>
 </body>
 </html>
