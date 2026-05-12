@@ -6,96 +6,138 @@
   <title>Yönetici Paneli — DOKUZCAN</title>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet" />
   <style>
-    :root{--red:#E8001D;--black:#080808;--dark:#0e0e0e;--panel:#141414;--border:#252525;--border2:#2e2e2e;--white:#F2F0EC;--grey:#777;--light:#aaa;--green:#22c55e;--yellow:#f59e0b;--blue:#3b82f6}
+    :root{--red:#E8001D;--dark-red:#9B0013;--black:#080808;--dark:#0e0e0e;--panel:#141414;--panel2:#1a1a1a;--border:#252525;--border2:#2e2e2e;--white:#F2F0EC;--grey:#777;--light:#aaa;--green:#22c55e;--yellow:#f59e0b;--blue:#3b82f6}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    body{background:var(--black);color:var(--white);font-family:'Barlow Condensed',sans-serif;min-height:100vh}
+    body{background:var(--black);color:var(--white);font-family:'Barlow Condensed',sans-serif;min-height:100vh;overflow-x:hidden}
 
-    /* LOGIN SCREEN */
+    /* LOGIN */
     .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
     .login-box{background:var(--panel);border:1px solid var(--border);padding:36px 32px;max-width:380px;width:100%;position:relative}
     .login-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--red)}
     .login-logo{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:5px;text-align:center;margin-bottom:6px}
     .login-logo span{color:var(--red)}
     .login-sub{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--grey);text-align:center;margin-bottom:28px}
-    .login-form .form-group{margin-bottom:14px}
-    .login-form label{display:block;font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--grey);margin-bottom:7px}
-    .login-form input{width:100%;background:var(--black);border:1px solid var(--border);color:var(--white);padding:12px 14px;font-family:'Barlow Condensed',sans-serif;font-size:14px;outline:none}
-    .login-form input:focus{border-color:var(--red)}
-    .login-btn{width:100%;background:var(--red);color:#000;border:none;padding:14px;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:4px;text-transform:uppercase;cursor:pointer;margin-top:8px}
-    .login-btn:hover{background:#9B0013}
     .login-err{background:rgba(232,0,29,0.08);border:1px solid rgba(232,0,29,0.3);border-left:2px solid var(--red);padding:10px 12px;margin-bottom:14px;font-size:12px;color:var(--red);display:none}
     .login-err.show{display:block}
+    .login-btn{width:100%;background:var(--red);color:#000;border:none;padding:14px;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:4px;text-transform:uppercase;cursor:pointer;margin-top:8px}
 
-    /* DASHBOARD */
-    .topbar{position:sticky;top:0;z-index:100;background:rgba(8,8,8,0.97);border-bottom:1px solid var(--border);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(10px)}
-    .logo{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:4px;color:var(--white);text-decoration:none}
-    .logo span{color:var(--red)}
-    .admin-badge{background:var(--red);color:#000;padding:2px 8px;font-size:10px;font-weight:700;letter-spacing:2px;margin-left:8px}
-    .topbar-actions{display:flex;align-items:center;gap:14px}
-    .back{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--grey);text-decoration:none}
-    .back:hover{color:var(--white)}
-    .logout-btn{background:none;border:1px solid var(--border2);color:var(--grey);padding:6px 12px;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer}
-    .logout-btn:hover{border-color:var(--red);color:var(--red)}
+    /* LAYOUT */
+    .admin-layout{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+    .sidebar{background:var(--dark);border-right:1px solid var(--border);padding:0;position:sticky;top:0;height:100vh;overflow-y:auto}
+    .side-head{padding:18px 20px;border-bottom:1px solid var(--border)}
+    .side-logo{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:4px}
+    .side-logo span{color:var(--red)}
+    .side-role{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--red);margin-top:2px}
+    .side-nav{padding:14px 0}
+    .nav-item{display:flex;align-items:center;gap:12px;padding:12px 20px;color:var(--grey);cursor:pointer;font-size:13px;font-weight:600;letter-spacing:1px;border-left:2px solid transparent;transition:all 0.15s}
+    .nav-item:hover{color:var(--white);background:rgba(255,255,255,0.02)}
+    .nav-item.active{color:var(--white);border-left-color:var(--red);background:rgba(232,0,29,0.04)}
+    .nav-icon{font-size:16px;width:20px;text-align:center}
+    .nav-badge{margin-left:auto;background:var(--red);color:#000;font-size:10px;font-weight:700;padding:1px 6px;letter-spacing:1px}
+    .side-footer{position:absolute;bottom:0;left:0;right:0;padding:14px 20px;border-top:1px solid var(--border);background:var(--dark)}
+    .side-footer button{width:100%;background:transparent;border:1px solid var(--border2);color:var(--grey);padding:8px;font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer}
+    .side-footer button:hover{border-color:var(--red);color:var(--red)}
 
-    .page{max-width:1400px;margin:0 auto;padding:28px 20px 60px}
-    .h1{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:3px;margin-bottom:20px}
+    /* MAIN */
+    .main-area{padding:24px 28px 60px;overflow-x:auto}
+    .page-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px}
+    .page-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:3px}
+    .page-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .btn-primary{background:var(--red);color:#000;border:none;padding:9px 16px;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer}
+    .btn-primary:hover{background:var(--dark-red);color:var(--white)}
+    .btn-ghost{background:transparent;border:1px solid var(--border2);color:var(--grey);padding:8px 14px;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer}
+    .btn-ghost:hover{border-color:var(--white);color:var(--white)}
+    .btn-danger{background:transparent;border:1px solid rgba(232,0,29,0.3);color:var(--red);padding:7px 12px;font-size:10px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700}
+    .btn-danger:hover{background:rgba(232,0,29,0.1)}
 
-    .tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:24px}
-    .tab{background:none;border:none;color:var(--grey);padding:14px 24px;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase;cursor:pointer;border-bottom:2px solid transparent}
-    .tab.active{color:var(--white);border-bottom-color:var(--red)}
-    .tab:hover{color:var(--white)}
-
+    /* STATS */
     .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:24px}
-    .stat-card{background:var(--panel);border:1px solid var(--border);padding:16px 20px;position:relative;overflow:hidden}
+    .stat-card{background:var(--panel);border:1px solid var(--border);padding:16px 18px;position:relative;overflow:hidden}
     .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--red)}
-    .stat-label{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--grey)}
-    .stat-val{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;margin-top:4px}
+    .stat-card.green::before{background:var(--green)}
+    .stat-card.yellow::before{background:var(--yellow)}
+    .stat-card.blue::before{background:var(--blue)}
+    .stat-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--grey)}
+    .stat-val{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;margin-top:6px}
+    .stat-sub{font-size:11px;color:var(--grey);margin-top:2px}
 
-    .filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+    /* FILTER ROW */
+    .filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;align-items:center}
     .filter-btn{background:var(--dark);border:1px solid var(--border2);color:var(--grey);padding:7px 14px;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer}
     .filter-btn.active{background:var(--red);color:#000;border-color:var(--red)}
-    .search-input{flex:1;min-width:200px;background:var(--dark);border:1px solid var(--border2);color:var(--white);padding:7px 12px;font-family:'Barlow Condensed',sans-serif;font-size:13px;outline:none}
+    .search-input{flex:1;min-width:200px;background:var(--dark);border:1px solid var(--border2);color:var(--white);padding:8px 12px;font-family:'Barlow Condensed',sans-serif;font-size:13px;outline:none}
     .search-input:focus{border-color:var(--red)}
 
+    /* TABLE */
     .table-wrap{background:var(--panel);border:1px solid var(--border);overflow-x:auto}
-    table{width:100%;border-collapse:collapse}
-    th{text-align:left;padding:12px 14px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--grey);background:var(--dark);border-bottom:1px solid var(--border)}
-    td{padding:14px;font-family:'Barlow Condensed',sans-serif;font-size:13px;border-bottom:1px solid #1a1a1a}
+    table{width:100%;border-collapse:collapse;min-width:600px}
+    th{text-align:left;padding:11px 14px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--grey);background:var(--dark);border-bottom:1px solid var(--border);white-space:nowrap}
+    td{padding:12px 14px;font-family:'Barlow Condensed',sans-serif;font-size:13px;border-bottom:1px solid #1a1a1a;vertical-align:middle}
     tr:hover td{background:rgba(255,255,255,0.02)}
 
-    .badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase}
-    .badge-pending{background:rgba(136,136,136,0.15);color:var(--grey);border:1px solid rgba(136,136,136,0.3)}
+    /* BADGES */
+    .badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;white-space:nowrap}
+    .badge-pending,.badge-grey{background:rgba(136,136,136,0.15);color:var(--grey);border:1px solid rgba(136,136,136,0.3)}
     .badge-paid{background:rgba(34,197,94,0.12);color:var(--green);border:1px solid rgba(34,197,94,0.3)}
     .badge-processing{background:rgba(59,130,246,0.12);color:var(--blue);border:1px solid rgba(59,130,246,0.3)}
     .badge-shipped{background:rgba(245,158,11,0.12);color:var(--yellow);border:1px solid rgba(245,158,11,0.3)}
     .badge-delivered{background:rgba(34,197,94,0.18);color:var(--green);border:1px solid rgba(34,197,94,0.4)}
-    .badge-returned,.badge-cancelled{background:rgba(232,0,29,0.12);color:var(--red);border:1px solid rgba(232,0,29,0.3)}
+    .badge-returned,.badge-cancelled,.badge-red{background:rgba(232,0,29,0.12);color:var(--red);border:1px solid rgba(232,0,29,0.3)}
+    .badge-active{background:rgba(34,197,94,0.12);color:var(--green);border:1px solid rgba(34,197,94,0.3)}
+    .badge-inactive{background:rgba(136,136,136,0.15);color:var(--grey);border:1px solid rgba(136,136,136,0.3)}
 
-    .btn-action{background:transparent;border:1px solid var(--border2);color:var(--grey);padding:5px 10px;font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer}
+    .btn-row{display:flex;gap:6px;flex-wrap:wrap}
+    .btn-action{background:transparent;border:1px solid var(--border2);color:var(--grey);padding:5px 9px;font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;white-space:nowrap}
     .btn-action:hover{border-color:var(--red);color:var(--red)}
 
-    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:9999;display:none;align-items:center;justify-content:center;padding:20px}
+    /* MODAL */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;display:none;align-items:flex-start;justify-content:center;padding:30px 20px;overflow-y:auto}
     .modal-overlay.open{display:flex}
-    .modal{background:var(--panel);border:1px solid var(--border);max-width:560px;width:100%;max-height:90vh;overflow-y:auto;position:relative}
+    .modal{background:var(--panel);border:1px solid var(--border);max-width:640px;width:100%;position:relative;margin:auto}
     .modal::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--red)}
-    .modal-head{padding:18px 24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+    .modal-head{padding:16px 22px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
     .modal-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px}
-    .modal-close{background:none;border:none;color:var(--grey);font-size:18px;cursor:pointer}
-    .modal-body{padding:20px 24px}
-    .modal-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #1a1a1a;font-size:13px}
+    .modal-close{background:none;border:none;color:var(--grey);font-size:20px;cursor:pointer;line-height:1}
+    .modal-body{padding:20px 22px}
+    .modal-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #1a1a1a;font-size:13px;gap:12px}
     .modal-row:last-child{border:none}
-    .modal-key{color:var(--grey);font-size:11px;text-transform:uppercase;letter-spacing:2px}
-    .modal-val{color:var(--white);text-align:right;max-width:60%;font-weight:600}
-    .modal-section{margin-top:16px;padding-top:16px;border-top:1px solid var(--border)}
+    .modal-key{color:var(--grey);font-size:10px;text-transform:uppercase;letter-spacing:2px;white-space:nowrap;flex-shrink:0}
+    .modal-val{color:var(--white);text-align:right;max-width:65%;font-weight:600;word-break:break-word}
+    .modal-section{margin-top:18px;padding-top:16px;border-top:1px solid var(--border)}
+    .section-label{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--red);margin-bottom:10px}
 
-    .form-group{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
-    label{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--grey)}
-    input,select{background:var(--dark);border:1px solid var(--border2);color:var(--white);padding:10px 12px;font-family:'Barlow Condensed',sans-serif;font-size:14px;outline:none;width:100%}
-    input:focus,select:focus{border-color:var(--red)}
+    /* FORM */
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .form-group{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+    .form-group.full{grid-column:1/-1}
+    label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--grey)}
+    input,select,textarea{background:var(--dark);border:1px solid var(--border2);color:var(--white);padding:10px 12px;font-family:'Barlow Condensed',sans-serif;font-size:14px;outline:none;width:100%}
+    input:focus,select:focus,textarea:focus{border-color:var(--red)}
+    textarea{resize:vertical;min-height:60px}
     .btn-save{background:var(--red);color:#000;border:none;padding:12px 24px;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase;cursor:pointer;width:100%;margin-top:8px}
 
     .empty{padding:48px;text-align:center;color:var(--grey);font-size:13px;letter-spacing:2px;text-transform:uppercase}
     .loader{display:flex;align-items:center;justify-content:center;padding:60px;color:var(--grey);font-size:12px;letter-spacing:3px;text-transform:uppercase}
+
+    /* SECTION VISIBILITY */
+    .section{display:none}
+    .section.active{display:block}
+
+    /* TABS in modal */
+    .tabs-row{display:flex;border-bottom:1px solid var(--border);margin-bottom:16px}
+    .modal-tab{background:none;border:none;color:var(--grey);padding:10px 16px;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-bottom:2px solid transparent}
+    .modal-tab.active{color:var(--white);border-bottom-color:var(--red)}
+    .modal-tab-content{display:none}
+    .modal-tab-content.active{display:block}
+
+    /* Mobile */
+    @media (max-width: 880px) {
+      .admin-layout{grid-template-columns:1fr}
+      .sidebar{position:fixed;left:-100%;width:240px;z-index:200;transition:left 0.3s}
+      .sidebar.open{left:0}
+      .mobile-menu{display:block;background:var(--panel);border:1px solid var(--border);color:var(--white);padding:8px 12px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:16px}
+    }
+    @media (min-width: 881px) { .mobile-menu{display:none} }
   </style>
 </head>
 <body>
@@ -106,281 +148,707 @@
       <div class="login-logo">DOKUZ<span>CAN</span></div>
       <div class="login-sub">Yönetici Girişi</div>
       <div class="login-err" id="loginErr">Şifre yanlış</div>
-      <div class="login-form">
-        <div class="form-group">
-          <label>Yönetici Şifresi</label>
-          <input type="password" id="adminPw" placeholder="••••••••" onkeydown="if(event.key==='Enter')doAdminLogin()" />
-        </div>
-        <button class="login-btn" onclick="doAdminLogin()">Giriş Yap</button>
+      <div class="form-group">
+        <label>Şifre</label>
+        <input type="password" id="adminPw" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()" />
       </div>
+      <button class="login-btn" onclick="doLogin()">Giriş Yap</button>
     </div>
   </div>
 
   <!-- DASHBOARD -->
   <div id="dashScreen" style="display:none;">
-    <div class="topbar">
-      <div style="display:flex;align-items:center;">
-        <a href="/" class="logo">DOKUZ<span>CAN</span></a>
-        <span class="admin-badge">ADMIN</span>
-      </div>
-      <div class="topbar-actions">
-        <a href="/" class="back">← Ana Sayfa</a>
-        <button class="logout-btn" onclick="adminLogout()">Çıkış</button>
-      </div>
-    </div>
-
-    <div class="page">
-      <div class="h1">Yönetici Paneli</div>
-      <div class="stats" id="stats"></div>
-
-      <div class="tabs">
-        <button class="tab active" data-tab="orders" onclick="switchTab('orders')">Siparişler</button>
-        <button class="tab" data-tab="users" onclick="switchTab('users')">Kullanıcılar</button>
-      </div>
-
-      <div id="ordersTab">
-        <div class="filter-row">
-          <button class="filter-btn active" data-status="all" onclick="filterOrders('all', this)">Tümü</button>
-          <button class="filter-btn" data-status="paid" onclick="filterOrders('paid', this)">Ödendi</button>
-          <button class="filter-btn" data-status="processing" onclick="filterOrders('processing', this)">Hazırlanıyor</button>
-          <button class="filter-btn" data-status="shipped" onclick="filterOrders('shipped', this)">Kargoda</button>
-          <button class="filter-btn" data-status="delivered" onclick="filterOrders('delivered', this)">Teslim</button>
-          <input class="search-input" id="orderSearch" placeholder="Slug, ad veya telefon ara..." oninput="renderOrders()" />
+    <div class="admin-layout">
+      <aside class="sidebar" id="sidebar">
+        <div class="side-head">
+          <div class="side-logo">DOKUZ<span>CAN</span></div>
+          <div class="side-role">Admin Panel</div>
         </div>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Sipariş No</th><th>Müşteri</th><th>Kit</th><th>Tutar</th><th>Durum</th><th>Tarih</th><th>İşlem</th></tr></thead>
-            <tbody id="ordersBody"></tbody>
-          </table>
-        </div>
-      </div>
+        <nav class="side-nav">
+          <div class="nav-item active" data-sec="dashboard" onclick="showSection('dashboard')"><span class="nav-icon">📊</span> Dashboard</div>
+          <div class="nav-item" data-sec="orders" onclick="showSection('orders')"><span class="nav-icon">📦</span> Siparişler <span class="nav-badge" id="ordersBadge">0</span></div>
+          <div class="nav-item" data-sec="users" onclick="showSection('users')"><span class="nav-icon">👥</span> Üyeler <span class="nav-badge" id="usersBadge">0</span></div>
+          <div class="nav-item" data-sec="kits" onclick="showSection('kits')"><span class="nav-icon">🎯</span> Kitler</div>
+          <div class="nav-item" data-sec="medical" onclick="showSection('medical')"><span class="nav-icon">🩺</span> Tıbbi Profil</div>
+          <div class="nav-item" data-sec="pending" onclick="showSection('pending')"><span class="nav-icon">⏳</span> Bekleyen <span class="nav-badge" id="pendingBadge">0</span></div>
+        </nav>
+        <div class="side-footer"><button onclick="doLogout()">Çıkış Yap</button></div>
+      </aside>
 
-      <div id="usersTab" style="display:none;">
-        <div class="filter-row">
-          <input class="search-input" id="userSearch" placeholder="Ad, soyad ara..." oninput="renderUsers()" />
+      <div class="main-area">
+        <button class="mobile-menu" onclick="document.getElementById('sidebar').classList.toggle('open')">☰ Menü</button>
+
+        <!-- DASHBOARD -->
+        <div class="section active" id="sec-dashboard">
+          <div class="page-head">
+            <div class="page-title">Dashboard</div>
+            <button class="btn-ghost" onclick="reload()">↻ Yenile</button>
+          </div>
+          <div class="stats" id="statsGrid"></div>
+
+          <div style="margin-top:24px;display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+            <div class="table-wrap" style="overflow:visible">
+              <div style="padding:14px 16px;border-bottom:1px solid var(--border);font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;">Son Siparişler</div>
+              <div id="recentOrders" style="padding:8px"></div>
+            </div>
+            <div class="table-wrap" style="overflow:visible">
+              <div style="padding:14px 16px;border-bottom:1px solid var(--border);font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;">Son Üyeler</div>
+              <div id="recentUsers" style="padding:8px"></div>
+            </div>
+          </div>
         </div>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Ad Soyad</th><th>Telefon</th><th>Sipariş</th><th>Kullanıcı ID</th></tr></thead>
-            <tbody id="usersBody"></tbody>
-          </table>
+
+        <!-- ORDERS -->
+        <div class="section" id="sec-orders">
+          <div class="page-head">
+            <div class="page-title">Siparişler</div>
+            <div class="page-actions">
+              <button class="btn-primary" onclick="openCreateKit()">+ Manuel Kit Oluştur</button>
+              <button class="btn-ghost" onclick="exportCSV('orders')">↓ CSV</button>
+              <button class="btn-ghost" onclick="reload()">↻</button>
+            </div>
+          </div>
+          <div class="filter-row">
+            <button class="filter-btn active" data-status="all" onclick="filterOrders('all', this)">Tümü</button>
+            <button class="filter-btn" data-status="paid" onclick="filterOrders('paid', this)">Ödendi</button>
+            <button class="filter-btn" data-status="processing" onclick="filterOrders('processing', this)">Hazırlanıyor</button>
+            <button class="filter-btn" data-status="shipped" onclick="filterOrders('shipped', this)">Kargoda</button>
+            <button class="filter-btn" data-status="delivered" onclick="filterOrders('delivered', this)">Teslim</button>
+            <button class="filter-btn" data-status="returned" onclick="filterOrders('returned', this)">İade</button>
+            <button class="filter-btn" data-status="cancelled" onclick="filterOrders('cancelled', this)">İptal</button>
+            <input class="search-input" id="orderSearch" placeholder="Slug, ad, telefon, TC..." oninput="renderOrders()" />
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>SİP No</th><th>Müşteri</th><th>Kit</th><th>Tutar</th><th>Durum</th><th>Tarih</th><th>İşlem</th></tr></thead>
+              <tbody id="ordersBody"></tbody>
+            </table>
+          </div>
         </div>
+
+        <!-- USERS -->
+        <div class="section" id="sec-users">
+          <div class="page-head">
+            <div class="page-title">Üyeler</div>
+            <button class="btn-ghost" onclick="exportCSV('users')">↓ CSV</button>
+          </div>
+          <div class="filter-row">
+            <input class="search-input" id="userSearch" placeholder="Ad, soyad, e-posta, telefon ara..." oninput="renderUsers()" />
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Ad Soyad</th><th>E-posta</th><th>Telefon</th><th>Sipariş</th><th>Kayıt</th><th>Son Giriş</th><th>İşlem</th></tr></thead>
+              <tbody id="usersBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- KITS -->
+        <div class="section" id="sec-kits">
+          <div class="page-head">
+            <div class="page-title">QR Kitler</div>
+            <button class="btn-primary" onclick="openCreateKit()">+ Yeni Kit</button>
+          </div>
+          <div class="filter-row">
+            <button class="filter-btn active" data-active="all" onclick="filterKits('all', this)">Tümü</button>
+            <button class="filter-btn" data-active="active" onclick="filterKits('active', this)">Aktif</button>
+            <button class="filter-btn" data-active="inactive" onclick="filterKits('inactive', this)">Pasif</button>
+            <input class="search-input" id="kitSearch" placeholder="Slug, kullanıcı ara..." oninput="renderKits()" />
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Slug</th><th>Tip</th><th>Sahip</th><th>QR Durumu</th><th>Sipariş Durumu</th><th>Oluşturma</th><th>İşlem</th></tr></thead>
+              <tbody id="kitsBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- MEDICAL -->
+        <div class="section" id="sec-medical">
+          <div class="page-head"><div class="page-title">Tıbbi Profiller</div></div>
+          <div class="filter-row">
+            <input class="search-input" id="medSearch" placeholder="Kullanıcı ara..." oninput="renderMedical()" />
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Kullanıcı</th><th>Kan Grubu</th><th>Alerji</th><th>İlaç</th><th>Acil Kişi</th><th>Güncelleme</th><th>İşlem</th></tr></thead>
+              <tbody id="medicalBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- PENDING -->
+        <div class="section" id="sec-pending">
+          <div class="page-head"><div class="page-title">Bekleyen Ödemeler</div></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Token</th><th>Kullanıcı</th><th>Kit Tipi</th><th>Slug</th><th>Oluşturma</th><th>İşlem</th></tr></thead>
+              <tbody id="pendingBody"></tbody>
+            </table>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
 
-  <div class="modal-overlay" id="orderModal" onclick="if(event.target===this)closeModal()">
+  <!-- MODAL -->
+  <div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
     <div class="modal">
       <div class="modal-head">
-        <div class="modal-title" id="modalTitle">Sipariş Detayı</div>
+        <div class="modal-title" id="modalTitle">—</div>
         <button class="modal-close" onclick="closeModal()">✕</button>
       </div>
       <div class="modal-body" id="modalBody"></div>
     </div>
   </div>
 
-  <script>
-    const kitNames  = { basic:'CITY', advanced:'TOUR', pro:'OFF-ROAD' }
-    const statusMap = { pending:'Onay Bekliyor', paid:'Ödendi', processing:'Hazırlanıyor', shipped:'Kargoda', delivered:'Teslim', returned:'İade', cancelled:'İptal' }
-    let adminPw = sessionStorage.getItem('adminPw') || ''
-    let allOrders = [], allUsers = [], currentFilter = 'all'
+<script>
+const KIT_NAMES = { basic:'CITY', advanced:'TOUR', pro:'OFF-ROAD' }
+const STATUS_LABEL = { pending:'Onay Bekliyor', paid:'Ödendi', processing:'Hazırlanıyor', shipped:'Kargoda', delivered:'Teslim', returned:'İade', cancelled:'İptal' }
 
-    async function doAdminLogin() {
-      const pw = document.getElementById('adminPw').value
-      const errEl = document.getElementById('loginErr')
-      errEl.classList.remove('show')
-      if (!pw) { errEl.textContent='Şifre girin'; errEl.classList.add('show'); return }
+let adminPw = sessionStorage.getItem('adminPw') || ''
+let DATA = { orders:[], users:[], pending:[], medical:[] }
+let orderFilter = 'all', kitFilter = 'all'
 
-      const resp = await fetch('/api/admin-data', { headers: { 'x-admin-password': pw } })
-      if (!resp.ok) {
-        errEl.textContent='Şifre yanlış'
-        errEl.classList.add('show')
-        return
-      }
-      adminPw = pw
-      sessionStorage.setItem('adminPw', pw)
-      const data = await resp.json()
-      allOrders = data.orders
-      allUsers  = data.users
-      document.getElementById('loginScreen').style.display = 'none'
-      document.getElementById('dashScreen').style.display  = 'block'
-      renderAll()
-    }
+/* ───── AUTH ───── */
+async function doLogin() {
+  const pw = document.getElementById('adminPw').value
+  const errEl = document.getElementById('loginErr')
+  errEl.classList.remove('show')
+  if (!pw) { errEl.textContent='Şifre girin'; errEl.classList.add('show'); return }
+  const r = await fetch('/api/admin-data', { headers: { 'x-admin-password': pw } })
+  if (!r.ok) { errEl.textContent='Şifre yanlış'; errEl.classList.add('show'); return }
+  adminPw = pw; sessionStorage.setItem('adminPw', pw)
+  DATA = await r.json()
+  showDashboard()
+}
 
-    function adminLogout() {
-      sessionStorage.removeItem('adminPw')
-      adminPw = ''
-      document.getElementById('loginScreen').style.display = 'flex'
-      document.getElementById('dashScreen').style.display  = 'none'
-      document.getElementById('adminPw').value = ''
-    }
+function doLogout() {
+  sessionStorage.removeItem('adminPw'); adminPw = ''
+  document.getElementById('loginScreen').style.display = 'flex'
+  document.getElementById('dashScreen').style.display = 'none'
+  document.getElementById('adminPw').value = ''
+}
 
-    async function init() {
-      if (!adminPw) return
-      const resp = await fetch('/api/admin-data', { headers: { 'x-admin-password': adminPw } })
-      if (!resp.ok) { adminLogout(); return }
-      const data = await resp.json()
-      allOrders = data.orders
-      allUsers  = data.users
-      document.getElementById('loginScreen').style.display = 'none'
-      document.getElementById('dashScreen').style.display  = 'block'
-      renderAll()
-    }
+async function init() {
+  if (!adminPw) return
+  const r = await fetch('/api/admin-data', { headers: { 'x-admin-password': adminPw } })
+  if (!r.ok) { doLogout(); return }
+  DATA = await r.json()
+  showDashboard()
+}
 
-    async function reload() {
-      const resp = await fetch('/api/admin-data', { headers: { 'x-admin-password': adminPw } })
-      if (!resp.ok) return
-      const data = await resp.json()
-      allOrders = data.orders
-      allUsers  = data.users
-      renderAll()
-    }
+function showDashboard() {
+  document.getElementById('loginScreen').style.display = 'none'
+  document.getElementById('dashScreen').style.display = 'block'
+  renderAll()
+}
 
-    function renderAll() { renderStats(); renderOrders(); renderUsers() }
+async function reload() {
+  const r = await fetch('/api/admin-data', { headers: { 'x-admin-password': adminPw } })
+  if (!r.ok) return
+  DATA = await r.json()
+  renderAll()
+}
 
-    function renderStats() {
-      const total = allOrders.length
-      const paid = allOrders.filter(o=>o.status==='paid').length
-      const shipped = allOrders.filter(o=>o.status==='shipped').length
-      const delivered = allOrders.filter(o=>o.status==='delivered').length
-      const revenue = allOrders.reduce((s,o)=>s+(parseFloat(o.payment_amount)||0),0)
-      document.getElementById('stats').innerHTML = `
-        <div class="stat-card"><div class="stat-label">Toplam Sipariş</div><div class="stat-val">${total}</div></div>
-        <div class="stat-card"><div class="stat-label">Bekleyen</div><div class="stat-val" style="color:var(--green)">${paid}</div></div>
-        <div class="stat-card"><div class="stat-label">Kargoda</div><div class="stat-val" style="color:var(--yellow)">${shipped}</div></div>
-        <div class="stat-card"><div class="stat-label">Teslim</div><div class="stat-val" style="color:var(--green)">${delivered}</div></div>
-        <div class="stat-card"><div class="stat-label">Toplam Ciro</div><div class="stat-val">₺${revenue.toLocaleString('tr-TR')}</div></div>
-        <div class="stat-card"><div class="stat-label">Üye</div><div class="stat-val">${allUsers.length}</div></div>`
-    }
+async function api(action, data) {
+  const r = await fetch('/api/admin-action', {
+    method: 'POST',
+    headers: { 'Content-Type':'application/json', 'x-admin-password': adminPw },
+    body: JSON.stringify({ action, data })
+  })
+  const result = await r.json()
+  if (!r.ok) throw new Error(result.error || 'Hata')
+  return result
+}
 
-    function renderOrders() {
-      const search = document.getElementById('orderSearch').value.toLowerCase()
-      let filtered = allOrders
-      if (currentFilter !== 'all') filtered = filtered.filter(o=>o.status===currentFilter)
-      if (search) {
-        filtered = filtered.filter(o=>{
-          const p = allUsers.find(u=>u.id===o.user_id) || {}
-          return (o.slug||'').toLowerCase().includes(search)
-              || (p.first_name||'').toLowerCase().includes(search)
-              || (p.last_name||'').toLowerCase().includes(search)
-              || (o.full_name||'').toLowerCase().includes(search)
-              || (o.phone||'').includes(search)
-        })
-      }
-      const tbody = document.getElementById('ordersBody')
-      if (filtered.length === 0) { tbody.innerHTML = '<tr><td colspan="7" class="empty">Sipariş bulunamadı</td></tr>'; return }
-      tbody.innerHTML = filtered.map(o=>{
-        const p = allUsers.find(u=>u.id===o.user_id) || {}
-        const name = p.first_name ? p.first_name + ' ' + p.last_name : (o.full_name||'—')
-        const status = o.status || 'paid'
-        const date = o.created_at ? new Date(o.created_at).toLocaleDateString('tr-TR') : '—'
-        const orderNo = 'SİP-' + (o.id ? o.id.slice(0,8).toUpperCase() : '—')
-        return `<tr>
-          <td><span style="font-family:'JetBrains Mono',monospace;font-size:11px;">${orderNo}</span><div style="font-size:10px;color:var(--grey);margin-top:2px;">${o.slug}</div></td>
-          <td>${name}<div style="font-size:11px;color:var(--grey);">${o.phone || p.phone || ''}</div></td>
-          <td>${kitNames[o.kit_type]||o.kit_type?.toUpperCase()}</td>
-          <td>₺${parseFloat(o.payment_amount||0).toLocaleString('tr-TR')}</td>
-          <td><span class="badge badge-${status}">${statusMap[status]}</span></td>
-          <td style="color:var(--grey);font-size:12px;">${date}</td>
-          <td><button class="btn-action" onclick="openOrder('${o.id}')">Detay →</button></td>
-        </tr>`
-      }).join('')
-    }
+/* ───── NAV ───── */
+function showSection(sec) {
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active', n.dataset.sec===sec))
+  document.querySelectorAll('.section').forEach(s=>s.classList.toggle('active', s.id==='sec-'+sec))
+  document.getElementById('sidebar').classList.remove('open')
+}
 
-    function renderUsers() {
-      const search = document.getElementById('userSearch').value.toLowerCase()
-      let filtered = allUsers
-      if (search) filtered = filtered.filter(u=>
-        (u.first_name||'').toLowerCase().includes(search) ||
-        (u.last_name||'').toLowerCase().includes(search) ||
-        (u.phone||'').includes(search)
-      )
-      const tbody = document.getElementById('usersBody')
-      if (filtered.length === 0) { tbody.innerHTML='<tr><td colspan="4" class="empty">Kullanıcı yok</td></tr>'; return }
-      tbody.innerHTML = filtered.map(u=>{
-        const count = allOrders.filter(o=>o.user_id===u.id).length
-        return `<tr>
-          <td><b>${u.first_name||''} ${u.last_name||''}</b></td>
-          <td>${u.phone||'—'}</td>
-          <td>${count}</td>
-          <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--grey);">${u.id ? u.id.slice(0,16)+'...' : '—'}</td>
-        </tr>`
-      }).join('')
-    }
+function renderAll() {
+  renderStats(); renderOrders(); renderUsers(); renderKits(); renderMedical(); renderPending(); renderRecent()
+  document.getElementById('ordersBadge').textContent = DATA.orders.length
+  document.getElementById('usersBadge').textContent = DATA.users.length
+  document.getElementById('pendingBadge').textContent = DATA.pending.length
+}
 
-    function filterOrders(s, btn) { currentFilter = s; document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); renderOrders() }
-    function switchTab(t) { document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.tab===t)); document.getElementById('ordersTab').style.display = t==='orders'?'block':'none'; document.getElementById('usersTab').style.display = t==='users'?'block':'none' }
+/* ───── STATS ───── */
+function renderStats() {
+  const total = DATA.orders.length
+  const paid = DATA.orders.filter(o=>o.status==='paid').length
+  const shipped = DATA.orders.filter(o=>o.status==='shipped').length
+  const delivered = DATA.orders.filter(o=>o.status==='delivered').length
+  const revenue = DATA.orders.reduce((s,o)=>s+(parseFloat(o.payment_amount)||0),0)
+  const activeKits = DATA.orders.filter(o=>o.is_active!==false).length
+  const today = new Date(); today.setHours(0,0,0,0)
+  const todayCount = DATA.orders.filter(o=>new Date(o.created_at)>=today).length
+  const todayRev = DATA.orders.filter(o=>new Date(o.created_at)>=today).reduce((s,o)=>s+(parseFloat(o.payment_amount)||0),0)
+  document.getElementById('statsGrid').innerHTML = `
+    <div class="stat-card"><div class="stat-label">Toplam Sipariş</div><div class="stat-val">${total}</div><div class="stat-sub">Bugün: ${todayCount}</div></div>
+    <div class="stat-card green"><div class="stat-label">Toplam Ciro</div><div class="stat-val">₺${revenue.toLocaleString('tr-TR')}</div><div class="stat-sub">Bugün: ₺${todayRev.toLocaleString('tr-TR')}</div></div>
+    <div class="stat-card blue"><div class="stat-label">Toplam Üye</div><div class="stat-val">${DATA.users.length}</div></div>
+    <div class="stat-card yellow"><div class="stat-label">Bekleyen Sevkiyat</div><div class="stat-val">${paid}</div><div class="stat-sub">Kargoda: ${shipped}</div></div>
+    <div class="stat-card green"><div class="stat-label">Teslim Edilen</div><div class="stat-val">${delivered}</div></div>
+    <div class="stat-card"><div class="stat-label">Aktif QR</div><div class="stat-val">${activeKits}</div></div>
+    <div class="stat-card"><div class="stat-label">Tıbbi Profil</div><div class="stat-val">${DATA.medical.length}</div></div>
+    <div class="stat-card"><div class="stat-label">Bekleyen Ödeme</div><div class="stat-val">${DATA.pending.length}</div></div>`
+}
 
-    function openOrder(id) {
-      const o = allOrders.find(x=>x.id===id); if (!o) return
-      const p = allUsers.find(u=>u.id===o.user_id) || {}
-      const name = p.first_name ? p.first_name+' '+p.last_name : (o.full_name||'—')
-      const orderNo = 'SİP-' + o.id.slice(0,8).toUpperCase()
-      document.getElementById('modalTitle').textContent = orderNo
-      document.getElementById('modalBody').innerHTML = `
-        <div class="modal-row"><span class="modal-key">Müşteri</span><span class="modal-val">${name}</span></div>
-        <div class="modal-row"><span class="modal-key">Telefon</span><span class="modal-val">${o.phone||p.phone||'—'}</span></div>
-        <div class="modal-row"><span class="modal-key">TC Kimlik</span><span class="modal-val">${o.tc_kimlik||'—'}</span></div>
-        <div class="modal-row"><span class="modal-key">Kit</span><span class="modal-val">${kitNames[o.kit_type]||o.kit_type}</span></div>
-        <div class="modal-row"><span class="modal-key">Tutar</span><span class="modal-val">₺${parseFloat(o.payment_amount||0).toLocaleString('tr-TR')}</span></div>
-        <div class="modal-row"><span class="modal-key">QR Slug</span><span class="modal-val" style="font-family:'JetBrains Mono',monospace;font-size:12px;">${o.slug}</span></div>
-        <div class="modal-row"><span class="modal-key">Tarih</span><span class="modal-val">${o.created_at?new Date(o.created_at).toLocaleString('tr-TR'):'—'}</span></div>
-        <div class="modal-section">
-          <div class="modal-key" style="margin-bottom:8px;">Teslimat Adresi</div>
-          <div style="font-size:13px;color:var(--light);line-height:1.6;">
-            ${o.shipping_address||'—'}<br>
-            ${o.shipping_district||''} / ${o.shipping_city||''} ${o.shipping_postal?'('+o.shipping_postal+')':''}
-          </div>
+function renderRecent() {
+  const recent = DATA.orders.slice(0,5)
+  const rh = document.getElementById('recentOrders')
+  if (recent.length === 0) { rh.innerHTML = '<div class="empty">Sipariş yok</div>'; }
+  else {
+    rh.innerHTML = recent.map(o=>{
+      const u = DATA.users.find(x=>x.id===o.user_id) || {}
+      const name = u.first_name ? `${u.first_name} ${u.last_name}` : (o.full_name||'—')
+      return `<div style="padding:10px 12px;border-bottom:1px solid #1a1a1a;display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="openOrder('${o.id}')">
+        <div><div style="font-weight:600">${name}</div><div style="font-size:11px;color:var(--grey);font-family:'JetBrains Mono',monospace">${o.slug}</div></div>
+        <div style="text-align:right"><div style="font-weight:600">₺${parseFloat(o.payment_amount||0).toLocaleString('tr-TR')}</div><span class="badge badge-${o.status||'paid'}">${STATUS_LABEL[o.status||'paid']}</span></div>
+      </div>`
+    }).join('')
+  }
+  const recentU = DATA.users.slice(0,5)
+  const uh = document.getElementById('recentUsers')
+  uh.innerHTML = recentU.length === 0 ? '<div class="empty">Üye yok</div>' : recentU.map(u=>{
+    const kits = DATA.orders.filter(o=>o.user_id===u.id).length
+    return `<div style="padding:10px 12px;border-bottom:1px solid #1a1a1a;display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="openUser('${u.id}')">
+      <div><div style="font-weight:600">${u.first_name||'(Boş)'} ${u.last_name||''}</div><div style="font-size:11px;color:var(--grey)">${u.email||'—'}</div></div>
+      <div style="font-size:11px;color:var(--grey)">${kits} sipariş</div>
+    </div>`
+  }).join('')
+}
+
+/* ───── ORDERS ───── */
+function renderOrders() {
+  const s = document.getElementById('orderSearch').value.toLowerCase()
+  let list = DATA.orders
+  if (orderFilter !== 'all') list = list.filter(o=>o.status===orderFilter)
+  if (s) list = list.filter(o=>{
+    const u = DATA.users.find(x=>x.id===o.user_id) || {}
+    return [o.slug, u.first_name, u.last_name, u.email, o.full_name, o.phone, o.tc_kimlik].some(v=>(v||'').toLowerCase().includes(s))
+  })
+  const tb = document.getElementById('ordersBody')
+  if (!list.length) { tb.innerHTML = '<tr><td colspan="7" class="empty">Sipariş yok</td></tr>'; return }
+  tb.innerHTML = list.map(o=>{
+    const u = DATA.users.find(x=>x.id===o.user_id) || {}
+    const name = u.first_name ? `${u.first_name} ${u.last_name}` : (o.full_name||'<span style="color:var(--red)">— USER YOK</span>')
+    const st = o.status || 'paid'
+    return `<tr>
+      <td><span style="font-family:'JetBrains Mono',monospace;font-size:11px">SİP-${o.id.slice(0,8).toUpperCase()}</span><div style="font-size:10px;color:var(--grey)">${o.slug}</div></td>
+      <td>${name}<div style="font-size:11px;color:var(--grey)">${o.phone||u.phone||u.email||''}</div></td>
+      <td>${KIT_NAMES[o.kit_type]||o.kit_type?.toUpperCase()}</td>
+      <td>₺${parseFloat(o.payment_amount||0).toLocaleString('tr-TR')}</td>
+      <td><span class="badge badge-${st}">${STATUS_LABEL[st]}</span></td>
+      <td style="color:var(--grey);font-size:12px">${o.created_at?new Date(o.created_at).toLocaleDateString('tr-TR'):'—'}</td>
+      <td><div class="btn-row"><button class="btn-action" onclick="openOrder('${o.id}')">Detay</button><button class="btn-action" onclick="confirmDeleteOrder('${o.id}')">Sil</button></div></td>
+    </tr>`
+  }).join('')
+}
+
+function filterOrders(f, btn) { orderFilter = f; document.querySelectorAll('#sec-orders .filter-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); renderOrders() }
+
+function openOrder(id) {
+  const o = DATA.orders.find(x=>x.id===id); if (!o) return
+  const u = DATA.users.find(x=>x.id===o.user_id) || {}
+  const name = u.first_name ? `${u.first_name} ${u.last_name}` : (o.full_name||'—')
+  document.getElementById('modalTitle').textContent = 'SİP-' + o.id.slice(0,8).toUpperCase()
+  document.getElementById('modalBody').innerHTML = `
+    <div class="modal-row"><span class="modal-key">Müşteri</span><span class="modal-val">${name}</span></div>
+    <div class="modal-row"><span class="modal-key">E-posta</span><span class="modal-val">${u.email||'—'}</span></div>
+    <div class="modal-row"><span class="modal-key">Telefon</span><span class="modal-val">${o.phone||u.phone||'—'}</span></div>
+    <div class="modal-row"><span class="modal-key">TC Kimlik</span><span class="modal-val">${o.tc_kimlik||'—'}</span></div>
+    <div class="modal-row"><span class="modal-key">Kit</span><span class="modal-val">${KIT_NAMES[o.kit_type]||o.kit_type}</span></div>
+    <div class="modal-row"><span class="modal-key">QR Slug</span><span class="modal-val" style="font-family:'JetBrains Mono',monospace;font-size:12px">${o.slug}</span></div>
+    <div class="modal-row"><span class="modal-key">Tutar</span><span class="modal-val">₺${parseFloat(o.payment_amount||0).toLocaleString('tr-TR')}</span></div>
+    <div class="modal-row"><span class="modal-key">Tarih</span><span class="modal-val">${o.created_at?new Date(o.created_at).toLocaleString('tr-TR'):'—'}</span></div>
+    <div class="modal-row"><span class="modal-key">QR Aktif mi</span><span class="modal-val">${o.is_active===false?'<span class="badge badge-inactive">PASİF</span>':'<span class="badge badge-active">AKTİF</span>'}</span></div>
+
+    <div class="modal-section">
+      <div class="section-label">Teslimat Adresi</div>
+      <div style="font-size:13px;color:var(--light);line-height:1.6">
+        ${o.shipping_address||'—'}<br>
+        ${o.shipping_district||''} / ${o.shipping_city||''} ${o.shipping_postal?'('+o.shipping_postal+')':''}
+      </div>
+    </div>
+
+    <div class="modal-section">
+      <div class="section-label">Sipariş Yönetimi</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Durum</label>
+          <select id="newStatus">
+            <option value="paid"${o.status==='paid'?' selected':''}>Ödendi</option>
+            <option value="processing"${o.status==='processing'?' selected':''}>Hazırlanıyor</option>
+            <option value="shipped"${o.status==='shipped'?' selected':''}>Kargoda</option>
+            <option value="delivered"${o.status==='delivered'?' selected':''}>Teslim Edildi</option>
+            <option value="returned"${o.status==='returned'?' selected':''}>İade Edildi</option>
+            <option value="cancelled"${o.status==='cancelled'?' selected':''}>İptal</option>
+          </select>
         </div>
-        <div class="modal-section">
-          <div class="form-group">
-            <label>Sipariş Durumu</label>
-            <select id="newStatus">
-              <option value="paid"${o.status==='paid'?' selected':''}>Ödendi</option>
-              <option value="processing"${o.status==='processing'?' selected':''}>Hazırlanıyor</option>
-              <option value="shipped"${o.status==='shipped'?' selected':''}>Kargoda</option>
-              <option value="delivered"${o.status==='delivered'?' selected':''}>Teslim Edildi</option>
-              <option value="returned"${o.status==='returned'?' selected':''}>İade Edildi</option>
-              <option value="cancelled"${o.status==='cancelled'?' selected':''}>İptal</option>
-            </select>
-          </div>
-          <div class="form-group"><label>Kargo Şirketi</label><input type="text" id="shipCompany" value="${o.shipping_company||''}" placeholder="Aras, Yurtiçi..." /></div>
-          <div class="form-group"><label>Kargo Takip No</label><input type="text" id="trackNum" value="${o.tracking_number||''}" /></div>
-          <div class="form-group"><label>Yönetici Notu</label><input type="text" id="adminNote" value="${o.admin_notes||''}" /></div>
-          <button class="btn-save" onclick="saveOrder('${o.id}')">Güncelle</button>
-        </div>`
-      document.getElementById('orderModal').classList.add('open')
-    }
+        <div class="form-group">
+          <label>Tutar (₺)</label>
+          <input type="number" step="0.01" id="newAmount" value="${o.payment_amount||0}" />
+        </div>
+        <div class="form-group">
+          <label>Kargo Şirketi</label>
+          <input type="text" id="shipCompany" value="${o.shipping_company||''}" placeholder="Aras, Yurtiçi..." />
+        </div>
+        <div class="form-group">
+          <label>Takip No</label>
+          <input type="text" id="trackNum" value="${o.tracking_number||''}" />
+        </div>
+        <div class="form-group full">
+          <label>Yönetici Notu</label>
+          <textarea id="adminNote">${o.admin_notes||''}</textarea>
+        </div>
+      </div>
+      <button class="btn-save" onclick="saveOrder('${o.id}')">Güncelle</button>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="btn-action" onclick="toggleKitActive('${o.id}',${!(o.is_active===false)})">${o.is_active===false?'QR Aktifleştir':'QR Pasif Yap'}</button>
+        <button class="btn-danger" onclick="confirmDeleteOrder('${o.id}')">Siparişi Sil</button>
+      </div>
+    </div>`
+  document.getElementById('modal').classList.add('open')
+}
 
-    function closeModal() { document.getElementById('orderModal').classList.remove('open') }
+async function saveOrder(id) {
+  const btn = event.target; btn.textContent='Kaydediliyor...'; btn.disabled=true
+  try {
+    await api('update-order', {
+      orderId: id,
+      status: document.getElementById('newStatus').value,
+      payment_amount: document.getElementById('newAmount').value,
+      shipping_company: document.getElementById('shipCompany').value.trim(),
+      tracking_number: document.getElementById('trackNum').value.trim(),
+      admin_notes: document.getElementById('adminNote').value.trim()
+    })
+    btn.textContent = '✓ Kaydedildi'
+    await reload()
+    setTimeout(closeModal, 600)
+  } catch(e) { btn.textContent='Hata'; alert(e.message); btn.disabled=false }
+}
 
-    async function saveOrder(id) {
-      const btn = event.target
-      btn.textContent = 'Kaydediliyor...'; btn.disabled = true
-      const resp = await fetch('/api/admin-update-order', {
-        method: 'POST',
-        headers: { 'Content-Type':'application/json', 'x-admin-password': adminPw },
-        body: JSON.stringify({
-          orderId         : id,
-          status          : document.getElementById('newStatus').value,
-          shipping_company: document.getElementById('shipCompany').value.trim(),
-          tracking_number : document.getElementById('trackNum').value.trim(),
-          admin_notes     : document.getElementById('adminNote').value.trim()
-        })
-      })
-      if (resp.ok) {
-        btn.textContent = '✓ Kaydedildi'
-        await reload()
-        setTimeout(closeModal, 800)
-      } else {
-        const err = await resp.json().catch(()=>({}))
-        btn.textContent = 'Hata!'
-        alert(err.error || 'Güncelleme başarısız')
-      }
-      btn.disabled = false
-    }
+async function toggleKitActive(id, newVal) {
+  if (!confirm(newVal?'QR aktifleştirilsin mi?':'QR pasif yapılsın mı?')) return
+  try { await api('toggle-kit-active', { orderId: id, is_active: newVal }); await reload(); openOrder(id) }
+  catch(e) { alert(e.message) }
+}
 
-    init()
-  </script>
+async function confirmDeleteOrder(id) {
+  if (!confirm('Sipariş kalıcı olarak silinecek. Emin misin?')) return
+  try { await api('delete-kit', { orderId: id }); await reload(); closeModal() }
+  catch(e) { alert(e.message) }
+}
+
+/* ───── USERS ───── */
+function renderUsers() {
+  const s = document.getElementById('userSearch').value.toLowerCase()
+  let list = DATA.users
+  if (s) list = list.filter(u=>[u.first_name,u.last_name,u.email,u.phone].some(v=>(v||'').toLowerCase().includes(s)))
+  const tb = document.getElementById('usersBody')
+  if (!list.length) { tb.innerHTML = '<tr><td colspan="7" class="empty">Üye yok</td></tr>'; return }
+  tb.innerHTML = list.map(u=>{
+    const count = DATA.orders.filter(o=>o.user_id===u.id).length
+    const last = u.last_sign_in ? new Date(u.last_sign_in).toLocaleDateString('tr-TR') : '—'
+    const reg = u.created_at ? new Date(u.created_at).toLocaleDateString('tr-TR') : '—'
+    return `<tr>
+      <td><b>${u.first_name||'(Boş)'} ${u.last_name||''}</b></td>
+      <td style="font-size:12px">${u.email||'—'}</td>
+      <td>${u.phone||'—'}</td>
+      <td>${count}</td>
+      <td style="color:var(--grey);font-size:12px">${reg}</td>
+      <td style="color:var(--grey);font-size:12px">${last}</td>
+      <td><div class="btn-row"><button class="btn-action" onclick="openUser('${u.id}')">Detay</button></div></td>
+    </tr>`
+  }).join('')
+}
+
+function openUser(id) {
+  const u = DATA.users.find(x=>x.id===id); if (!u) return
+  const userOrders = DATA.orders.filter(o=>o.user_id===id)
+  const userMed = DATA.medical.find(m=>m.user_id===id)
+  document.getElementById('modalTitle').textContent = `${u.first_name||''} ${u.last_name||''}`
+  document.getElementById('modalBody').innerHTML = `
+    <div class="tabs-row">
+      <button class="modal-tab active" onclick="userTab('info',this)">Bilgiler</button>
+      <button class="modal-tab" onclick="userTab('orders',this)">Siparişler (${userOrders.length})</button>
+      <button class="modal-tab" onclick="userTab('medical',this)">Tıbbi</button>
+      <button class="modal-tab" onclick="userTab('actions',this)">İşlemler</button>
+    </div>
+
+    <div class="modal-tab-content active" id="utab-info">
+      <div class="modal-row"><span class="modal-key">User ID</span><span class="modal-val" style="font-family:'JetBrains Mono',monospace;font-size:11px">${u.id}</span></div>
+      <div class="modal-row"><span class="modal-key">E-posta</span><span class="modal-val">${u.email||'—'}</span></div>
+      <div class="modal-row"><span class="modal-key">Kayıt</span><span class="modal-val">${u.created_at?new Date(u.created_at).toLocaleString('tr-TR'):'—'}</span></div>
+      <div class="modal-row"><span class="modal-key">Son Giriş</span><span class="modal-val">${u.last_sign_in?new Date(u.last_sign_in).toLocaleString('tr-TR'):'—'}</span></div>
+      <div class="modal-section">
+        <div class="section-label">Profil Düzenle</div>
+        <div class="form-grid">
+          <div class="form-group"><label>Ad</label><input id="uFirst" value="${u.first_name||''}" /></div>
+          <div class="form-group"><label>Soyad</label><input id="uLast" value="${u.last_name||''}" /></div>
+          <div class="form-group full"><label>Telefon</label><input id="uPhone" value="${u.phone||''}" /></div>
+        </div>
+        <button class="btn-save" onclick="saveUser('${u.id}')">Bilgileri Kaydet</button>
+      </div>
+    </div>
+
+    <div class="modal-tab-content" id="utab-orders">
+      ${userOrders.length===0 ? '<div class="empty">Sipariş yok</div>' :
+        userOrders.map(o=>`
+          <div style="padding:12px;border:1px solid var(--border);margin-bottom:8px;cursor:pointer" onclick="closeModal();setTimeout(()=>openOrder('${o.id}'),100)">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+              <b>SİP-${o.id.slice(0,8).toUpperCase()}</b>
+              <span class="badge badge-${o.status||'paid'}">${STATUS_LABEL[o.status||'paid']}</span>
+            </div>
+            <div style="font-size:12px;color:var(--grey)">${KIT_NAMES[o.kit_type]||o.kit_type} · ₺${parseFloat(o.payment_amount||0).toLocaleString('tr-TR')} · ${o.slug}</div>
+          </div>`).join('')}
+      <button class="btn-primary" style="width:100%;margin-top:8px" onclick="closeModal();setTimeout(()=>openCreateKit('${u.id}'),100)">+ Bu Kullanıcıya Manuel Kit Ata</button>
+    </div>
+
+    <div class="modal-tab-content" id="utab-medical">
+      ${!userMed ? '<div class="empty">Tıbbi profil doldurulmamış</div>' : `
+        <div class="modal-row"><span class="modal-key">Kan Grubu</span><span class="modal-val">${userMed.blood_type||'—'}</span></div>
+        <div class="modal-row"><span class="modal-key">Doğum</span><span class="modal-val">${userMed.birth_date||'—'}</span></div>
+        <div class="modal-row"><span class="modal-key">Kilo</span><span class="modal-val">${userMed.weight?userMed.weight+'kg':'—'}</span></div>
+        <div class="modal-row"><span class="modal-key">Alerji</span><span class="modal-val">${userMed.allergies||'—'}</span></div>
+        <div class="modal-row"><span class="modal-key">İlaç Alerjisi</span><span class="modal-val">${userMed.food_allergies||'—'}</span></div>
+        <div class="modal-row"><span class="modal-key">İlaçlar</span><span class="modal-val">${userMed.medications||'—'}</span></div>
+        <div class="modal-row"><span class="modal-key">Kronik</span><span class="modal-val">${userMed.chronic_conditions||'—'}</span></div>
+        <div class="modal-row"><span class="modal-key">Kan Sulandırıcı</span><span class="modal-val">${userMed.blood_thinner==='yes'?'EVET':'Hayır'}</span></div>
+        <div class="modal-row"><span class="modal-key">Acil Kişi</span><span class="modal-val">${userMed.emergency_contact_name||'—'} ${userMed.emergency_contact_phone?'· '+userMed.emergency_contact_phone:''}</span></div>
+        <div class="modal-row"><span class="modal-key">Not</span><span class="modal-val">${userMed.notes||'—'}</span></div>`}
+    </div>
+
+    <div class="modal-tab-content" id="utab-actions">
+      <div class="form-group">
+        <label>Yeni Şifre Belirle</label>
+        <input type="password" id="newUserPw" placeholder="En az 8 karakter" />
+      </div>
+      <button class="btn-save" onclick="resetUserPw('${u.id}')">Şifre Sıfırla</button>
+      <div class="modal-section">
+        <div class="section-label" style="color:var(--red)">Tehlikeli Bölge</div>
+        <button class="btn-danger" style="width:100%" onclick="confirmDeleteUser('${u.id}')">⚠ Bu Kullanıcıyı ve Tüm Verilerini Sil</button>
+      </div>
+    </div>`
+  document.getElementById('modal').classList.add('open')
+}
+
+function userTab(t, btn) {
+  btn.parentElement.querySelectorAll('.modal-tab').forEach(b=>b.classList.remove('active'))
+  btn.classList.add('active')
+  document.querySelectorAll('[id^="utab-"]').forEach(x=>x.classList.remove('active'))
+  document.getElementById('utab-'+t).classList.add('active')
+}
+
+async function saveUser(id) {
+  const btn = event.target; btn.textContent='Kaydediliyor...'; btn.disabled=true
+  try {
+    await api('update-user', {
+      user_id: id,
+      first_name: document.getElementById('uFirst').value.trim(),
+      last_name : document.getElementById('uLast').value.trim(),
+      phone     : document.getElementById('uPhone').value.trim()
+    })
+    btn.textContent = '✓ Kaydedildi'; await reload(); setTimeout(closeModal, 600)
+  } catch(e) { btn.textContent='Hata'; alert(e.message); btn.disabled=false }
+}
+
+async function resetUserPw(id) {
+  const pw = document.getElementById('newUserPw').value
+  if (pw.length < 8) { alert('Şifre en az 8 karakter olmalı'); return }
+  if (!confirm('Şifre değiştirilecek. Emin misin?')) return
+  try { await api('reset-password', { user_id: id, new_password: pw }); alert('Şifre güncellendi'); document.getElementById('newUserPw').value='' }
+  catch(e) { alert(e.message) }
+}
+
+async function confirmDeleteUser(id) {
+  if (!confirm('Bu kullanıcı ve tüm verisi (sipariş, tıbbi profil, hesap) silinecek. EMİN MİSİN?')) return
+  if (!confirm('GERÇEKTEN emin misin? Bu işlem geri alınamaz!')) return
+  try { await api('delete-user', { user_id: id }); await reload(); closeModal() }
+  catch(e) { alert(e.message) }
+}
+
+/* ───── KITS ───── */
+function renderKits() {
+  const s = document.getElementById('kitSearch').value.toLowerCase()
+  let list = DATA.orders
+  if (kitFilter === 'active') list = list.filter(o=>o.is_active!==false)
+  if (kitFilter === 'inactive') list = list.filter(o=>o.is_active===false)
+  if (s) list = list.filter(o=>{
+    const u = DATA.users.find(x=>x.id===o.user_id) || {}
+    return [o.slug, u.first_name, u.last_name, u.email].some(v=>(v||'').toLowerCase().includes(s))
+  })
+  const tb = document.getElementById('kitsBody')
+  if (!list.length) { tb.innerHTML='<tr><td colspan="7" class="empty">Kit yok</td></tr>'; return }
+  tb.innerHTML = list.map(o=>{
+    const u = DATA.users.find(x=>x.id===o.user_id) || {}
+    const name = u.first_name?`${u.first_name} ${u.last_name}`:(o.full_name||'<span style="color:var(--red)">— BOŞ</span>')
+    return `<tr>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:12px">${o.slug}</td>
+      <td>${KIT_NAMES[o.kit_type]||o.kit_type?.toUpperCase()}</td>
+      <td>${name}</td>
+      <td>${o.is_active===false?'<span class="badge badge-inactive">PASİF</span>':'<span class="badge badge-active">AKTİF</span>'}</td>
+      <td><span class="badge badge-${o.status||'paid'}">${STATUS_LABEL[o.status||'paid']}</span></td>
+      <td style="color:var(--grey);font-size:12px">${o.created_at?new Date(o.created_at).toLocaleDateString('tr-TR'):'—'}</td>
+      <td><button class="btn-action" onclick="openOrder('${o.id}')">Yönet</button></td>
+    </tr>`
+  }).join('')
+}
+
+function filterKits(f, btn) { kitFilter=f; document.querySelectorAll('#sec-kits .filter-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); renderKits() }
+
+function openCreateKit(forUserId) {
+  const opts = DATA.users.map(u=>`<option value="${u.id}"${u.id===forUserId?' selected':''}>${u.first_name||'(Boş)'} ${u.last_name||''} · ${u.email||u.id.slice(0,8)}</option>`).join('')
+  document.getElementById('modalTitle').textContent = 'Manuel Kit Oluştur'
+  document.getElementById('modalBody').innerHTML = `
+    <div class="form-group">
+      <label>Kullanıcı *</label>
+      <select id="ck_user">${opts}</select>
+    </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Kit Tipi *</label>
+        <select id="ck_type">
+          <option value="basic">CITY (Seviye 01)</option>
+          <option value="advanced" selected>TOUR (Seviye 02)</option>
+          <option value="pro">OFF-ROAD (Seviye 03)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Durum</label>
+        <select id="ck_status">
+          <option value="paid">Ödendi</option>
+          <option value="processing">Hazırlanıyor</option>
+          <option value="shipped">Kargoda</option>
+          <option value="delivered" selected>Teslim Edildi</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Tutar (₺)</label><input type="number" id="ck_amount" value="2290" /></div>
+      <div class="form-group"><label>Telefon</label><input id="ck_phone" /></div>
+      <div class="form-group"><label>TC Kimlik</label><input id="ck_tc" maxlength="11" /></div>
+      <div class="form-group"><label>Ad Soyad</label><input id="ck_name" /></div>
+      <div class="form-group full"><label>Adres</label><input id="ck_address" /></div>
+      <div class="form-group"><label>İl</label><input id="ck_city" /></div>
+      <div class="form-group"><label>İlçe</label><input id="ck_district" /></div>
+      <div class="form-group full"><label>Yönetici Notu</label><textarea id="ck_notes">Manuel oluşturuldu</textarea></div>
+    </div>
+    <button class="btn-save" onclick="createKit()">Kit Oluştur</button>`
+  document.getElementById('modal').classList.add('open')
+}
+
+async function createKit() {
+  const btn = event.target; btn.textContent='Oluşturuluyor...'; btn.disabled=true
+  try {
+    const r = await api('create-kit', {
+      user_id: document.getElementById('ck_user').value,
+      kit_type: document.getElementById('ck_type').value,
+      status: document.getElementById('ck_status').value,
+      payment_amount: document.getElementById('ck_amount').value,
+      phone: document.getElementById('ck_phone').value.trim(),
+      tc_kimlik: document.getElementById('ck_tc').value.trim(),
+      full_name: document.getElementById('ck_name').value.trim(),
+      shipping_address: document.getElementById('ck_address').value.trim(),
+      shipping_city: document.getElementById('ck_city').value.trim(),
+      shipping_district: document.getElementById('ck_district').value.trim(),
+      admin_notes: document.getElementById('ck_notes').value.trim()
+    })
+    btn.textContent = '✓ Oluşturuldu! Slug: ' + r.slug
+    await reload()
+    setTimeout(closeModal, 1500)
+  } catch(e) { btn.textContent='Hata'; alert(e.message); btn.disabled=false }
+}
+
+/* ───── MEDICAL ───── */
+function renderMedical() {
+  const s = document.getElementById('medSearch').value.toLowerCase()
+  let list = DATA.medical
+  if (s) list = list.filter(m=>{
+    const u = DATA.users.find(x=>x.id===m.user_id) || {}
+    return [u.first_name,u.last_name,u.email].some(v=>(v||'').toLowerCase().includes(s))
+  })
+  const tb = document.getElementById('medicalBody')
+  if (!list.length) { tb.innerHTML='<tr><td colspan="7" class="empty">Tıbbi profil yok</td></tr>'; return }
+  tb.innerHTML = list.map(m=>{
+    const u = DATA.users.find(x=>x.id===m.user_id) || {}
+    return `<tr>
+      <td><b>${u.first_name||'(Boş)'} ${u.last_name||''}</b><div style="font-size:11px;color:var(--grey)">${u.email||''}</div></td>
+      <td><span style="color:var(--red);font-weight:700">${m.blood_type||'—'}</span></td>
+      <td style="font-size:12px">${(m.allergies||'—').slice(0,40)}</td>
+      <td style="font-size:12px">${(m.medications||'—').slice(0,40)}</td>
+      <td style="font-size:12px">${m.emergency_contact_name||'—'}<div style="color:var(--grey)">${m.emergency_contact_phone||''}</div></td>
+      <td style="color:var(--grey);font-size:12px">${m.updated_at?new Date(m.updated_at).toLocaleDateString('tr-TR'):'—'}</td>
+      <td><button class="btn-action" onclick="openUser('${m.user_id}')">Görüntüle</button></td>
+    </tr>`
+  }).join('')
+}
+
+/* ───── PENDING ───── */
+function renderPending() {
+  const tb = document.getElementById('pendingBody')
+  if (!DATA.pending.length) { tb.innerHTML='<tr><td colspan="6" class="empty">Bekleyen yok</td></tr>'; return }
+  tb.innerHTML = DATA.pending.map(p=>{
+    const u = DATA.users.find(x=>x.id===p.user_id) || {}
+    const name = u.first_name?`${u.first_name} ${u.last_name}`:'(Boş)'
+    return `<tr>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:11px">${p.token.slice(0,12)}...</td>
+      <td>${name}<div style="font-size:11px;color:var(--grey)">${u.email||p.user_id?.slice(0,8)}</div></td>
+      <td>${KIT_NAMES[p.kit_type]||p.kit_type?.toUpperCase()}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:11px">${p.slug}</td>
+      <td style="color:var(--grey);font-size:12px">${p.created_at?new Date(p.created_at).toLocaleString('tr-TR'):'—'}</td>
+      <td><button class="btn-danger" onclick="deletePending('${p.token}')">Sil</button></td>
+    </tr>`
+  }).join('')
+}
+
+async function deletePending(token) {
+  if (!confirm('Bekleyen ödeme kaydı silinsin mi?')) return
+  try { await api('delete-pending', { token }); await reload() } catch(e) { alert(e.message) }
+}
+
+/* ───── CSV EXPORT ───── */
+function exportCSV(type) {
+  let rows = [], headers = []
+  if (type === 'orders') {
+    headers = ['Sipariş No','Müşteri','E-posta','Telefon','TC','Kit','Tutar','Durum','Slug','Adres','Şehir','Kargo','Takip','Tarih']
+    rows = DATA.orders.map(o=>{
+      const u = DATA.users.find(x=>x.id===o.user_id)||{}
+      return [
+        'SİP-'+o.id.slice(0,8).toUpperCase(),
+        (u.first_name||'')+' '+(u.last_name||o.full_name||''),
+        u.email||'', o.phone||u.phone||'', o.tc_kimlik||'',
+        KIT_NAMES[o.kit_type]||o.kit_type, o.payment_amount||0,
+        STATUS_LABEL[o.status||'paid'], o.slug,
+        o.shipping_address||'', o.shipping_city||'',
+        o.shipping_company||'', o.tracking_number||'',
+        o.created_at?new Date(o.created_at).toLocaleString('tr-TR'):''
+      ]
+    })
+  } else if (type === 'users') {
+    headers = ['Ad','Soyad','E-posta','Telefon','Sipariş','Kayıt','Son Giriş']
+    rows = DATA.users.map(u=>[
+      u.first_name||'', u.last_name||'', u.email||'', u.phone||'',
+      DATA.orders.filter(o=>o.user_id===u.id).length,
+      u.created_at?new Date(u.created_at).toLocaleString('tr-TR'):'',
+      u.last_sign_in?new Date(u.last_sign_in).toLocaleString('tr-TR'):''
+    ])
+  }
+  const csv = [headers, ...rows].map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n')
+  const blob = new Blob(['\uFEFF'+csv], { type: 'text/csv;charset=utf-8' })
+  const a = document.createElement('a')
+  a.href = URL.createObjectURL(blob)
+  a.download = `dokuzcan-${type}-${new Date().toISOString().split('T')[0]}.csv`
+  a.click()
+}
+
+function closeModal() { document.getElementById('modal').classList.remove('open') }
+
+init()
+</script>
 </body>
 </html>
