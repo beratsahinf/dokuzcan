@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title id="pageTitle">TOUR Kit — DOKUZCAN</title>
+  <meta name="description" id="pageDesc" content="Motosikletçiler için profesyonel travma kiti ve akıllı QR tıbbi profil sistemi." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Barlow:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root{
+      --red:#E8001D; --dark-red:#9B0013;
+      --black:#080808; --dark:#0e0e0e; --panel:#141414; --panel2:#1a1a1a;
+      --border:#252525; --border2:#2e2e2e;
+      --white:#F2F0EC; --grey:#777; --light:#aaa;
+      --green:#22c55e; --yellow:#f59e0b;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{background:var(--black);color:var(--white);font-family:'Barlow',sans-serif;overflow-x:hidden;cursor:crosshair}
+
+    /* NAV */
+    nav{position:sticky;top:0;z-index:100;background:rgba(8,8,8,0.95);border-bottom:1px solid var(--border);height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 32px;backdrop-filter:blur(12px)}
+    .nav-logo{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:4px;color:var(--white);text-decoration:none}
+    .nav-logo span{color:var(--red)}
+    .nav-links{display:flex;gap:24px;align-items:center}
+    .nav-link{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--grey);text-decoration:none;transition:color 0.2s}
+    .nav-link:hover{color:var(--white)}
+    .nav-cta{background:var(--red);color:#000;padding:8px 18px;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;text-decoration:none}
+
+    /* KIT TABS */
+    .kit-tabs{background:var(--dark);border-bottom:1px solid var(--border);display:flex;justify-content:center;gap:0}
+    .kit-tab{padding:16px 32px;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--grey);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.2s;text-decoration:none}
+    .kit-tab:hover{color:var(--white)}
+    .kit-tab.active{color:var(--white);border-bottom-color:var(--red)}
+
+    /* HERO */
+    .hero{display:grid;grid-template-columns:1fr 1fr;min-height:80vh;align-items:center;gap:0}
+    .hero-img{position:relative;height:100%;min-height:500px;background:var(--dark);overflow:hidden;display:flex;align-items:center;justify-content:center}
+    .hero-img-main{width:100%;height:100%;object-fit:cover}
+    .hero-img-placeholder{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;background:linear-gradient(135deg,var(--dark) 0%,#0d0404 100%)}
+    .hero-img-thumbs{position:absolute;bottom:16px;left:16px;display:flex;gap:8px}
+    .thumb{width:56px;height:56px;background:var(--panel);border:1px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--grey);text-align:center;transition:border-color 0.2s}
+    .thumb.active,.thumb:hover{border-color:var(--red)}
+
+    .hero-content{padding:60px 56px}
+    .hero-tag{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--red);margin-bottom:8px}
+    .hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,5vw,72px);letter-spacing:3px;line-height:0.95;margin-bottom:12px}
+    .hero-sub{font-family:'Barlow Condensed',sans-serif;font-size:16px;color:var(--light);letter-spacing:1px;margin-bottom:28px;line-height:1.5}
+    .hero-price-row{display:flex;align-items:baseline;gap:12px;margin-bottom:8px}
+    .hero-price{font-family:'Bebas Neue',sans-serif;font-size:48px;letter-spacing:2px;color:var(--red)}
+    .hero-price-kdv{font-family:'Barlow Condensed',sans-serif;font-size:12px;color:var(--grey);letter-spacing:2px}
+    .hero-installment{font-family:'Barlow Condensed',sans-serif;font-size:13px;color:var(--grey);margin-bottom:28px}
+    .hero-installment b{color:var(--white)}
+
+    .hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:28px}
+    .btn-buy{background:var(--red);color:#000;padding:16px 32px;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:3px;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:background 0.2s}
+    .btn-buy:hover{background:var(--dark-red);color:var(--white)}
+    .btn-outline{background:transparent;border:1px solid var(--border2);color:var(--white);padding:15px 24px;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase;text-decoration:none;transition:border-color 0.2s}
+    .btn-outline:hover{border-color:var(--white)}
+
+    .hero-badges{display:flex;gap:12px;flex-wrap:wrap}
+    .hero-badge{display:flex;align-items:center;gap:6px;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--grey)}
+    .hero-badge span{font-size:14px}
+
+    /* STRIP */
+    .strip{background:var(--red);padding:12px 0;overflow:hidden;white-space:nowrap}
+    .strip-inner{display:inline-flex;gap:60px;animation:marquee 25s linear infinite}
+    @keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+    .strip-item{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:4px;color:#000;flex-shrink:0}
+
+    /* SECTION */
+    .section{padding:80px 40px;max-width:1280px;margin:0 auto}
+    .sec-tag{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--red);margin-bottom:8px}
+    .sec-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(32px,4vw,52px);letter-spacing:3px;margin-bottom:12px}
+    .sec-sub{font-family:'Barlow',sans-serif;font-size:14px;color:var(--light);max-width:560px;line-height:1.8;margin-bottom:40px}
+    hr.sec-line{border:none;border-top:1px solid var(--border);margin-bottom:40px}
+
+    /* KIT CONTENTS */
+    .contents-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+    .content-card{background:var(--panel);border:1px solid var(--border);padding:20px;position:relative}
+    .content-card::before{content:'';position:absolute;top:0;left:0;width:2px;height:100%;background:var(--red)}
+    .content-qty{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;color:var(--red);margin-bottom:4px}
+    .content-name{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:1px;margin-bottom:4px}
+    .content-desc{font-size:12px;color:var(--grey);line-height:1.5}
+
+    /* QR TECH */
+    .qr-tech{background:var(--dark);border:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr;gap:0}
+    .qr-tech-visual{background:linear-gradient(135deg,#0d0404,#1a0506);display:flex;align-items:center;justify-content:center;padding:60px;min-height:360px}
+    .qr-mock{width:180px;height:180px;background:#fff;display:flex;align-items:center;justify-content:center;position:relative}
+    .qr-mock::after{content:'dokuzcan.com';position:absolute;bottom:-28px;left:50%;transform:translateX(-50%);font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--grey);white-space:nowrap}
+    .qr-tech-content{padding:56px}
+    .qr-steps{display:flex;flex-direction:column;gap:24px;margin-top:28px}
+    .qr-step{display:flex;gap:16px;align-items:flex-start}
+    .qr-step-num{width:32px;height:32px;background:var(--red);color:#000;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .qr-step-text b{display:block;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:1px;margin-bottom:2px}
+    .qr-step-text span{font-size:12px;color:var(--grey);line-height:1.6}
+
+    /* SPECS */
+    .specs-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--border)}
+    .spec-row{display:flex;border-bottom:1px solid var(--border)}
+    .spec-row:last-child{border-bottom:none}
+    .spec-key{width:180px;padding:14px 16px;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--grey);background:var(--dark);border-right:1px solid var(--border);flex-shrink:0}
+    .spec-val{padding:14px 16px;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:600;flex:1}
+
+    /* COMPARISON TABLE */
+    .compare-wrap{overflow-x:auto}
+    .compare-table{width:100%;border-collapse:collapse;min-width:600px}
+    .compare-table th{padding:16px 20px;text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase;border-bottom:2px solid var(--border);background:var(--dark)}
+    .compare-table th:first-child{text-align:left}
+    .compare-table th.active{color:var(--red);border-bottom-color:var(--red)}
+    .compare-table td{padding:13px 20px;border-bottom:1px solid #1a1a1a;font-family:'Barlow Condensed',sans-serif;font-size:13px;text-align:center}
+    .compare-table td:first-child{text-align:left;color:var(--light)}
+    .compare-table tr:hover td{background:rgba(255,255,255,0.02)}
+    .compare-price{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px}
+    .chk{color:var(--green);font-size:15px}
+    .cross{color:#444;font-size:15px}
+    .compare-table td.active-col{background:rgba(232,0,29,0.04)}
+    .compare-btn{display:block;margin:8px auto 0;padding:9px 16px;background:var(--red);color:#000;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-decoration:none;text-align:center}
+
+    /* REVIEWS */
+    .reviews-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+    .review-card{background:var(--panel);border:1px solid var(--border);padding:24px}
+    .review-stars{color:var(--yellow);font-size:14px;margin-bottom:10px;letter-spacing:2px}
+    .review-text{font-size:14px;color:var(--light);line-height:1.7;margin-bottom:16px;font-style:italic}
+    .review-text::before{content:'"';font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--red);display:block;line-height:1;margin-bottom:6px}
+    .review-author{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase}
+    .review-meta{font-size:11px;color:var(--grey);margin-top:2px}
+    .review-badge{display:inline-block;background:rgba(34,197,94,0.12);color:var(--green);border:1px solid rgba(34,197,94,0.3);padding:2px 8px;font-size:10px;font-weight:700;letter-spacing:2px;margin-top:6px}
+
+    /* RATING SUMMARY */
+    .rating-summary{background:var(--dark);border:1px solid var(--border);padding:32px;display:flex;gap:40px;align-items:center;margin-bottom:32px;flex-wrap:wrap}
+    .rating-big{text-align:center}
+    .rating-num{font-family:'Bebas Neue',sans-serif;font-size:64px;letter-spacing:2px;color:var(--white);line-height:1}
+    .rating-stars-big{color:var(--yellow);font-size:20px;margin:4px 0;letter-spacing:4px}
+    .rating-count{font-size:12px;color:var(--grey);letter-spacing:2px;text-transform:uppercase}
+    .rating-bars{flex:1;min-width:200px}
+    .rating-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:7px;font-family:'Barlow Condensed',sans-serif;font-size:12px}
+    .rating-bar-label{width:20px;text-align:right;color:var(--grey)}
+    .rating-bar-track{flex:1;height:4px;background:var(--border2)}
+    .rating-bar-fill{height:100%;background:var(--yellow)}
+    .rating-bar-pct{width:32px;color:var(--grey)}
+
+    /* FAQ */
+    .faq-list{display:flex;flex-direction:column;gap:0;border:1px solid var(--border)}
+    .faq-item{border-bottom:1px solid var(--border)}
+    .faq-item:last-child{border-bottom:none}
+    .faq-q{padding:18px 20px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;letter-spacing:1px}
+    .faq-q:hover{background:rgba(255,255,255,0.02)}
+    .faq-arrow{color:var(--red);transition:transform 0.2s;font-size:12px}
+    .faq-item.open .faq-arrow{transform:rotate(180deg)}
+    .faq-a{padding:0 20px;max-height:0;overflow:hidden;transition:max-height 0.3s ease,padding 0.3s}
+    .faq-item.open .faq-a{padding:0 20px 18px;max-height:300px}
+    .faq-a p{font-size:13px;color:var(--light);line-height:1.8}
+
+    /* CTA BOTTOM */
+    .cta-bottom{background:linear-gradient(135deg,#0d0404 0%,#1a0506 100%);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:80px 40px;text-align:center}
+    .cta-bottom .sec-title{max-width:600px;margin:0 auto 20px}
+    .cta-bottom .sec-sub{max-width:480px;margin:0 auto 36px;text-align:center}
+
+    /* FOOTER */
+    footer{background:var(--dark);border-top:1px solid var(--border);padding:32px;text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;color:var(--grey)}
+    footer a{color:var(--red);text-decoration:none}
+
+    /* MOBILE */
+    @media(max-width:900px){
+      .hero{grid-template-columns:1fr}
+      .hero-img{min-height:280px}
+      .hero-content{padding:32px 24px}
+      .qr-tech{grid-template-columns:1fr}
+      .specs-grid{grid-template-columns:1fr}
+      .section{padding:48px 20px}
+      nav{padding:0 20px}
+      .kit-tab{padding:12px 16px;font-size:11px}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="/" class="nav-logo">DOKUZ<span>CAN</span></a>
+    <div class="nav-links">
+      <a href="/#nasil-calisir" class="nav-link">Nasıl Çalışır</a>
+      <a href="/kit" class="nav-link" style="color:var(--white)">Ürünler</a>
+      <a id="navBtn" href="/urun" class="nav-cta">Satın Al</a>
+    </div>
+  </nav>
+
+  <!-- KIT SEÇICI -->
+  <div class="kit-tabs">
+    <a href="/kit?type=basic"    class="kit-tab" data-type="basic">CITY Kit <span style="font-family:'Barlow',sans-serif;font-size:11px;font-weight:400;margin-left:4px;color:var(--grey)">₺1.490</span></a>
+    <a href="/kit?type=advanced" class="kit-tab" data-type="advanced">TOUR Kit <span style="font-family:'Barlow',sans-serif;font-size:11px;font-weight:400;margin-left:4px;color:var(--grey)">₺2.290</span></a>
+    <a href="/kit?type=pro"      class="kit-tab" data-type="pro">OFF-ROAD Kit <span style="font-family:'Barlow',sans-serif;font-size:11px;font-weight:400;margin-left:4px;color:var(--grey)">₺3.490</span></a>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-img">
+      <div class="hero-img-placeholder">
+        <svg viewBox="0 0 200 200" width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+          <rect width="200" height="200" fill="#141414"/>
+          <rect x="70" y="20" width="60" height="80" rx="4" fill="#1e0305" stroke="#E8001D" stroke-width="1"/>
+          <text x="100" y="68" text-anchor="middle" font-family="monospace" font-size="28" fill="#E8001D">+</text>
+          <rect x="40" y="110" width="120" height="70" rx="3" fill="#1a1a1a" stroke="#252525" stroke-width="1"/>
+          <rect x="50" y="120" width="30" height="20" rx="2" fill="#252525"/>
+          <rect x="90" y="120" width="30" height="20" rx="2" fill="#252525"/>
+          <rect x="130" y="120" width="20" height="20" rx="2" fill="#E8001D"/>
+          <text x="100" y="165" text-anchor="middle" font-family="monospace" font-size="10" fill="#555" letter-spacing="2">TRAVMA KİTİ</text>
+        </svg>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;color:#333;text-align:center">ÜRÜN FOTOĞRAFI<br>YÜKLENECEK</div>
+      </div>
+      <div class="hero-img-thumbs">
+        <div class="thumb active">Ön</div>
+        <div class="thumb">Açık</div>
+        <div class="thumb">İçerik</div>
+        <div class="thumb">Bacak</div>
+      </div>
+    </div>
+
+    <div class="hero-content">
+      <div class="hero-tag" id="heroTag">Seviye 02 — Drop-Leg Travma Kiti</div>
+      <div class="hero-title" id="heroTitle">TOUR<br>KİT</div>
+      <div class="hero-sub" id="heroSub">Uzun yol ve şehirlerarası sürüşler için tasarlandı. Kapsamlı içerik ve akıllı QR tıbbi profil sistemi ile donanmış.</div>
+
+      <div class="hero-price-row">
+        <div class="hero-price" id="heroPrice">₺2.290</div>
+        <div class="hero-price-kdv">KDV Dahil</div>
+      </div>
+      <div class="hero-installment" id="heroInstallment">
+        3 taksit: <b id="heroInst3">₺763/ay</b> &nbsp;·&nbsp; 6 taksit: <b id="heroInst6">₺382/ay</b>
+      </div>
+
+      <div class="hero-actions">
+        <a href="/urun" class="btn-buy" id="heroBuy">Şimdi Satın Al →</a>
+        <a href="#icerik" class="btn-outline">İçeriği Gör ↓</a>
+      </div>
+
+      <div class="hero-badges">
+        <div class="hero-badge"><span>🚚</span> Ücretsiz Kargo</div>
+        <div class="hero-badge"><span>📦</span> 1–3 İş Günü</div>
+        <div class="hero-badge"><span>🔒</span> Güvenli Ödeme</div>
+        <div class="hero-badge"><span>↩</span> 14 Gün İade</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MARQUEE -->
+  <div class="strip">
+    <div class="strip-inner">
+      <span class="strip-item">ACİL TIBBİ PROFİL</span><span class="strip-item">ANINDA QR TARAMA</span>
+      <span class="strip-item">İLK MÜDAHALE</span><span class="strip-item">MOTOSIKLET GÜVENLİĞİ</span>
+      <span class="strip-item">ÜCRETSİZ KARGO</span><span class="strip-item">TÜRK YAPIMI</span>
+      <span class="strip-item">ACİL TIBBİ PROFİL</span><span class="strip-item">ANINDA QR TARAMA</span>
+      <span class="strip-item">İLK MÜDAHALE</span><span class="strip-item">MOTOSIKLET GÜVENLİĞİ</span>
+      <span class="strip-item">ÜCRETSİZ KARGO</span><span class="strip-item">TÜRK YAPIMI</span>
+    </div>
+  </div>
+
+  <!-- KİT İÇERİĞİ -->
+  <div id="icerik" style="background:var(--dark);border-top:1px solid var(--border)">
+    <div class="section">
+      <div class="sec-tag">Kit İçeriği</div>
+      <div class="sec-title" id="contentTitle">TOUR KİT'TE NELER VAR?</div>
+      <div class="sec-sub" id="contentSub">Her kit, en zorlu koşullar için test edilmiş, steril ve sertifikalı malzemelerden oluşur.</div>
+      <div class="contents-grid" id="contentsGrid"></div>
+    </div>
+  </div>
+
+  <!-- QR TEKNOLOJİSİ -->
+  <div style="border-top:1px solid var(--border)">
+    <div class="section" style="padding-bottom:0">
+      <div class="sec-tag">Akıllı QR Sistemi</div>
+      <div class="sec-title">HER KİT BİR KİMLİKTİR</div>
+    </div>
+    <div class="qr-tech">
+      <div class="qr-tech-visual">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:16px">
+          <div class="qr-mock">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=156x156&data=https://dokuzcan.com/qr-profil?slug=ORNEK-DEMO&margin=4" width="156" height="156" alt="Örnek QR" />
+          </div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--grey)">ÖRNEK-QR-KODU</div>
+        </div>
+      </div>
+      <div class="qr-tech-content">
+        <div class="sec-tag">Nasıl Çalışır</div>
+        <div class="sec-title" style="font-size:clamp(28px,3vw,42px)">KAZAda 1 SANIYE<br>FARK YARATABİLİR</div>
+        <div class="qr-steps">
+          <div class="qr-step">
+            <div class="qr-step-num">1</div>
+            <div class="qr-step-text">
+              <b>Kitine Özel QR Kod</b>
+              <span>Satın aldığın kit, sana özel kriptografik bir QR ile gelir. Bu kod sadece senin profilini açar.</span>
+            </div>
+          </div>
+          <div class="qr-step">
+            <div class="qr-step-num">2</div>
+            <div class="qr-step-text">
+              <b>Tıbbi Profilini Doldur</b>
+              <span>Kan grubu, alerji, ilaçlar, acil kişi bilgilerini ekle. Ambulans bu bilgilere anında ulaşır.</span>
+            </div>
+          </div>
+          <div class="qr-step">
+            <div class="qr-step-num">3</div>
+            <div class="qr-step-text">
+              <b>Kodu Bacağına Tak, Yola Çık</b>
+              <span>QR kodu kite basılıdır. Kaza anında herhangi bir akıllı telefon tarayabilir — uygulama gerekmez.</span>
+            </div>
+          </div>
+          <div class="qr-step">
+            <div class="qr-step-num">4</div>
+            <div class="qr-step-text">
+              <b>Sağlık Ekibi Bilgilere Erişir</b>
+              <span>Tüm bilgiler şifrelenmiş ve güvenli. Profili istediğin zaman güncelleyebilirsin.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TEKNİK ÖZELLİKLER -->
+  <div style="background:var(--dark);border-top:1px solid var(--border)">
+    <div class="section">
+      <div class="sec-tag">Teknik Özellikler</div>
+      <div class="sec-title">DETAYLAR</div>
+      <hr class="sec-line">
+      <div class="specs-grid">
+        <div>
+          <div class="spec-row"><div class="spec-key">Montaj</div><div class="spec-val">Drop-Leg (Bacak Montajı)</div></div>
+          <div class="spec-row"><div class="spec-key">Materyal</div><div class="spec-val" id="specMaterial">—</div></div>
+          <div class="spec-row"><div class="spec-key">Boyutlar</div><div class="spec-val" id="specDims">—</div></div>
+          <div class="spec-row"><div class="spec-key">Ağırlık</div><div class="spec-val" id="specWeight">—</div></div>
+        </div>
+        <div>
+          <div class="spec-row"><div class="spec-key">QR Sistemi</div><div class="spec-val">Kriptografik, uygulama gerektirmez</div></div>
+          <div class="spec-row"><div class="spec-key">Garanti</div><div class="spec-val">2 Yıl</div></div>
+          <div class="spec-row"><div class="spec-key">Kargo</div><div class="spec-val">Ücretsiz, 1–3 İş Günü</div></div>
+          <div class="spec-row"><div class="spec-key">İade</div><div class="spec-val">14 Gün Koşulsuz</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KİT KARŞILAŞTIRMA -->
+  <div style="border-top:1px solid var(--border)">
+    <div class="section">
+      <div class="sec-tag">Karşılaştırma</div>
+      <div class="sec-title">HANGİ KİT SENİN İÇİN?</div>
+      <hr class="sec-line">
+      <div class="compare-wrap">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th data-type="basic">CITY<br><span style="font-weight:400;font-family:'Barlow',sans-serif;font-size:11px;color:var(--grey)">Şehir İçi</span></th>
+              <th data-type="advanced" class="active">TOUR<br><span style="font-weight:400;font-family:'Barlow',sans-serif;font-size:11px;color:var(--grey)">Uzun Yol</span></th>
+              <th data-type="pro">OFF-ROAD<br><span style="font-weight:400;font-family:'Barlow',sans-serif;font-size:11px;color:var(--grey)">Arazi</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Fiyat</td>
+              <td><div class="compare-price">₺1.490</div></td>
+              <td class="active-col"><div class="compare-price" style="color:var(--red)">₺2.290</div></td>
+              <td><div class="compare-price">₺3.490</div></td>
+            </tr>
+            <tr><td>QR Tıbbi Profil</td><td><span class="chk">✓</span></td><td class="active-col"><span class="chk">✓</span></td><td><span class="chk">✓</span></td></tr>
+            <tr><td>Turnike</td><td><span class="chk">✓</span></td><td class="active-col"><span class="chk">✓</span></td><td><span class="chk">✓</span></td></tr>
+            <tr><td>Hemostatik Sargı</td><td><span class="cross">—</span></td><td class="active-col"><span class="chk">✓</span></td><td><span class="chk">✓</span></td></tr>
+            <tr><td>Dekompresyon İğnesi</td><td><span class="cross">—</span></td><td class="active-col"><span class="chk">✓</span></td><td><span class="chk">✓</span></td></tr>
+            <tr><td>Oklusif Yara Örtüsü</td><td><span class="cross">—</span></td><td class="active-col"><span class="cross">—</span></td><td><span class="chk">✓</span></td></tr>
+            <tr><td>IFAK Kitaplığı Erişimi</td><td><span class="cross">—</span></td><td class="active-col"><span class="chk">✓</span></td><td><span class="chk">✓</span></td></tr>
+            <tr><td>Termal Battaniye</td><td><span class="cross">—</span></td><td class="active-col"><span class="cross">—</span></td><td><span class="chk">✓</span></td></tr>
+            <tr><td>İçerik Adedi</td><td>8 parça</td><td class="active-col" style="color:var(--white);font-weight:700">14 parça</td><td>22 parça</td></tr>
+            <tr>
+              <td></td>
+              <td><a href="/urun?kit=basic" class="compare-btn">Seç</a></td>
+              <td class="active-col"><a href="/urun?kit=advanced" class="compare-btn">Seç</a></td>
+              <td><a href="/urun?kit=pro" class="compare-btn">Seç</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- DEĞERLENDİRMELER -->
+  <div style="background:var(--dark);border-top:1px solid var(--border)">
+    <div class="section">
+      <div class="sec-tag">Kullanıcı Yorumları</div>
+      <div class="sec-title">GERÇEK DENEYİMLER</div>
+      <hr class="sec-line">
+      <div class="rating-summary">
+        <div class="rating-big">
+          <div class="rating-num">4.9</div>
+          <div class="rating-stars-big">★★★★★</div>
+          <div class="rating-count">127 Değerlendirme</div>
+        </div>
+        <div class="rating-bars">
+          <div class="rating-bar-row"><span class="rating-bar-label">5</span><div class="rating-bar-track"><div class="rating-bar-fill" style="width:89%"></div></div><span class="rating-bar-pct">89%</span></div>
+          <div class="rating-bar-row"><span class="rating-bar-label">4</span><div class="rating-bar-track"><div class="rating-bar-fill" style="width:8%"></div></div><span class="rating-bar-pct">8%</span></div>
+          <div class="rating-bar-row"><span class="rating-bar-label">3</span><div class="rating-bar-track"><div class="rating-bar-fill" style="width:2%"></div></div><span class="rating-bar-pct">2%</span></div>
+          <div class="rating-bar-row"><span class="rating-bar-label">2</span><div class="rating-bar-track"><div class="rating-bar-fill" style="width:1%"></div></div><span class="rating-bar-pct">1%</span></div>
+          <div class="rating-bar-row"><span class="rating-bar-label">1</span><div class="rating-bar-track"><div class="rating-bar-fill" style="width:0%"></div></div><span class="rating-bar-pct">0%</span></div>
+        </div>
+      </div>
+      <div class="reviews-grid">
+        <div class="review-card">
+          <div class="review-stars">★★★★★</div>
+          <div class="review-text">İki yıldır motosiklet sürmeme rağmen hiçbir zaman böyle eksiksiz bir kite sahip olmamıştım. QR sistem çok düşünülmüş — kaza anında yanındakilerin telefonuyla tarayıp kan grubuma ulaşabilmesi müthiş.</div>
+          <div class="review-author">Murat K.</div>
+          <div class="review-meta">İstanbul · TOUR Kit · 8 ay önce</div>
+          <div class="review-badge">✓ Doğrulanmış Satın Alma</div>
+        </div>
+        <div class="review-card">
+          <div class="review-stars">★★★★★</div>
+          <div class="review-text">OFF-ROAD versiyonu gerçekten profesyonel seviyede. Dekompresyon iğnesi ve oklusif yara örtüsü dahil — bunları ayrı ayrı almak çok daha pahalıya patlar. Kalite mükemmel.</div>
+          <div class="review-author">Selin A.</div>
+          <div class="review-meta">Ankara · OFF-ROAD Kit · 3 ay önce</div>
+          <div class="review-badge">✓ Doğrulanmış Satın Alma</div>
+        </div>
+        <div class="review-card">
+          <div class="review-stars">★★★★★</div>
+          <div class="review-text">Kargo hızı harika, 2 günde geldi. İçerik kalitesi beklediğimden çok daha iyi. QR profilimi doldurmak 5 dakika sürdü, artık her yolculukta çok daha güvende hissediyorum.</div>
+          <div class="review-author">Emre T.</div>
+          <div class="review-meta">İzmir · CITY Kit · 1 ay önce</div>
+          <div class="review-badge">✓ Doğrulanmış Satın Alma</div>
+        </div>
+        <div class="review-card">
+          <div class="review-stars">★★★★☆</div>
+          <div class="review-text">Ürün kaliteli ve pratik. Sadece tıbbi profil sayfasının mobilde biraz daha hızlı açılmasını dilerdim ama genel olarak son derece memnunum. Çevremdeki sürücü arkadaşlara da önerdim.</div>
+          <div class="review-author">Ahmet Y.</div>
+          <div class="review-meta">Bursa · TOUR Kit · 5 ay önce</div>
+          <div class="review-badge">✓ Doğrulanmış Satın Alma</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SSS -->
+  <div style="border-top:1px solid var(--border)">
+    <div class="section">
+      <div class="sec-tag">Sık Sorulan Sorular</div>
+      <div class="sec-title">HER ŞEYİ BİL</div>
+      <hr class="sec-line">
+      <div class="faq-list">
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">QR kodu okutmak için uygulama gerekiyor mu? <span class="faq-arrow">▼</span></div>
+          <div class="faq-a"><p>Hayır. Herhangi bir akıllı telefon kamerasıyla doğrudan taranabilir. iOS ve Android'in varsayılan kamera uygulamaları QR okuyabilir. Ekstra uygulama indirmek gerekmez.</p></div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">Tıbbi bilgilerimi kim görebilir? <span class="faq-arrow">▼</span></div>
+          <div class="faq-a"><p>Profilin herkese açıktır — bu kasıtlı bir tasarım kararıdır. Kaza anında sana yardım eden herkesin (ambulans, itfaiye, sivil) bilgilere uygulama ya da şifre olmadan ulaşabilmesi gerekir. QR kodunu istediğin zaman pasif hale getirebilirsin.</p></div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">Kit içeriği süresi doluyor mu? <span class="faq-arrow">▼</span></div>
+          <div class="faq-a"><p>Evet, tıbbi malzemelerin son kullanma tarihi vardır. Her kit içeriğinde tarihler belirtilmiştir. Süre dolmak üzere olan malzemeler için yenileme paketi sipariş edebilirsin.</p></div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">Kiti motosikletim dışında kullanabilir miyim? <span class="faq-arrow">▼</span></div>
+          <div class="faq-a"><p>Kesinlikle. Kit, bacak montajlı tasarımıyla bisiklet, ATV ve off-road araçları için de uygundur. QR sistemi ise herhangi bir aktivitede aynı şekilde çalışır.</p></div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">Farklı kit tipine geçiş yapabilir miyim? <span class="faq-arrow">▼</span></div>
+          <div class="faq-a"><p>Yeni bir kit aldığında mevcut QR profilin korunur, içeriklerin güncellenir. Şu an upgrade programımız geliştirme aşamasındadır.</p></div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">Ödeme seçenekleri nelerdir? <span class="faq-arrow">▼</span></div>
+          <div class="faq-a"><p>iyzico altyapısı üzerinden tüm kredi ve banka kartları, 1–6 taksit seçeneği mevcuttur. Ödeme tamamen güvenlidir ve 3D Secure ile korunur.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ALT CTA -->
+  <div class="cta-bottom">
+    <div style="max-width:800px;margin:0 auto">
+      <div class="sec-tag" style="text-align:center">Hazır mısın?</div>
+      <div class="sec-title" style="text-align:center">BİR SONRAKI YOLCULUĞUNDAN ÖNCE AL</div>
+      <div class="sec-sub" style="text-align:center;margin:12px auto 36px">Türkiye'nin en kapsamlı motosikletçi travma kiti. Ücretsiz kargo, 14 gün iade garantisi.</div>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        <a href="/urun" class="btn-buy">Satın Al — <span id="ctaPrice">₺2.290</span> →</a>
+        <a href="/urun" class="btn-outline">Tüm Kitler</a>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div style="margin-bottom:8px"><a href="/">DOKUZCAN</a> · Tüm hakları saklıdır © 2025</div>
+    <div>destek@dokuzcan.com</div>
+  </footer>
+
+<script>
+  const KITS = {
+    basic: {
+      tag: 'Seviye 01 — Drop-Leg Travma Kiti',
+      title: 'CITY\nKİT',
+      sub: 'Şehir içi ve kısa mesafe sürüşler için temel travma kiti. Kompakt tasarım, temel müdahale malzemeleri.',
+      price: 2290, priceStr: '₺1.490',
+      inst3: '₺497/ay', inst6: '₺248/ay',
+      contentTitle: 'CITY KİT\'TE NELER VAR?',
+      contentSub: 'Şehir sürüşlerinde ihtiyacınız olan temel malzemeler, kompakt ve hafif bir yapıda.',
+      material: 'MOLLE Uyumlu Kordura Naylon',
+      dims: '22 × 14 × 8 cm',
+      weight: '680 g (Dolu)',
+      items: [
+        { qty:'1', name:'Tourniquet (CAT)', desc:'NATO standardı, tek elle uygulanabilir' },
+        { qty:'2', name:'Steril Kompres', desc:'10x10 cm, absorban' },
+        { qty:'1', name:'Elastik Bandaj', desc:'10 cm genişlik' },
+        { qty:'2', name:'Yara Bandı (Büyük)', desc:'Steril, tek kullanımlık' },
+        { qty:'1', name:'Makas', desc:'Bandaj ve giysi kesimi' },
+        { qty:'1', name:'Nitril Eldiven', desc:'XL beden, lateks içermez' },
+        { qty:'1', name:'Acil Folyo Battaniye', desc:'İzotermik' },
+        { qty:'1', name:'QR Profil Kodu', desc:'Akıllı tıbbi kimlik' },
+      ]
+    },
+    advanced: {
+      tag: 'Seviye 02 — Drop-Leg Travma Kiti',
+      title: 'TOUR\nKİT',
+      sub: 'Uzun yol ve şehirlerarası sürüşler için tasarlandı. Kapsamlı içerik ve akıllı QR tıbbi profil sistemi.',
+      price: 2290, priceStr: '₺2.290',
+      inst3: '₺763/ay', inst6: '₺382/ay',
+      contentTitle: 'TOUR KİT\'TE NELER VAR?',
+      contentSub: 'Uzun yolculuklarda karşılaşabileceğiniz her senaryoya hazır, kapsamlı içerik.',
+      material: 'MOLLE Uyumlu Kordura 500D Naylon',
+      dims: '28 × 18 × 10 cm',
+      weight: '1.1 kg (Dolu)',
+      items: [
+        { qty:'1', name:'Tourniquet (CAT)', desc:'NATO standardı, tek elle uygulanabilir' },
+        { qty:'1', name:'Hemostatik Sargı', desc:'QuikClot Combat Gauze benzeri' },
+        { qty:'1', name:'Dekompresyon İğnesi', desc:'14G, 3.25 inç' },
+        { qty:'2', name:'Steril Kompres', desc:'15x15 cm, yüksek absorban' },
+        { qty:'1', name:'İsraeli Bandaj', desc:'Baskı sargısı, geniş yara' },
+        { qty:'1', name:'Elastik Bandaj', desc:'10 cm genişlik' },
+        { qty:'1', name:'Triangular Bandaj', desc:'Atel ve askı için' },
+        { qty:'2', name:'Nitril Eldiven', desc:'XL beden, çift çift' },
+        { qty:'1', name:'Makas', desc:'Tıbbi tip, kıyafet kesimi' },
+        { qty:'1', name:'Airway Tüpü (NPA)', desc:'Solunum yolu açma' },
+        { qty:'1', name:'Acil Folyo Battaniye', desc:'İzotermik' },
+        { qty:'2', name:'Yara Bandı (XL)', desc:'Steril, çeşitli ebatlar' },
+        { qty:'1', name:'IFAK Kitaplığı Erişimi', desc:'Dijital ilk yardım rehberi' },
+        { qty:'1', name:'QR Profil Kodu', desc:'Akıllı tıbbi kimlik' },
+      ]
+    },
+    pro: {
+      tag: 'Seviye 03 — Drop-Leg Travma Kiti',
+      title: 'OFF-ROAD\nKİT',
+      sub: 'Arazi ve ekstrem koşullar için en kapsamlı kit. Profesyonel seviyede ekipman ve maksimum müdahale kapasitesi.',
+      price: 3490, priceStr: '₺3.490',
+      inst3: '₺1.163/ay', inst6: '₺582/ay',
+      contentTitle: 'OFF-ROAD KİT\'TE NELER VAR?',
+      contentSub: 'Arazi koşullarında sizi ayakta tutacak, profesyonel seviyede 22 parça.',
+      material: 'Askeri Sınıf MOLLE 1000D Cordura',
+      dims: '34 × 22 × 12 cm',
+      weight: '1.8 kg (Dolu)',
+      items: [
+        { qty:'2', name:'Tourniquet (CAT)', desc:'NATO standardı, çift paket' },
+        { qty:'1', name:'Hemostatik Sargı', desc:'QuikClot Combat Gauze' },
+        { qty:'1', name:'Oklusif Yara Örtüsü', desc:'Göğüs yarası için, hava geçirmez' },
+        { qty:'1', name:'Dekompresyon İğnesi', desc:'14G 3.25 inç, ikinci adet yedek' },
+        { qty:'3', name:'Steril Kompres', desc:'15x15 cm ve 20x20 cm karışık' },
+        { qty:'1', name:'İsraeli Bandaj', desc:'4 inç ve 6 inç çift paket' },
+        { qty:'2', name:'Elastik Bandaj', desc:'Farklı genişlik' },
+        { qty:'1', name:'Triangular Bandaj', desc:'Atel ve kırık için' },
+        { qty:'3', name:'Nitril Eldiven', desc:'XL beden, 3 çift' },
+        { qty:'1', name:'Airway Tüpü (NPA)', desc:'Solunum yolu açma' },
+        { qty:'1', name:'Makas + Penset', desc:'Tıbbi set' },
+        { qty:'1', name:'Termal Battaniye', desc:'İzotermik, ağır koşul' },
+        { qty:'1', name:'Mini Fener', desc:'Müdahale aydınlatması' },
+        { qty:'1', name:'Yara Irrigasyon Şırıngası', desc:'Temizleme için' },
+        { qty:'1', name:'Splint (Atel)', desc:'Kırık ve çıkık için' },
+        { qty:'1', name:'IFAK Kitaplığı Erişimi', desc:'Dijital ilk yardım rehberi' },
+        { qty:'1', name:'QR Profil Kodu', desc:'Akıllı tıbbi kimlik — öncelikli destek' },
+      ]
+    }
+  }
+
+  // Aktif kit tipi
+  const params = new URLSearchParams(window.location.search)
+  let activeType = params.get('type') || 'advanced'
+  if (!KITS[activeType]) activeType = 'advanced'
+
+  function loadKit(type) {
+    const k = KITS[type]
+    document.title = (type === 'basic' ? 'CITY' : type === 'advanced' ? 'TOUR' : 'OFF-ROAD') + ' Kit — DOKUZCAN'
+    document.getElementById('heroTag').textContent = k.tag
+    document.getElementById('heroTitle').innerHTML = k.title.replace('\n','<br>')
+    document.getElementById('heroSub').textContent = k.sub
+    document.getElementById('heroPrice').textContent = k.priceStr
+    document.getElementById('heroInst3').textContent = k.inst3
+    document.getElementById('heroInst6').textContent = k.inst6
+    document.getElementById('contentTitle').textContent = k.contentTitle
+    document.getElementById('contentSub').textContent = k.contentSub
+    document.getElementById('specMaterial').textContent = k.material
+    document.getElementById('specDims').textContent = k.dims
+    document.getElementById('specWeight').textContent = k.weight
+    document.getElementById('ctaPrice').textContent = k.priceStr
+
+    // Tab active
+    document.querySelectorAll('.kit-tab').forEach(t => t.classList.toggle('active', t.dataset.type === type))
+
+    // Compare highlight
+    document.querySelectorAll('.compare-table th').forEach(th => th.classList.toggle('active', th.dataset.type === type))
+    document.querySelectorAll('.compare-table td.active-col').forEach(td => td.classList.remove('active-col'))
+    const idx = {basic:1, advanced:2, pro:3}[type]
+    document.querySelectorAll('.compare-table tr').forEach(row => {
+      const cells = row.querySelectorAll('td')
+      if (cells[idx]) cells[idx].classList.add('active-col')
+    })
+
+    // İçerik
+    document.getElementById('contentsGrid').innerHTML = k.items.map(i => `
+      <div class="content-card">
+        <div class="content-qty">×${i.qty}</div>
+        <div class="content-name">${i.name}</div>
+        <div class="content-desc">${i.desc}</div>
+      </div>`).join('')
+  }
+
+  function toggleFaq(el) {
+    el.parentElement.classList.toggle('open')
+  }
+
+  // Kit tab click — URL güncelle
+  document.querySelectorAll('.kit-tab').forEach(tab => {
+    tab.addEventListener('click', e => {
+      e.preventDefault()
+      const type = tab.dataset.type
+      history.pushState({}, '', '/kit?type=' + type)
+      loadKit(type)
+    })
+  })
+
+  loadKit(activeType)
+</script>
+</body>
+</html>
