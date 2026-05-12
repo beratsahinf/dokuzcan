@@ -310,8 +310,9 @@
   </div>
 
   <!-- QR MODAL -->
-  <div class="modal-overlay" id="qrModal" onclick="if(event.target===this)closeQR()">
-    <div class="modal" style="max-width:380px;text-align:center;max-height:88vh;overflow-y:auto">
+  <div id="qrModal" onclick="if(event.target===this)closeQR()" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.88);z-index:99999;align-items:center;justify-content:center">
+    <div style="background:var(--panel);border:1px solid var(--border);max-width:380px;width:calc(100% - 40px);position:relative;max-height:85vh;overflow-y:auto;text-align:center">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--red)"></div>
       <div class="modal-head">
         <div class="modal-title" id="qrModalTitle">QR Kod</div>
         <button class="modal-close" onclick="closeQR()">✕</button>
@@ -332,7 +333,11 @@
       </div>
     </div>
   </div>
-    <div class="modal">
+
+  <!-- ANA MODAL -->
+  <div id="modal" onclick="if(event.target===this)closeModal()" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.88);z-index:99999;align-items:center;justify-content:center">
+    <div style="background:var(--panel);border:1px solid var(--border);max-width:640px;width:calc(100% - 40px);position:relative;max-height:85vh;overflow-y:auto">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--red)"></div>
       <div class="modal-head">
         <div class="modal-title" id="modalTitle">—</div>
         <button class="modal-close" onclick="closeModal()">✕</button>
@@ -907,14 +912,6 @@ function openQR(slug) {
   }
 
   document.getElementById('qrModal').style.display = 'flex'
-  document.getElementById('qrModal').style.position = 'fixed'
-  document.getElementById('qrModal').style.top = '0'
-  document.getElementById('qrModal').style.left = '0'
-  document.getElementById('qrModal').style.width = '100vw'
-  document.getElementById('qrModal').style.height = '100vh'
-  document.getElementById('qrModal').style.alignItems = 'center'
-  document.getElementById('qrModal').style.justifyContent = 'center'
-  document.getElementById('qrModal').style.zIndex = '99999'
   document.body.style.overflow = 'hidden'
 }
 
@@ -926,14 +923,6 @@ function closeQR() {
 function openModal() {
   const el = document.getElementById('modal')
   el.style.display = 'flex'
-  el.style.position = 'fixed'
-  el.style.top = '0'
-  el.style.left = '0'
-  el.style.width = '100vw'
-  el.style.height = '100vh'
-  el.style.alignItems = 'center'
-  el.style.justifyContent = 'center'
-  el.style.zIndex = '99999'
   document.body.style.overflow = 'hidden'
 }
 
