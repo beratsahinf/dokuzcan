@@ -523,7 +523,7 @@
   <div class="toast" id="toast">✓ PROFİL KAYDEDİLDİ</div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  
   <script>
     const SUPABASE_URL = 'https://fascsdkzcmnmaaxvldxf.supabase.co'
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZhc2NzZGt6Y21ubWFheHZsZHhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4MTMxMTMsImV4cCI6MjA5MzM4OTExM30.Unlfg8DHP7ce2CtFCcCgRaydstrCB-dwAIEebFRUQm4'
@@ -542,36 +542,34 @@
       return 'https://dokuzcan.com/qr-profil?slug=' + (userKit?.slug || 'unknown')
     }
 
-    function waitForQRLib(cb, n = 0) {
-      if (typeof QRCode !== 'undefined') { cb(); return }
-      if (n > 30) { console.error('QRCode lib yüklenemedi'); return }
-      setTimeout(() => waitForQRLib(cb, n + 1), 200)
+    function getQRImageUrl(size = 200) {
+      return 'https://api.qrserver.com/v1/create-qr-code/?size=' + size + 'x' + size + '&data=' + encodeURIComponent(getQRUrl()) + '&margin=6&color=000000&bgcolor=ffffff'
     }
 
     function generateQR() {
       if (!userKit) return
-      const url = getQRUrl()
+      const box = document.querySelector('.qr-canvas-box')
+      if (!box) return
+      const img = document.createElement('img')
+      img.src = getQRImageUrl(200)
+      img.width = 108
+      img.height = 108
+      img.alt = 'QR Kod'
+      img.style.display = 'block'
+      img.onerror = () => {
+        img.src = 'https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=' + encodeURIComponent(getQRUrl())
+      }
+      box.innerHTML = ''
+      box.appendChild(img)
+    }
 
-      waitForQRLib(() => {
-        // SVG formatı — canvas sorunları yok
-        QRCode.toString(url, {
-          type  : 'svg',
-          margin: 1,
-          width : 160,
-          color : { dark: '#000000', light: '#ffffff' }
-        }, (err, svgStr) => {
-          if (err) { console.error('QR SVG hatası:', err); return }
-          const box = document.querySelector('.qr-canvas-box')
-          if (!box) return
-          box.innerHTML = svgStr
-          const svg = box.querySelector('svg')
-          if (svg) {
-            svg.style.width  = '108px'
-            svg.style.height = '108px'
-            svg.style.display = 'block'
-          }
-        })
-      })
+    function downloadQR() {
+      if (!userKit) return
+      const a = document.createElement('a')
+      a.href = getQRImageUrl(512)
+      a.download = 'dokuzcan-qr-' + (userKit?.slug || 'profil') + '.png'
+      a.target = '_blank'
+      a.click()
     }
 
     async function toggleQRStatus(active) {
@@ -618,22 +616,12 @@
     }
 
     function downloadQR() {
-      const url = getQRUrl()
-      if (!url || !userKit) return
-      waitForQRLib(() => {
-        QRCode.toDataURL(url, {
-          type  : 'image/png',
-          width : 512,
-          margin: 2,
-          color : { dark: '#000000', light: '#ffffff' }
-        }, (err, dataUrl) => {
-          if (err) { console.error(err); return }
-          const a = document.createElement('a')
-          a.download = 'dokuzcan-qr-' + (userKit?.slug || 'profil') + '.png'
-          a.href = dataUrl
-          a.click()
-        })
-      })
+      if (!userKit) return
+      const a = document.createElement('a')
+      a.href = getQRImageUrl(512)
+      a.download = 'dokuzcan-qr-' + (userKit?.slug || 'profil') + '.png'
+      a.target = '_blank'
+      a.click()
     }
 
     /* ── TAG HELPERS ── */
