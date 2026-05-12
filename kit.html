@@ -663,6 +663,9 @@
     document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'))
     thumbEl.classList.add('active')
   }
+
+  // Kit tab click — URL güncelle
+  document.querySelectorAll('.kit-tab').forEach(tab => {
     tab.addEventListener('click', e => {
       e.preventDefault()
       const type = tab.dataset.type
