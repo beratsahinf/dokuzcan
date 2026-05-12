@@ -288,41 +288,60 @@
           </div>
 
           <!-- LOGO -->
-          <div style="background:var(--panel);border:1px solid var(--border);padding:20px;margin-bottom:20px;position:relative">
+          <div style="background:var(--panel);border:1px solid var(--border);padding:20px;margin-bottom:16px;position:relative">
             <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--red)"></div>
             <div class="section-label" style="margin-bottom:12px">Logo</div>
-            <div style="display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:center">
-              <div id="logoPreview" style="width:120px;height:60px;background:var(--dark);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;color:var(--grey)">LOGO YOK</div>
+            <div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap">
+              <div id="logoPreview" style="width:120px;height:60px;background:var(--dark);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;color:var(--grey);flex-shrink:0">LOGO YOK</div>
               <div>
-                <div style="font-size:13px;color:var(--light);margin-bottom:8px">PNG veya SVG önerilir. Beyaz/şeffaf arka plan.</div>
-                <label style="display:inline-block;background:var(--red);color:#000;padding:8px 16px;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;cursor:pointer">
+                <div style="font-size:13px;color:var(--light);margin-bottom:10px">PNG veya SVG önerilir. Beyaz/şeffaf arka plan.</div>
+                <label class="btn-primary" style="display:inline-block;cursor:pointer">
                   Yükle
                   <input type="file" accept="image/*" style="display:none" onchange="uploadImage(this,'logo','logo.png')" />
                 </label>
-                <span id="logoUrl" style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--grey);margin-left:10px;word-break:break-all"></span>
+                <div id="logoUrl" style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--grey);margin-top:6px;word-break:break-all"></div>
               </div>
             </div>
           </div>
 
           <!-- ÜRÜN GÖRSELLERİ -->
-          <div style="background:var(--panel);border:1px solid var(--border);padding:20px;margin-bottom:20px;position:relative">
+          <div style="background:var(--panel);border:1px solid var(--border);padding:20px;margin-bottom:16px;position:relative">
             <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--red)"></div>
             <div class="section-label" style="margin-bottom:4px">Ürün Görselleri</div>
             <div style="font-size:12px;color:var(--grey);margin-bottom:16px">Her kit için görseller yükle. İlk görsel hero olarak kullanılır.</div>
 
-            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
-              ${['basic','advanced','pro'].map(type => {
-                const names = {basic:'CITY Kit',advanced:'TOUR Kit',pro:'OFF-ROAD Kit'}
-                return `
-                <div>
-                  <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--red);margin-bottom:8px">${names[type]}</div>
-                  <div id="grid-${type}" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px"></div>
-                  <label style="display:block;background:var(--dark);border:1px dashed var(--border2);padding:10px;text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;color:var(--grey);cursor:pointer">
-                    + Görsel Ekle
-                    <input type="file" accept="image/*" style="display:none" onchange="uploadImage(this,'kit-${type}')" multiple />
-                  </label>
-                </div>`
-              }).join('')}
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px">
+
+              <!-- CITY KIT -->
+              <div>
+                <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--red);margin-bottom:8px">CITY Kit</div>
+                <div id="grid-basic" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px;min-height:60px"></div>
+                <label style="display:block;background:var(--dark);border:1px dashed var(--border2);padding:10px;text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;color:var(--grey);cursor:pointer">
+                  + Görsel Ekle
+                  <input type="file" accept="image/*" style="display:none" onchange="uploadImage(this,'kit-basic')" multiple />
+                </label>
+              </div>
+
+              <!-- TOUR KIT -->
+              <div>
+                <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--red);margin-bottom:8px">TOUR Kit</div>
+                <div id="grid-advanced" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px;min-height:60px"></div>
+                <label style="display:block;background:var(--dark);border:1px dashed var(--border2);padding:10px;text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;color:var(--grey);cursor:pointer">
+                  + Görsel Ekle
+                  <input type="file" accept="image/*" style="display:none" onchange="uploadImage(this,'kit-advanced')" multiple />
+                </label>
+              </div>
+
+              <!-- OFF-ROAD KIT -->
+              <div>
+                <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--red);margin-bottom:8px">OFF-ROAD Kit</div>
+                <div id="grid-pro" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px;min-height:60px"></div>
+                <label style="display:block;background:var(--dark);border:1px dashed var(--border2);padding:10px;text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;color:var(--grey);cursor:pointer">
+                  + Görsel Ekle
+                  <input type="file" accept="image/*" style="display:none" onchange="uploadImage(this,'kit-pro')" multiple />
+                </label>
+              </div>
+
             </div>
           </div>
 
@@ -331,7 +350,7 @@
             <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--red)"></div>
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
               <div class="section-label">Tüm Dosyalar</div>
-              <label style="background:var(--red);color:#000;padding:8px 16px;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;cursor:pointer">
+              <label class="btn-primary" style="display:inline-block;cursor:pointer">
                 + Yükle
                 <input type="file" accept="image/*" style="display:none" onchange="uploadImage(this,'genel')" multiple />
               </label>
