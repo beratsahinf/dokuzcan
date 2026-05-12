@@ -292,8 +292,31 @@
     </div>
   </div>
 
-  <!-- MODAL -->
-  <div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <!-- QR MODAL -->
+  <div class="modal-overlay" id="qrModal" onclick="if(event.target===this)closeQR()">
+    <div class="modal" style="max-width:380px;text-align:center">
+      <div class="modal-head">
+        <div class="modal-title" id="qrModalTitle">QR Kod</div>
+        <button class="modal-close" onclick="closeQR()">✕</button>
+      </div>
+      <div class="modal-body" style="display:flex;flex-direction:column;align-items:center;gap:16px">
+        <div style="background:#fff;padding:16px;display:inline-block">
+          <canvas id="qrCanvas"></canvas>
+        </div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--grey)" id="qrUrl"></div>
+        <div style="display:flex;gap:8px;width:100%">
+          <button class="btn-save" style="margin:0;flex:1" onclick="downloadQR()">↓ PNG İndir</button>
+          <a id="qrOpenLink" href="#" target="_blank" class="btn-ghost" style="flex:1;display:flex;align-items:center;justify-content:center;text-decoration:none">Profili Aç ↗</a>
+        </div>
+        <div style="font-size:12px;color:var(--grey);line-height:1.6;text-align:left;width:100%;padding:10px;background:var(--dark);border:1px solid var(--border)">
+          Bu QR kodu fiziksel kit üzerine basabilirsiniz.<br>
+          Tarandığında acil tıbbi profil açılır.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <div class="modal">
       <div class="modal-head">
         <div class="modal-title" id="modalTitle">—</div>
@@ -465,6 +488,8 @@ function openOrder(id) {
     <div class="modal-row"><span class="modal-key">TC Kimlik</span><span class="modal-val">${o.tc_kimlik||'—'}</span></div>
     <div class="modal-row"><span class="modal-key">Kit</span><span class="modal-val">${KIT_NAMES[o.kit_type]||o.kit_type}</span></div>
     <div class="modal-row"><span class="modal-key">QR Slug</span><span class="modal-val" style="font-family:'JetBrains Mono',monospace;font-size:12px">${o.slug}</span></div>
+    <div class="modal-row"><span class="modal-key">QR Profil Linki</span><span class="modal-val"><a href="https://dokuzcan.com/qr-profil?slug=${o.slug}" target="_blank" style="color:var(--red);font-size:12px">Profili Aç ↗</a></span></div>
+    <div class="modal-row"><span class="modal-key">QR Kod</span><span class="modal-val"><button class="btn-action" onclick="openQR('${o.slug}')">QR Önizle & İndir</button></span></div>
     <div class="modal-row"><span class="modal-key">Tutar</span><span class="modal-val">₺${parseFloat(o.payment_amount||0).toLocaleString('tr-TR')}</span></div>
     <div class="modal-row"><span class="modal-key">Tarih</span><span class="modal-val">${o.created_at?new Date(o.created_at).toLocaleString('tr-TR'):'—'}</span></div>
     <div class="modal-row"><span class="modal-key">QR Aktif mi</span><span class="modal-val">${o.is_active===false?'<span class="badge badge-inactive">PASİF</span>':'<span class="badge badge-active">AKTİF</span>'}</span></div>
@@ -696,7 +721,7 @@ function renderKits() {
       <td>${o.is_active===false?'<span class="badge badge-inactive">PASİF</span>':'<span class="badge badge-active">AKTİF</span>'}</td>
       <td><span class="badge badge-${o.status||'paid'}">${STATUS_LABEL[o.status||'paid']}</span></td>
       <td style="color:var(--grey);font-size:12px">${o.created_at?new Date(o.created_at).toLocaleDateString('tr-TR'):'—'}</td>
-      <td><button class="btn-action" onclick="openOrder('${o.id}')">Yönet</button></td>
+      <td><div class="btn-row"><button class="btn-action" onclick="openOrder('${o.id}')">Yönet</button><button class="btn-action" onclick="openQR('${o.slug}')">QR Görüntüle</button></div></td>
     </tr>`
   }).join('')
 }
@@ -843,6 +868,40 @@ function exportCSV(type) {
   const a = document.createElement('a')
   a.href = URL.createObjectURL(blob)
   a.download = `dokuzcan-${type}-${new Date().toISOString().split('T')[0]}.csv`
+  a.click()
+}
+
+function openQR(slug) {
+  const url = 'https://dokuzcan.com/qr-profil?slug=' + slug
+  document.getElementById('qrModalTitle').textContent = slug
+  document.getElementById('qrUrl').textContent = url
+  document.getElementById('qrOpenLink').href = url
+
+  const canvas = document.getElementById('qrCanvas')
+  canvas.width = 256; canvas.height = 256
+
+  const waitForLib = (cb, n=0) => {
+    if (typeof QRCode !== 'undefined') cb()
+    else if (n < 20) setTimeout(()=>waitForLib(cb, n+1), 150)
+  }
+  waitForLib(() => {
+    QRCode.toCanvas(canvas, url, {
+      width: 256, margin: 2,
+      color: { dark: '#000000', light: '#ffffff' }
+    }, err => { if (err) console.error(err) })
+  })
+
+  document.getElementById('qrModal').classList.add('open')
+}
+
+function closeQR() { document.getElementById('qrModal').classList.remove('open') }
+
+function downloadQR() {
+  const canvas = document.getElementById('qrCanvas')
+  const slug = document.getElementById('qrModalTitle').textContent
+  const a = document.createElement('a')
+  a.download = 'dokuzcan-qr-' + slug + '.png'
+  a.href = canvas.toDataURL('image/png')
   a.click()
 }
 
