@@ -91,9 +91,26 @@
     .btn-action:hover{border-color:var(--red);color:var(--red)}
 
     /* MODAL */
-    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;display:none;align-items:center;justify-content:center;padding:20px}
-    .modal-overlay.open{display:flex}
-    .modal{background:var(--panel);border:1px solid var(--border);max-width:640px;width:100%;position:relative;margin:0 auto;max-height:88vh;overflow-y:auto}
+    .modal-overlay{
+      position:fixed !important;
+      top:0 !important; left:0 !important;
+      width:100vw !important; height:100vh !important;
+      background:rgba(0,0,0,0.88);
+      z-index:99999;
+      display:none;
+      align-items:center;
+      justify-content:center;
+    }
+    .modal-overlay.open{display:flex !important}
+    .modal{
+      background:var(--panel);
+      border:1px solid var(--border);
+      max-width:640px;
+      width:calc(100% - 40px);
+      position:relative;
+      max-height:85vh;
+      overflow-y:auto;
+    }
     .modal::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--red)}
     .modal-head{padding:16px 22px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
     .modal-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px}
@@ -537,7 +554,7 @@ function openOrder(id) {
         <button class="btn-danger" onclick="confirmDeleteOrder('${o.id}')">Siparişi Sil</button>
       </div>
     </div>`
-  document.getElementById('modal').classList.add('open')
+  openModal()
 }
 
 async function saveOrder(id) {
@@ -659,7 +676,7 @@ function openUser(id) {
         <button class="btn-danger" style="width:100%" onclick="confirmDeleteUser('${u.id}')">⚠ Bu Kullanıcıyı ve Tüm Verilerini Sil</button>
       </div>
     </div>`
-  document.getElementById('modal').classList.add('open')
+  openModal()
 }
 
 function userTab(t, btn) {
@@ -762,7 +779,7 @@ function openCreateKit(forUserId) {
       <div class="form-group full"><label>Yönetici Notu</label><textarea id="ck_notes">Manuel oluşturuldu</textarea></div>
     </div>
     <button class="btn-save" onclick="createKit()">Kit Oluştur</button>`
-  document.getElementById('modal').classList.add('open')
+  openModal()
 }
 
 async function createKit() {
@@ -889,12 +906,41 @@ function openQR(slug) {
     a.click()
   }
 
-  document.getElementById('qrModal').classList.add('open')
+  document.getElementById('qrModal').style.display = 'flex'
+  document.getElementById('qrModal').style.position = 'fixed'
+  document.getElementById('qrModal').style.top = '0'
+  document.getElementById('qrModal').style.left = '0'
+  document.getElementById('qrModal').style.width = '100vw'
+  document.getElementById('qrModal').style.height = '100vh'
+  document.getElementById('qrModal').style.alignItems = 'center'
+  document.getElementById('qrModal').style.justifyContent = 'center'
+  document.getElementById('qrModal').style.zIndex = '99999'
+  document.body.style.overflow = 'hidden'
 }
 
-function closeQR() { document.getElementById('qrModal').classList.remove('open') }
+function closeQR() {
+  document.getElementById('qrModal').style.display = 'none'
+  document.body.style.overflow = ''
+}
 
-function closeModal() { document.getElementById('modal').classList.remove('open') }
+function openModal() {
+  const el = document.getElementById('modal')
+  el.style.display = 'flex'
+  el.style.position = 'fixed'
+  el.style.top = '0'
+  el.style.left = '0'
+  el.style.width = '100vw'
+  el.style.height = '100vh'
+  el.style.alignItems = 'center'
+  el.style.justifyContent = 'center'
+  el.style.zIndex = '99999'
+  document.body.style.overflow = 'hidden'
+}
+
+function closeModal() {
+  document.getElementById('modal').style.display = 'none'
+  document.body.style.overflow = ''
+}
 
 init()
 </script>
