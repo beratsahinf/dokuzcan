@@ -300,12 +300,12 @@
         <button class="modal-close" onclick="closeQR()">✕</button>
       </div>
       <div class="modal-body" style="display:flex;flex-direction:column;align-items:center;gap:16px">
-        <div style="background:#fff;padding:16px;display:inline-block">
-          <canvas id="qrCanvas"></canvas>
+        <div style="background:#fff;padding:12px;display:inline-block" id="qrBox">
+          <div style="width:256px;height:256px;display:flex;align-items:center;justify-content:center;color:#aaa;font-size:12px">Yükleniyor...</div>
         </div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--grey)" id="qrUrl"></div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--grey);word-break:break-all" id="qrUrl"></div>
         <div style="display:flex;gap:8px;width:100%">
-          <button class="btn-save" style="margin:0;flex:1" onclick="downloadQR()">↓ PNG İndir</button>
+          <button class="btn-save" id="qrDownloadBtn" style="margin:0;flex:1">↓ PNG İndir</button>
           <a id="qrOpenLink" href="#" target="_blank" class="btn-ghost" style="flex:1;display:flex;align-items:center;justify-content:center;text-decoration:none">Profili Aç ↗</a>
         </div>
         <div style="font-size:12px;color:var(--grey);line-height:1.6;text-align:left;width:100%;padding:10px;background:var(--dark);border:1px solid var(--border)">
@@ -315,8 +315,6 @@
       </div>
     </div>
   </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <div class="modal">
       <div class="modal-head">
         <div class="modal-title" id="modalTitle">—</div>
@@ -873,37 +871,28 @@ function exportCSV(type) {
 
 function openQR(slug) {
   const url = 'https://dokuzcan.com/qr-profil?slug=' + slug
+  const imgUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=256x256&data=' + encodeURIComponent(url) + '&margin=6'
+  const imgUrlHD = 'https://api.qrserver.com/v1/create-qr-code/?size=512x512&data=' + encodeURIComponent(url) + '&margin=6'
+
   document.getElementById('qrModalTitle').textContent = slug
   document.getElementById('qrUrl').textContent = url
   document.getElementById('qrOpenLink').href = url
 
-  const canvas = document.getElementById('qrCanvas')
-  canvas.width = 256; canvas.height = 256
+  const box = document.getElementById('qrBox')
+  box.innerHTML = `<img src="${imgUrl}" width="256" height="256" alt="QR Kod" style="display:block" />`
 
-  const waitForLib = (cb, n=0) => {
-    if (typeof QRCode !== 'undefined') cb()
-    else if (n < 20) setTimeout(()=>waitForLib(cb, n+1), 150)
+  document.getElementById('qrDownloadBtn').onclick = () => {
+    const a = document.createElement('a')
+    a.href = imgUrlHD
+    a.download = 'dokuzcan-qr-' + slug + '.png'
+    a.target = '_blank'
+    a.click()
   }
-  waitForLib(() => {
-    QRCode.toCanvas(canvas, url, {
-      width: 256, margin: 2,
-      color: { dark: '#000000', light: '#ffffff' }
-    }, err => { if (err) console.error(err) })
-  })
 
   document.getElementById('qrModal').classList.add('open')
 }
 
 function closeQR() { document.getElementById('qrModal').classList.remove('open') }
-
-function downloadQR() {
-  const canvas = document.getElementById('qrCanvas')
-  const slug = document.getElementById('qrModalTitle').textContent
-  const a = document.createElement('a')
-  a.download = 'dokuzcan-qr-' + slug + '.png'
-  a.href = canvas.toDataURL('image/png')
-  a.click()
-}
 
 function closeModal() { document.getElementById('modal').classList.remove('open') }
 
