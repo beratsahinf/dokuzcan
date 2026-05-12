@@ -684,8 +684,15 @@
       }
       currentUser = session.user
 
-      // Kit
-      const { data: kit } = await sb.from('kits').select('*').eq('user_id', currentUser.id).maybeSingle()
+      // Kit — en son oluşturulanı al, hata logla
+      const { data: kits, error: kitErr } = await sb
+        .from('kits')
+        .select('*')
+        .eq('user_id', currentUser.id)
+        .order('created_at', { ascending: false })
+
+      if (kitErr) console.error('Kit sorgu hatası:', kitErr.message, kitErr.code)
+      const kit = kits && kits.length > 0 ? kits[0] : null
       userKit = kit
 
       // Profile
