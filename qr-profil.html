@@ -243,7 +243,7 @@
         return
       }
 
-      // 2. Profil bilgileri
+      // 2. Profil bilgileri — hata olsa da devam et
       const { data: profile, error: profErr } = await sb
         .from('profiles')
         .select('first_name, last_name')
@@ -251,8 +251,8 @@
         .maybeSingle()
 
       if (profErr) {
-        showError('PROFİL HATASI', 'profiles tablosu anonim okuma izni yok. SQL güncellenmeli.')
-        return
+        console.warn('Profil sorgu hatası:', profErr.message, profErr.code)
+        // Durdurma — isim olmadan da devam et
       }
 
       // 3. Tıbbi veri
@@ -263,7 +263,6 @@
         .maybeSingle()
 
       if (medErr) {
-        // Tıbbi veri yok ama profil var — yine de göster
         console.warn('medical_data hatası:', medErr.message)
       }
 
